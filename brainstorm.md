@@ -20,3 +20,5 @@ prompt 4:
 <img width="1429" height="427" alt="Screenshot 2026-10-28 at 12 14 52 PM" src="https://github.com/user-attachments/assets/09abb432-084a-4b89-a90c-fd3878a66579" />
 
 also uses nasa data but with the moon. this could be cooler and better for the larps. we could either take the data and decide good landing sites once, or train a model to find good landing sites when new data is added, which is better for the larps but less measurable than prompt 3
+
+willy and cason vote prompt 4
