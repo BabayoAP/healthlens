@@ -6,6 +6,8 @@ each log is ran through a model / ai (similar to aquaplot) which identifies and 
 new imperfections on the skin are noticed, which helps to detect cancerous and/or malignant tumors way before they become lethal.
 add this with heart rate tracking, blood pressure, and other metabolic tests, and we have an amazing app that fulfills the prompt.
 
+lowk could claude kicad + onshape and crank out a physical monitoring device in a weekend
+
 prompt 2: 
 <img width="1448" height="325" alt="Screenshot 2026-10-28 at 12 14 15 PM" src="https://github.com/user-attachments/assets/ec2f1d11-8f3e-46ef-b237-3de9331885ac" />
 
@@ -21,4 +23,5 @@ prompt 4:
 
 also uses nasa data but with the moon. this could be cooler and better for the larps. we could either take the data and decide good landing sites once, or train a model to find good landing sites when new data is added, which is better for the larps but less measurable than prompt 3
 
-willy and cason vote prompt 4
+cason vote prompt 4
+val and dawson vote prompt 1
