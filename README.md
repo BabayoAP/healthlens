@@ -5,7 +5,10 @@ Astronaut health monitoring for long-duration missions. NASA Space Apps Challeng
 Crewmates scan each other's skin. An AI model maps every mole and spot into a personal profile and flags anything new or changing. Vitals (heart rate, blood pressure, SpO₂) sit alongside, so each astronaut gets a clear **OK / Watch / Act** status and a next step, with no doctor on board.
 
 - **Challenge:** [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/)
+- **Tasks (claim before you start):** [`docs/TASKS.md`](docs/TASKS.md)
 - **PRD (source of truth):** [`docs/PRD.md`](docs/PRD.md)
+- **Submission guide + live draft:** [`docs/SUBMISSION.md`](docs/SUBMISSION.md)
+- **Working with Claude Code here:** [`CLAUDE.md`](CLAUDE.md)
 - **Past-winner research:** [`docs/research/PAST-WINNERS.md`](docs/research/PAST-WINNERS.md)
 - **Early concept:** [`docs/CONCEPT.md`](docs/CONCEPT.md)
 - **Original brainstorm:** [`brainstorm.md`](brainstorm.md)
@@ -29,8 +32,14 @@ app/                 Vite + React + TypeScript web app
   src/lib/analysis.ts    skin-scan analysis (mock for now, real model later)
   src/lib/status.ts      OK / Watch / Act rules
   src/pages/             Dashboard, Skin, Vitals
-docs/CONCEPT.md      the idea, how it maps to the challenge, MVP checklist
-brainstorm.md        team brainstorm + vote
+docs/PRD.md          product requirements (features, indicators, MVP cut)
+docs/TASKS.md        who's doing what
+docs/SUBMISSION.md   Space Apps rules + submission draft (kept current)
+docs/research/       past-winner research
+docs/CONCEPT.md      early concept (history)
+brainstorm.md        team brainstorm + vote (history)
+CLAUDE.md            instructions every teammate's Claude Code reads
+.claude/             shared Claude Code settings + /update-submission skill
 ```
 
 > Not a medical device. HealthLens flags changes for review; it does not diagnose.

@@ -9,7 +9,7 @@ Compiled from past winning project pages, to steer HealthLens. Add new batches u
 3. **Something live or interactive.** Every winner shipped a working, public link (vercel, framer, github pages, a custom domain). Judges click it. Deploy early.
 4. **Show a worked example with real numbers.** Astro Sweepers walked one rocket body through before/after (lifetime >100 yrs → <25 yrs, risk 3.3×10⁻⁴ → 4.1×10⁻⁵). We should walk one astronaut through: "Day 97 scan → new 2 mm spot → Day 142 grew to 6.5 mm → **Act** → report sent."
 5. **Tie it to who uses it and why it matters.** Each winner names users (researchers, drug developers, mission planners, operators, insurers) and the real-world stakes. Ours: the astronaut (self-check), the crew medical officer, flight surgeons on the ground, plus Earth spin-off (remote and rural skin-cancer screening).
-6. **Be open about AI use.** There's a required "Use of AI" section. Winners list each tool and what it did, then say "AI sped us up; logic, research and direction were ours; all output reviewed; no NASA logos or branding in AI output; AI images watermarked." Copy that structure.
+6. **Be open about AI use.** There's a required AI section (2026: "Use of Super Intelligence", not shown to judges). Winners list each tool and what it did, then say "AI sped us up; logic, research and direction were ours; all output reviewed; no NASA logos or branding in AI output; AI images watermarked." Copy that structure.
 7. **Fill every submission section well.** All winning pages follow the same template (below). A thin section looks weak next to them.
 
 ## The submission template (every winner uses it)
@@ -24,7 +24,7 @@ Compiled from past winning project pages, to steer HealthLens. Add new batches u
 | **NASA Data** | Named datasets/APIs, ideally with IDs and dates |
 | **Space Agency Partner & Other Data** | Other agencies (ESA, ISRO, USGS) + libraries/services used |
 
-> To verify on the official site: the exact demo format rules (from memory it's a short video ≤30 s *or* ≤7 slides) and the judging criteria (from memory: **Influence, Creativity, Validity, Relevance, Presentation**). Check these before we build the demo.
+> **Verified 2026-11-14 against the official guides** (details in [SUBMISSION.md](../SUBMISSION.md)): demo is a video ≤30 s *or* ≤7 slides; judging criteria are **Impact, Creativity, Validity, Relevance, Presentation** (1–5 each). For 2026 the AI section is called "Use of Super Intelligence (SI)" and **is not shown to judges**, but watermarks and acknowledgements inside the project are.
 
 ## Patterns across winners
 

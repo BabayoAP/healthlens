@@ -1,0 +1,198 @@
+# Submission Guide + Live Draft
+
+How to write our Space Apps team page, and the current draft. **Keep the draft current as we build** (see CLAUDE.md). The Project tab is what judges score, so most of this file is about it.
+
+> **Deadline:** click **Submit for Judging** before **Sun Nov 15, 2026, 11:59 p.m. PT**. Late = not judged. Save often on the site ("Save Progress"); turn the edit **Lock** on while editing so teammates don't overwrite you.
+
+---
+
+## Part 1: The rules (official, 2026)
+
+From the official [Project Submission Guide](https://www.spaceappschallenge.org/resources/project-submission-guide/) and [Judging & Awards Guide](https://www.spaceappschallenge.org/resources/judging-awards-guide):
+
+- **Every judge scores 1–5 on five criteria:**
+
+  | Criterion | What a 5 looks like (official wording, shortened) | How we hit it |
+  | --- | --- | --- |
+  | **Impact** | Significant problem, broad reach, "could change the world" | Astronaut safety on Moon/Mars + Earth spin-off for remote communities |
+  | **Creativity** | Novel concept or meaningful improvement on existing ideas | AI skin profile that tracks every spot over time; comm-delay-aware emergency guides |
+  | **Validity** | Scientifically sound, technically feasible, usable | Cited ranges, own-baseline logic, false-alarm handling, working app |
+  | **Relevance** | Fully addresses the challenge; **NASA data integral, not superficial** | Hit every challenge bullet (§ coverage table below); NASA data drives features |
+  | **Presentation** | Clear, engaging story; judges use the demo **and** the full page | Strong hook, worked example, clean visuals |
+
+  The guide explicitly says teams under-invest in **Presentation**, so give it equal time.
+- **Most of the score comes from the Project page, not the demo.**
+- **Demo:** video **≤30 seconds** *or* slide deck **≤7 slides** (incl. title + intro). Over the limit = **not eligible for global judging**. Host externally (YouTube/Drive/GitHub), public link, no login.
+- **All links public, no login/permission.** Test each in a private window. Optional: request a FortiGuard web-filter classification for our site so school/corporate networks don't block it.
+- **English** everywhere (video may be another language only with English subtitles).
+- **At least one NASA data source or resource** is required for global awards.
+- **No images/video/audio/likeness of anyone under 18.** Applies to skin photos and team shots in the demo.
+- **AI ("Super Intelligence / SI") rules:** allowed as an accelerator, **not** to come up with the core idea. No NASA branding in AI output. AI images/video need a **visible watermark**; AI code, data or audio must be acknowledged in text/metadata. The SI answer itself **is not shown to judges**, but judges see watermarks and acknowledgements in the project.
+- Images (JPG/PNG/GIF ≤10 MB) can be pasted straight into the Project page. **Use them**: past winners put diagrams and screenshots inline.
+- Max 6 team members; everyone must be registered at the same local event and listed on the Members tab.
+- Global awards we could realistically target: **Galactic Impact**, **Best Use of Data**, **Most Inspirational**, **Best Storytelling**, **Local Impact** (remote-care angle).
+
+---
+
+## Part 2: About tab (light touch)
+
+The About tab is the team's identity, not the scored content. Keep it short and confident.
+
+**Frame:**
+1. One line: who we are + where (Irvine local event).
+2. One line: what we chose and why it matters to us.
+3. One line: the skills we brought (software, AI, hardware/CAD, design, storytelling).
+
+**Draft:**
+> We're **Hydrogen Temp**, a team at the NASA Space Apps Irvine local event. We picked *Create Health Monitoring Software for Astronauts* because on a Mars mission there's no doctor down the hall, and the crew has to catch problems in themselves. We combine software, AI, hardware design, and storytelling to build tools people actually use.
+
+_(Check the exact About fields when we open the page; update this frame to match.)_
+
+---
+
+## Part 3: Project tab (the scored part)
+
+Fields in order, as they appear on the form. For each: **what the form asks**, **what winners did**, **our frame**, **our draft**.
+
+### 3.1 Project Name
+- Winners: short, memorable, says the benefit (SkySense, PureFlow, SpaceGenes+). Several add a subtitle on the page title ("Astro Sweepers – AI-powered orbital debris compliance and risk intelligence").
+- **Draft:** **HealthLens: an AI health check-up that never forgets, for crews with no doctor on board**
+
+### 3.2 High-Level Project Summary
+**Form asks:** What did you develop? How does it address the challenge? Why is it important?
+
+**Winner pattern (all 8):** one paragraph, ~150–250 words, in this order:
+1. *"We developed X, a [type of tool] that [does what] using [NASA data]."*
+2. *How it meets the challenge*: echo the challenge's own words.
+3. *The unique angle*: "Unlike tools that…, ours…" (SpaceGenes+: "most space omics tools treat stressors in isolation").
+4. *Why it matters*: stakes in one or two concrete sentences, ideally with a number.
+
+**Draft (update as features land):**
+> We developed **HealthLens**, a self-assessment health app for astronauts on long missions, where the crew carries much of the responsibility for spotting health changes in themselves. Crewmates photograph each other's skin, and an AI model maps every mole, bump and blotch into a personal skin profile that flags any new or changing spot, catching potential skin cancer early, a risk that space radiation increases. HealthLens adds vitals, body mass, mood, sleep, strength and vision checks, compares every reading against the astronaut's *own* baseline, and turns the result into a simple green/amber/red status. Because astronauts are not doctors, every measurement comes with plain-language steps: how to take it, why it matters in space, and what to do when it looks wrong, including emergency guides that adjust for the communication delay to Earth. Reminders and streaks keep the crew on routine, and the app adapts to a spacecraft, a space station or a lunar base. Built on NASA Human Research Program risk research and NASA OSDR spaceflight skin data, HealthLens helps crews act before problems become emergencies, and the same tools can bring check-ups to remote communities on Earth.
+
+### 3.3 Link to Project Demo
+**Rules:** ≤30 s video or ≤7 slides; public link.
+
+**Recommendation:** a **30-second video**. Showing the working app beats slides for both Presentation and Validity. Official timeline, filled in:
+
+| Time | Official beat | Our content |
+| --- | --- | --- |
+| 0:00 | Introduce yourselves | "We're Hydrogen Temp from Irvine." No faces **or voices** of anyone under 18. If that's us, use on-screen captions or an AI voice (acknowledged) |
+| 0:02 | Challenge + inspiration | "On Mars there's no doctor down the hall. Astronauts have to catch problems themselves." |
+| 0:05 | Title + tagline | **HealthLens: a health check-up that never forgets.** |
+| 0:10 | How it works + NASA data | Screen recording: dashboard → one astronaut amber → body figure → arm → spot grew between scans → **Act** → guide card. Caption: "Built on NASA HRP risks + OSDR spaceflight skin data." |
+| 0:20–0:30 | The future | Moon-base switch with comm delay → "And on Earth: check-ups for remote communities." |
+
+Backup (if video slips): 7 slides: Title + team + challenge · Problem · Solution · How it works (screens) · NASA data · Impact + Earth use · Future.
+English captions on the video regardless; AI-generated visuals watermarked; AI voice acknowledged.
+
+### 3.4 Link to Final Project
+- Every winner linked a **live site** (vercel.app, framer, github.io, custom domain). Judges click it.
+- **Ours:** Vercel URL of `app/` (public, no login, demo data preloaded so it isn't empty). Link the GitHub repo inside the page too. **The repo is private now. Make it public, or link the live site only.**
+- Draft: _TBD after deploy_
+
+### 3.5 Detailed Project Description (most important field)
+**Form asks:** What exactly does it do? How does it work? What benefits? What do you hope to achieve? What tools/languages/hardware/software?
+
+**What winners did:** these were long (PureFlow ~600 words, Astro Sweepers ~2,000) with **headings, bullets, inline images, and numbers**. The strongest ones:
+- **Opened with a hook line.** PureFlow: "Would Your Habitat Survive a Solar Storm… Today?"
+- **Had a named method with stated weights.** Astro Sweepers' ASRI: R 0.45, D 0.25, C 0.20, S 0.10, "weights emerged from sensitivity studies".
+- **Walked through one worked example with before/after numbers.** Astro Sweepers: lifetime >100 yrs → <25 yrs.
+- **Covered validation and false positives.** Resonant Exoplanets built its pitch on it.
+- **Answered every form question under its own heading** (Queñaris literally used "What exactly does it do? / How does it work? / What benefits…").
+- **Had a short, believable roadmap.**
+- **Listed the full tool stack.**
+
+**Our frame (use these headings):**
+1. **Hook**: one line + one stat.
+2. **What it does**: bullet per feature, each tied to a challenge requirement.
+3. **How it works**: data flow: capture → AI analysis → personal baseline → status rules → guidance. Include a diagram image.
+4. **The HealthLens score**: named scoring, weights stated, why those weights.
+5. **Worked example**: one astronaut through two scans and the escalation, with screenshots.
+6. **Built for space**: environment modes, comm delay, offline-first, body mass without gravity.
+7. **Validity**: own-baseline comparison, re-measure-before-escalate, ranges cited, not-a-diagnosis.
+8. **Benefits + impact**: crew, flight surgeons, Earth remote care.
+9. **What we hope to achieve / next**: on-device model, wearable sensor, clinical validation.
+10. **Tools & technologies**: full list.
+
+**Draft (fill section by section as features land):**
+
+> **No dermatologist on Mars.** _(add stat: radiation dose / skin cancer risk, cited)_
+>
+> **What it does**
+> - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). _(status: mock AI)_
+> - Vitals: heart rate, blood pressure, SpO₂, temperature vs personal baseline. _(status: built, mock data)_
+> - Crew dashboard with green/amber/red status and reasons. _(status: built)_
+> - _(add each feature as it lands: guides, emergency mode, reminders, trends, environments, body figure)_
+>
+> **How it works**: _(diagram + 3–5 sentences)_
+>
+> **The HealthLens score**: _(define once status.ts weights are final)_
+>
+> **Worked example**: _(screenshots of the seeded astronaut)_
+>
+> **Tools & technologies**: React, TypeScript, Vite; _(add: AI model/API, chart library, hosting)_
+
+### 3.6 Use of Super Intelligence (SI)
+Not shown to judges, but required and must be honest. Winner pattern: list each tool + what it did + "the idea, research, logic and direction were ours; all output reviewed and tested; no NASA branding in AI output; AI images watermarked."
+
+**AI-use log (append as we go):**
+| Tool | Used for | Where |
+| --- | --- | --- |
+| Claude Code (Anthropic) | Project scaffolding, code generation and review, research summaries, document drafting | Whole repo |
+| _(skin-analysis model/API)_ | Lesion detection inside the app | `app/src/lib/analysis.ts` |
+
+**Draft:** _(write from the log at the end)_
+
+### 3.7 NASA Data
+Needs **specific names** ("GLDS-288 RNA-Seq: Mouse Spleen in Spaceflight"), not "NASA data". Relevance scores depend on data being **core to the product**, so for each entry say *how the app uses it*.
+
+**Log (append as we go; mark "used in app" vs "cited"):**
+| Source | ID / link | How HealthLens uses it | Status |
+| --- | --- | --- | --- |
+| NASA Human Research Program: 5 hazards (RIDGE) & risks | nasa.gov/hrp | Maps each indicator to a hazard; "why it matters" text | planned |
+| NASA OSDR: mouse skin RNA-seq, MHU-2 | OSD-238, OSD-239 | Evidence spaceflight alters skin barrier/collagen | planned (verify IDs) |
+| NASA OSDR: mouse skin RNA-seq, RR-5 | OSD-240, OSD-241 | same | planned (verify IDs) |
+| NASA OSDR: mouse skin RNA-seq, RR-7 | OSD-254 | same | planned (verify IDs) |
+| NASA Twins Study (results) | _TBD_ | Realistic trend scenarios for vitals/vision/cognition | idea |
+| NASA DONKI space-weather API | _TBD_ | Live solar-event alert → shelter guide | idea |
+
+### 3.8 Space Agency Partner Data and Other References
+List **everything**: code libraries, datasets, images, papers, even open-source. Partner-agency data is "highly encouraged": candidates are ESA, JAXA (the MHU-2 skin study is a JAXA mission), CSA, ISRO.
+
+**Log (append as we go):**
+| Resource | Type | Use |
+| --- | --- | --- |
+| JAXA Mouse Habitat Unit-2 (MHU-2) | Space Agency Partner data (via OSDR) | Skin study context |
+| Communications Medicine (2024), "Transcriptomics analysis reveals molecular alterations underpinning spaceflight dermatology" | Paper | Skin evidence |
+| React, Vite, TypeScript | Open-source code | App |
+| _(ISIC / HAM10000 if used)_ | Public dataset | Demo lesion images / model testing |
+
+---
+
+## Part 4: Challenge coverage (Relevance check)
+
+Every bullet the challenge names, and where we answer it. Fill the "Where" column with screenshots/sections before submitting.
+
+| Challenge asks for | HealthLens | Where |
+| --- | --- | --- |
+| Astronauts assess their own health | Self check-ins + status | |
+| Guidance in an emergency | Emergency mode | |
+| Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator | |
+| Remind the crew | Reminders + streaks | |
+| Adapt to spacecraft / station / Moon base | Environment modes | |
+| Use NASA HRP + OSDR | Hazard mapping + skin datasets | |
+| Any input incl. camera images | Skin photo scans | |
+| Clickable human figure (suggested) | Body figure | |
+| Gamification, dynamic charts, color coding (suggested) | Streaks, trend charts, green/amber/red | |
+| Earth spin-off for remote communities | Impact section | |
+
+## Part 5: Final checklist (Sunday)
+- [ ] All required fields filled, English
+- [ ] Demo ≤30 s (or ≤7 slides), public link tested in private window
+- [ ] Final project link public, tested in private window, demo data preloaded
+- [ ] Screenshots + diagram pasted into Detailed Description
+- [ ] NASA Data names exact IDs and says how each is used
+- [ ] No one under 18 visible/audible; AI visuals watermarked; no NASA logos
+- [ ] All members on Members tab, all registered for Irvine
+- [ ] Terms + "Confirm All Work is Original" boxes → **Submit for Judging** before 11:59 p.m. PT

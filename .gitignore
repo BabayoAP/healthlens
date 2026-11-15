@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+# personal Claude Code settings (shared ones live in .claude/settings.json)
+.claude/settings.local.json
+CLAUDE.local.md
+.vercel

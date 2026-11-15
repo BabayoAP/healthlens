@@ -1,0 +1,7 @@
+# Team is on Mac + Windows: store text with LF so diffs don't fill with line-ending noise
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
