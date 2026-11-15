@@ -11,7 +11,8 @@ Challenge: "Create Health Monitoring Software for Astronauts on Space Missions".
 1. `docs/TASKS.md`: who's doing what right now. **Claim a task before starting.**
 2. `docs/PRD.md`: source of truth for features, priorities (P0/P1/P2), indicator table, MVP cut (§11).
 3. `docs/SUBMISSION.md`: live draft of the Space Apps submission page + official rules.
-4. `docs/research/PAST-WINNERS.md`: patterns from past winners (only when writing pitch/submission content).
+4. `docs/DEMO-PLAN.md`: the 7-slide demo plan. Add demo ideas there; when you finish a feature that a slide is waiting on, update that slide's Status.
+5. `docs/research/PAST-WINNERS.md`: patterns from past winners (only when writing pitch/submission content).
 
 `docs/CONCEPT.md` and `brainstorm.md` are history; don't update them.
 

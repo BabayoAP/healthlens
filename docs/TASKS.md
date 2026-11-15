@@ -13,7 +13,6 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] Vitals + mood check-in entry forms with a "simulate reading" button; save with `addReading` from `lib/store.ts`. PRD §5.2, §5.4
 - [ ] Measurement guide cards (How / Why / If abnormal) for skin, HR, BP, SpO₂, mood. PRD §5.12
 - [ ] Insights list: what / why / do / escalate. PRD §5.9
 - [ ] Trend chart for one vital + skin timeline for one lesion. PRD §5.10
@@ -26,7 +25,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 - [ ] Verify indicator ranges in PRD §7 against sources; cite them
 - [ ] Pick + cite NASA data actually used in the app (OSDR skin OSD-238/239/240/241/254, HRP risks, DONKI). PRD §9
 - [ ] Deploy to a public URL (Vercel) and test in a private window
-- [ ] Demo: 30-s video **or** ≤7 slides. See SUBMISSION.md
+- [ ] Demo: 7-slide deck with short GIFs (≤30 s of motion in total). Plan in DEMO-PLAN.md
 - [ ] Fill the Space Apps Project page from SUBMISSION.md and click **Submit for Judging**
 
 ## In progress
@@ -34,6 +33,9 @@ _(name · task · started)_
 
 **Dawson Phan · claimed Nov 14 evening. Touches only `analysis.ts` and `Skin.tsx`.**
 - [ ] Real skin-analysis call in `app/src/lib/analysis.ts` (keep mock as offline fallback). PRD §5.1
+
+**BabayoAP · claimed Nov 14 evening. New file `pages/CheckIn.tsx`; small edit to `App.tsx` (one tab).**
+- [ ] Vitals + mood check-in entry forms with a "simulate reading" button. PRD §5.2, §5.4
 
 ## Done
 - [x] **Foundation is in: build on it** (see "How to build on the data layer" in CLAUDE.md). BabayoAP:

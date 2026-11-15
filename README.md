@@ -37,6 +37,7 @@ app/                 Vite + React + TypeScript web app
 docs/PRD.md          product requirements (features, indicators, MVP cut)
 docs/TASKS.md        who's doing what
 docs/SUBMISSION.md   Space Apps rules + submission draft (kept current)
+docs/DEMO-PLAN.md    7-slide demo plan (edit freely)
 docs/research/       past-winner research
 docs/CONCEPT.md      early concept (history)
 brainstorm.md        team brainstorm + vote (history)

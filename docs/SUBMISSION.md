@@ -73,18 +73,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 ### 3.3 Link to Project Demo
 **Rules:** ≤30 s video or ≤7 slides; public link.
 
-**Recommendation:** a **30-second video**. Showing the working app beats slides for both Presentation and Validity. Official timeline, filled in:
-
-| Time | Official beat | Our content |
-| --- | --- | --- |
-| 0:00 | Introduce yourselves | "We're Hydrogen Temp from Irvine." No faces **or voices** of anyone under 18. If that's us, use on-screen captions or an AI voice (acknowledged) |
-| 0:02 | Challenge + inspiration | "On Mars there's no doctor down the hall. Astronauts have to catch problems themselves." |
-| 0:05 | Title + tagline | **HealthLens: a health check-up that never forgets.** |
-| 0:10 | How it works + NASA data | Screen recording: dashboard → one astronaut amber → body figure → arm → spot grew between scans → **Act** → guide card. Caption: "Built on NASA HRP risks + OSDR spaceflight skin data." |
-| 0:20–0:30 | The future | Moon-base switch with comm delay → "And on Earth: check-ups for remote communities." |
-
-Backup (if video slips): 7 slides: Title + team + challenge · Problem · Solution · How it works (screens) · NASA data · Impact + Earth use · Future.
-English captions on the video regardless; AI-generated visuals watermarked; AI voice acknowledged.
+**Decision (Nov 14): 7-slide deck** with short GIFs of the working app, total motion kept under 30 seconds. The full slide plan, rules and recording notes live in **[DEMO-PLAN.md](DEMO-PLAN.md)**; edit it there.
 
 ### 3.4 Link to Final Project
 - Every winner linked a **live site** (vercel.app, framer, github.io, custom domain). Judges click it.
@@ -197,7 +186,7 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 
 ## Part 5: Final checklist (Sunday)
 - [ ] All required fields filled, English
-- [ ] Demo ≤30 s (or ≤7 slides), public link tested in private window
+- [ ] Demo deck ≤7 slides, total GIF/clip time ≤30 s, public link tested in private window
 - [ ] Final project link public, tested in private window, demo data preloaded
 - [ ] Screenshots + diagram pasted into Detailed Description
 - [ ] NASA Data names exact IDs and says how each is used
