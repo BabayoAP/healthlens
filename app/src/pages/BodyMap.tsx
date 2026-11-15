@@ -13,13 +13,13 @@ const DAY = 86_400_000;
 
 /** Figure shapes, drawn facing the viewer: the person's left side is on the viewer's right. */
 const SHAPES: Record<FigureRegionId, { d: string; labelAt: [number, number] }> = {
-  head: { d: 'M100 8a30 30 0 0 1 30 30a30 30 0 0 1-18 27.5V78H88V65.5A30 30 0 0 1 70 38A30 30 0 0 1 100 8Z', labelAt: [100, 40] },
-  chest: { d: 'M64 84h72a14 14 0 0 1 14 14v56H50V98a14 14 0 0 1 14-14Z', labelAt: [100, 122] },
-  abdomen: { d: 'M52 160h96v54a14 14 0 0 1-14 14H66a14 14 0 0 1-14-14Z', labelAt: [100, 195] },
-  'right-arm': { d: 'M32 88a12 12 0 0 1 12 12v118a12 12 0 0 1-24 0V100a12 12 0 0 1 12-12Z', labelAt: [32, 160] },
-  'left-arm': { d: 'M168 88a12 12 0 0 1 12 12v118a12 12 0 0 1-24 0V100a12 12 0 0 1 12-12Z', labelAt: [168, 160] },
-  'right-leg': { d: 'M58 234h38v150a19 19 0 0 1-38 0Z', labelAt: [77, 315] },
-  'left-leg': { d: 'M104 234h38v150a19 19 0 0 1-38 0Z', labelAt: [123, 315] },
+  head: { d: 'M100 8c13 0 22 10.5 22 25c0 10-4.5 18-11 22.5V68H89V55.5C82.5 51 78 43 78 33c0-14.5 9-25 22-25Z', labelAt: [100, 34] },
+  chest: { d: 'M70 74h60c12 0 20 8 21 19l1 59H48l1-59c1-11 9-19 21-19Z', labelAt: [100, 115] },
+  abdomen: { d: 'M51 156h98l1 44c0 10-2 19-5 26H55c-3-7-5-16-5-26Z', labelAt: [100, 192] },
+  'right-arm': { d: 'M38 80c5 0 8 4 8 10l-2 72l-4 62c-.5 6-3.5 10-8 10s-7.5-4-7.5-10l1-62l3-72c.4-6 4.5-10 9.5-10Z', labelAt: [35, 165] },
+  'left-arm': { d: 'M162 80c-5 0-8 4-8 10l2 72l4 62c.5 6 3.5 10 8 10s7.5-4 7.5-10l-1-62l-3-72c-.4-6-4.5-10-9.5-10Z', labelAt: [165, 165] },
+  'right-leg': { d: 'M56 230h40l-3 84l-4 68c-.4 7-5 11-11 11s-10.6-4-11-11l-4-68l-7-84Z', labelAt: [77, 300] },
+  'left-leg': { d: 'M144 230h-40l3 84l4 68c.4 7 5 11 11 11s10.6-4 11-11l4-68l7-84Z', labelAt: [123, 300] },
 };
 
 const STATUS_WORD: Record<Status, string> = { ok: 'OK', watch: 'Watch', act: 'Act' };

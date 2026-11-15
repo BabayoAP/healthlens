@@ -3,5 +3,5 @@ import type { Status } from '../lib/types';
 const label: Record<Status, string> = { ok: 'OK', watch: 'Watch', act: 'Act' };
 
 export function StatusBadge({ status }: { status: Status }) {
-  return <span className={`badge badge-${status}`}>{label[status]}</span>;
+  return <span className={`badge badge-${status}`}><span className="badge-dot" aria-hidden="true" />{label[status]}</span>;
 }

@@ -1,10 +1,34 @@
+@import '@fontsource-variable/geist';
+
+/* Design tokens. Status colors (ok / watch / act) are reserved for status only. */
 :root {
-  --bg: #f6f7f9; --surface: #fff; --text: #14181f; --muted: #5b6472; --border: #dde1e7;
-  --accent: #2f5fd0; --series: #2a78d6; --ok: #1f8a4c; --watch: #b07800; --act: #c0392b;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: var(--text); background: var(--bg);
+  --bg: #f7f7f8; --sidebar: #efeff2; --surface: #ffffff; --surface-2: #f4f4f6;
+  --text: #17181c; --muted: #676b76; --faint: #9a9ea8;
+  --border: #e3e4e8; --border-strong: #cfd1d7;
+  --accent: #2f5bea; --accent-soft: #e9eefd; --series: #3a72f0;
+  --ink-btn: #17181c; --ink-btn-text: #ffffff;
+  --ok: #1d8a4e; --watch: #b06a00; --act: #d1291b; --act-strong: #d1291b;
+  --ok-soft: #e6f4ec; --watch-soft: #fbf0dd; --act-soft: #fdeae7;
+  --shadow: 0 1px 2px rgb(16 18 24 / .04), 0 1px 1px rgb(16 18 24 / .03);
+  --r-lg: 14px; --r-md: 10px; --r-sm: 7px;
+  color-scheme: light;
+  font-family: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px; line-height: 1.5; color: var(--text); background: var(--bg);
+  font-feature-settings: 'tnum' 1; -webkit-font-smoothing: antialiased;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0e1116; --surface: #171b22; --text: #e6e9ee; --muted: #9aa3b1; --border: #2a303a; --accent: #7a9cff; --series: #3987e5; }
+  :root {
+    --bg: #18181b; --sidebar: #1f1f23; --surface: #232327; --surface-2: #2a2a2f;
+    --text: #f1f1f3; --muted: #a2a4ad; --faint: #73757e;
+    --border: #323238; --border-strong: #45454d;
+    --accent: #7d97ff; --accent-soft: #283152; --series: #6f92ff;
+    --ink-btn: #f1f1f3; --ink-btn-text: #17181c;
+    --ok: #46c27f; --watch: #e8a53b; --act: #ff6b5c; --act-strong: #d93a2b;
+    --ok-soft: #1d3428; --watch-soft: #3a2e17; --act-soft: #42221f;
+    --shadow: none;
+    color-scheme: dark;
+  }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); }
+h1, h2, h3, h4 { letter-spacing: -0.01em; }

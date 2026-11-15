@@ -18,9 +18,9 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
-- BabayoAP · UI redesign: new app shell (sidebar nav), design tokens, type, dashboard + restyle of every screen. Touches App.tsx, App.css, index.css, Dashboard and shared components · Nov 14
 
 ## Done
+- [x] UI redesign (pass 1): sidebar app shell (grouped screens, crew list with status dots, location / demo mode / Emergency at the bottom; becomes a top bar on phones), astronaut header on per-person screens, design tokens with real dark mode, Geist type, crew overview with a one-line status headline and crew cards, smoother body figure, NASA event list folded away. Restyle only on other screens: no logic changed. BabayoAP
 - [x] Tests screen: vision check (tumbling-E near-vision chart, 8 rows, then Amsler grid per eye) and reaction-time test (5 tries, middle value). New indicators `reactionTime`, `nearVision`, `amsler`, saved as measured-in-app, with guides, sources, reminders, trends and body map (head). Seeded for the demo crew; Nakamura's reaction time slows with the sleep loss. `pages/Tests.tsx`. BabayoAP
 - [x] Symptom checklist on the Check-in screen: 16 symptoms in 4 groups; any = Watch, 3 days in a row or an urgent one = Act, "No symptoms today" clears it. Feeds status, insights, body map and the report. `lib/symptoms.ts`, `components/SymptomChecklist.tsx`. Not seeded for the demo crew. BabayoAP
 - [x] Live site moved to a Git-linked Vercel project: **https://healthlens-one.vercel.app** (team `health-lens`, root directory `app/`). Every push to `main` redeploys; no manual deploy needed. BabayoAP

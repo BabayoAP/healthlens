@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
+import { Activity, BookOpen, ClipboardCheck, Eye, LayoutGrid, LineChart, ScanFace, Siren, Sparkles, PersonStanding } from 'lucide-react';
 import { crew } from './lib/mockData';
 import { ENVIRONMENTS, type EnvironmentId } from './lib/environment';
+import { evaluateAstronaut } from './lib/status';
 import { setDemoMode, setEnvironment, useData } from './lib/store';
 import { SourceTag } from './components/SourceTag';
+import { StatusBadge } from './components/StatusBadge';
 import { BodyMap } from './pages/BodyMap';
 import { CheckIn } from './pages/CheckIn';
 import { Dashboard } from './pages/Dashboard';
@@ -16,59 +19,135 @@ import { Vitals } from './pages/Vitals';
 import './App.css';
 
 type Tab = 'dashboard' | 'body' | 'insights' | 'check-in' | 'tests' | 'skin' | 'vitals' | 'trends' | 'guides';
-const TABS: Record<Tab, string> = { dashboard: 'Dashboard', body: 'Body map', insights: 'Insights', 'check-in': 'Check-in', tests: 'Tests', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
+type Icon = ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>;
+
+/** Sidebar groups: what you look at, what you record, what you look up. */
+const NAV: { group?: string; items: { id: Tab; label: string; icon: Icon }[] }[] = [
+  { items: [{ id: 'dashboard', label: 'Crew overview', icon: LayoutGrid }] },
+  { group: 'Astronaut', items: [
+    { id: 'body', label: 'Body map', icon: PersonStanding },
+    { id: 'insights', label: 'Insights', icon: Sparkles },
+    { id: 'vitals', label: 'Vitals', icon: Activity },
+    { id: 'trends', label: 'Trends', icon: LineChart },
+  ] },
+  { group: 'Record', items: [
+    { id: 'check-in', label: 'Check-in', icon: ClipboardCheck },
+    { id: 'tests', label: 'Tests', icon: Eye },
+    { id: 'skin', label: 'Skin scan', icon: ScanFace },
+  ] },
+  { group: 'Reference', items: [{ id: 'guides', label: 'Guides', icon: BookOpen }] },
+];
 
 export default function App() {
   const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
   const [astronautId, setAstronautId] = useState(crew[0].id);
-  const { demoMode, environment } = useData();
+  const data = useData();
+  const { demoMode, environment } = data;
   const [emergencyGuide, setEmergencyGuide] = useState<string>();
+  const perAstronaut = tab !== 'dashboard' && tab !== 'emergency';
+
+  const pickAstronaut = (id: string) => {
+    setAstronautId(id);
+    if (!perAstronaut) setTab('body');
+  };
 
   return (
     <div className="app">
-      <header>
-        <h1>HealthLens</h1>
-        <nav>
-          {(Object.keys(TABS) as Tab[]).map((t) => (
-            <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
-              {TABS[t]}
-            </button>
+      <aside className="sidebar">
+        <div className="brand">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="brand-mark">
+            <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" strokeWidth="2" />
+            <circle cx="12" cy="12" r="4" fill="currentColor" />
+          </svg>
+          <span>HealthLens</span>
+        </div>
+
+        <nav className="nav" aria-label="Screens">
+          {NAV.map((g, i) => (
+            <div className="nav-group" key={g.group ?? i}>
+              {g.group && <div className="nav-label">{g.group}</div>}
+              {g.items.map(({ id, label, icon: I }) => (
+                <button key={id} type="button" className={`nav-item${tab === id ? ' active' : ''}`} aria-current={tab === id ? 'page' : undefined} onClick={() => setTab(id)}>
+                  <I size={16} strokeWidth={1.75} aria-hidden />
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
-        {tab !== 'dashboard' && tab !== 'emergency' && (
-          <select aria-label="Astronaut" value={astronautId} onChange={(e) => setAstronautId(e.target.value)}>
-            {crew.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
-          </select>
+
+        <div className="nav-group crew-list">
+          <div className="nav-label">Crew</div>
+          {crew.map((a) => {
+            const ev = evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs);
+            const selected = perAstronaut && a.id === astronautId;
+            return (
+              <button key={a.id} type="button" className={`crew-item${selected ? ' active' : ''}`} aria-pressed={selected} onClick={() => pickAstronaut(a.id)}>
+                <span className="avatar" aria-hidden="true">{a.name.split(' ').pop()![0]}</span>
+                <span className="crew-name">{a.name}</span>
+                {ev.hasData && <span className={`status-dot status-dot-${ev.status}`} title={ev.status} />}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="sidebar-foot">
+          <label className="field-compact">
+            <span>Location</span>
+            <select aria-label="Environment" value={environment} onChange={(e) => setEnvironment(e.target.value as EnvironmentId)}>
+              {ENVIRONMENTS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
+            </select>
+          </label>
+          <label className="switch" title="Loads a seeded demo crew with 6 weeks of simulated history. Your own entries are kept either way.">
+            <input type="checkbox" role="switch" checked={demoMode} onChange={(e) => setDemoMode(e.target.checked)} />
+            <span className="switch-track" aria-hidden="true" />
+            Demo mode
+          </label>
+          <button type="button" className={`emergency-btn${tab === 'emergency' ? ' active' : ''}`} onClick={() => { setEmergencyGuide(undefined); setTab('emergency'); }}>
+            <Siren size={16} strokeWidth={2} aria-hidden /> Emergency
+          </button>
+        </div>
+      </aside>
+
+      <div className="content">
+        {perAstronaut && (() => {
+          const a = crew.find((c) => c.id === astronautId)!;
+          const ev = evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs);
+          return (
+            <div className="context-bar">
+              <span className="avatar avatar-lg" aria-hidden="true">{a.name.split(' ').pop()![0]}</span>
+              <div className="context-who">
+                <select aria-label="Astronaut" value={astronautId} onChange={(e) => setAstronautId(e.target.value)}>
+                  {crew.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+                <span className="muted">{a.role}, mission day {a.missionDay}</span>
+              </div>
+              {ev.hasData && <StatusBadge status={ev.status} />}
+            </div>
+          );
+        })()}
+
+        {demoMode && (
+          <p className="demo-banner">
+            Demo mode: crew history is <SourceTag source="simulated" />. Anything you enter is added on top and changes the status live.
+          </p>
         )}
-        <select aria-label="Environment" value={environment} onChange={(e) => setEnvironment(e.target.value as EnvironmentId)}>
-          {ENVIRONMENTS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
-        </select>
-        <button type="button" className="emergency-btn" onClick={() => { setEmergencyGuide(undefined); setTab('emergency'); }}>Emergency</button>
-        <label className="demo-toggle" title="Loads a seeded demo crew with 6 weeks of simulated history. Your own entries are kept either way.">
-          <input type="checkbox" checked={demoMode} onChange={(e) => setDemoMode(e.target.checked)} /> Demo mode
-        </label>
-      </header>
 
-      {demoMode && (
-        <p className="demo-banner">
-          Demo mode: crew history is <SourceTag source="simulated" />. Anything you enter is added on top and changes the status live.
-        </p>
-      )}
+        <main>
+          {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} onOpenCheck={(id, t) => { setAstronautId(id); setTab(t); }} onOpenStormGuide={() => { setEmergencyGuide('solar-storm'); setTab('emergency'); }} />}
+          {tab === 'body' && <BodyMap key={astronautId} astronautId={astronautId} onNavigate={setTab} />}
+          {tab === 'insights' && <Insights astronautId={astronautId} onNavigate={setTab} />}
+          {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
+          {tab === 'tests' && <Tests key={astronautId} astronautId={astronautId} />}
+          {tab === 'skin' && <Skin astronautId={astronautId} />}
+          {tab === 'vitals' && <Vitals astronautId={astronautId} />}
+          {tab === 'trends' && <Trends astronautId={astronautId} />}
+          {tab === 'guides' && <Guides astronautId={astronautId} />}
+          {tab === 'emergency' && <Emergency key={emergencyGuide ?? 'all'} initialGuide={emergencyGuide} />}
+        </main>
 
-      <main>
-        {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} onOpenCheck={(id, t) => { setAstronautId(id); setTab(t); }} onOpenStormGuide={() => { setEmergencyGuide('solar-storm'); setTab('emergency'); }} />}
-        {tab === 'body' && <BodyMap key={astronautId} astronautId={astronautId} onNavigate={setTab} />}
-        {tab === 'insights' && <Insights astronautId={astronautId} onNavigate={setTab} />}
-        {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
-        {tab === 'tests' && <Tests key={astronautId} astronautId={astronautId} />}
-        {tab === 'skin' && <Skin astronautId={astronautId} />}
-        {tab === 'vitals' && <Vitals astronautId={astronautId} />}
-        {tab === 'trends' && <Trends astronautId={astronautId} />}
-        {tab === 'guides' && <Guides astronautId={astronautId} />}
-        {tab === 'emergency' && <Emergency key={emergencyGuide ?? 'all'} initialGuide={emergencyGuide} />}
-      </main>
-
-      <footer className="muted">Not a medical device. HealthLens flags changes for review; it does not diagnose.</footer>
+        <footer>Not a medical device. HealthLens flags changes for review; it does not diagnose.</footer>
+      </div>
     </div>
   );
 }

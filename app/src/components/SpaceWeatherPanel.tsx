@@ -33,7 +33,8 @@ export function SpaceWeatherPanel({ onOpenStormGuide }: { onOpenStormGuide: () =
       )}
       <p className="muted">If a storm hits here ({env.label}): {env.shelter}</p>
 
-      <h4>Last 30 days, reported by NASA</h4>
+      <details className="sw-details">
+      <summary>Last 30 days, reported by NASA</summary>
       {events.length === 0 ? <p className="muted">No notifications in this period.</p> : (
         <>
           <p className="muted">{[...counts.entries()].map(([label, n]) => `${n} × ${label.toLowerCase()}`).join(' · ')}</p>
@@ -54,6 +55,7 @@ export function SpaceWeatherPanel({ onOpenStormGuide }: { onOpenStormGuide: () =
           : `No connection to NASA right now: showing the copy saved on ${when(new Date(weather.fetchedAt).toISOString())}.`}{' '}
         DONKI is NASA research information that watches conditions near Earth; a crew farther out would also rely on its own dosimeters.
       </p>
+      </details>
     </div>
   );
 }

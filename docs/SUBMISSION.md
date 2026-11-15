@@ -137,7 +137,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 >
 > **Worked example**: _(add screenshots)_ Demo crew of four, each with six weeks of simulated history: Vega has a spot on the left arm that grew from 4 mm to 6.5 mm in 45 days with an irregular border → **Act**. Osei's blood pressure crept from about 121 to 134 mmHg over two weeks → **Watch**. Nakamura's resting heart rate and sleep drifted slowly while every value still looked normal, and temperature checks were skipped → **Watch**. Lindqvist is healthy → **OK**.
 >
-> **Tools & technologies**: React, TypeScript, Vite; OpenRouter API with free vision models (`nvidia/nemotron-3.5-super-vl:free`, falling back to `google/gemma-4-31b-it:free` and `openrouter/free`), structured JSON output; Zod for the response schema; charts in plain SVG (no chart library); hosted on Vercel
+> **Tools & technologies**: React, TypeScript, Vite; OpenRouter API with free vision models (`nvidia/nemotron-3.5-super-vl:free`, falling back to `google/gemma-4-31b-it:free` and `openrouter/free`), structured JSON output; Zod for the response schema; charts in plain SVG (no chart library); Geist typeface and Lucide icons; hosted on Vercel
 
 ### 3.6 Use of Super Intelligence (SI)
 Not shown to judges, but required and must be honest. Winner pattern: list each tool + what it did + "the idea, research, logic and direction were ours; all output reviewed and tested; no NASA branding in AI output; AI images watermarked."
@@ -153,6 +153,7 @@ Not shown to judges, but required and must be honest. Winner pattern: list each 
 | Claude Code (Anthropic) | Checked limits and guide facts against public sources and wrote the source list; wrote the NASA DONKI space-weather feed | `app/src/lib/sources.ts`, `spaceWeather.ts` |
 | Claude Code (Anthropic) | Wrote the insights, flight-surgeon report and reminders code and tests. The advice text is reused from the measurement guides, not newly generated | `app/src/lib/insights.ts`, `reminders.ts`, `pages/Insights.tsx`, `components/RemindersPanel.tsx` |
 | Claude Code (Anthropic) | Wrote the vision check, reaction-time test and symptom checklist (screens, rules, tests) and drafted their guide text; facts checked against the cited NASA, AAO and journal sources | `app/src/pages/Tests.tsx`, `components/SymptomChecklist.tsx`, `lib/symptoms.ts`, `guides.ts` |
+| Claude Code (Anthropic) | UI redesign from the team's inspiration board (Apple Health / Notion direction): sidebar app shell, design tokens with light and dark mode, crew overview with a plain-language status headline, restyle of every screen | `app/src/App.tsx`, `App.css`, `index.css`, `pages/Dashboard.tsx` |
 
 **Draft:** _(write from the log at the end)_
 
@@ -196,6 +197,8 @@ List **everything**: code libraries, datasets, images, papers, even open-source.
 | American Academy of Ophthalmology, "Have AMD? Save Your Sight with an Amsler Grid" · aao.org/eye-health/tips-prevention/facts-about-amsler-grid-daily-vision-test | Reference | How to use the Amsler grid; any distortion is reported right away |
 | React, Vite, TypeScript | Open-source code | App |
 | Vitest | Open-source code | Tests for the status rules |
+| Geist (Vercel, SIL Open Font License) via @fontsource-variable/geist | Open-source font | App typeface |
+| Lucide icons (lucide-react, ISC license) | Open-source icons | Sidebar navigation icons |
 | OpenRouter API (openrouter.ai) | AI model gateway | Calls free vision models from the browser for skin analysis |
 | NVIDIA Nemotron 3.5 Super VL · Google Gemma 4 31B | Open-weight vision models | Skin-spot detection |
 | Zod | Open-source code | Schema for the skin-analysis response |
