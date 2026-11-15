@@ -13,12 +13,9 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] Measurement guide cards (How / Why / If abnormal) for skin, HR, BP, SpO₂, mood. PRD §5.12
 - [ ] Insights list: what / why / do / escalate. PRD §5.9
 - [ ] Trend chart for one vital + skin timeline for one lesion. PRD §5.10
 - [ ] Reminders: due/overdue list on dashboard (the `due` flag per indicator already exists in `evaluateAstronaut`). PRD §5.11
-- [ ] Emergency mode with 2 guides (low SpO₂, solar particle event). PRD §5.13
-- [ ] Environment switch (station vs Moon base). PRD §6
 - [ ] Clickable 2D SVG body figure + per-system detail panel. PRD §5.8
 - [ ] In-app vision check (near-vision chart + Amsler grid) and reaction-time test. PRD §5.0, §5.6
 - [ ] Symptom checklist. PRD §5.4
@@ -30,6 +27,11 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+
+**BabayoAP · claimed Nov 14 night. New files `lib/guides.ts`, `lib/environment.ts`, `lib/emergency.ts`, `pages/Guides.tsx`, `pages/Emergency.tsx`; small edits to `store.ts`, `App.tsx`, `CheckIn.tsx`.**
+- [ ] Measurement guide cards (How / Why / If abnormal). PRD §5.12
+- [ ] Emergency mode with 2 guides (low SpO₂, solar particle event). PRD §5.13
+- [ ] Environment switch (station / spacecraft / Moon / Mars). PRD §6
 
 ## Done
 - [x] **Real skin analysis** (Dawson Phan): Claude vision call (`claude-opus-5-5`) returns spots as structured JSON; matching to the previous scan (new/changed/stable, same ID over time) is in code; API key entered on the Skin screen, stored in the browser only; simulated fallback when offline/no key. Live call not yet tested with a real key. PRD §5.1 · `d11874a`
