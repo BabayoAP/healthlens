@@ -21,6 +21,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- Dawson Phan · Skin scoring: guessed sizes (no reference) can only raise to Watch; growth only compared between measured sizes · Sat evening
 - BabayoAP · Insights list (what / why / do / escalate, PRD §5.9) + Reminders due/overdue list (PRD §5.11) · Sat evening
 
 ## Done
