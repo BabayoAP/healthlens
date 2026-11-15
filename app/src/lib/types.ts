@@ -32,6 +32,8 @@ export interface Lesion {
   x: number;
   y: number;
   diameterMm: number;
+  /** false = size guessed by the model with no reference in frame. Missing = measured (seeded scans). */
+  sizeMeasured?: boolean;
   color: string;
   /** ABCDE-style notes from the model */
   notes: string[];

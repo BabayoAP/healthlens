@@ -120,7 +120,7 @@ export async function analyzeSkinPhoto(
     if (!result.photoUsable) {
       return { lesions: [], source: 'measured-in-app', message: result.photoNote || 'Photo not usable. Please retake.' };
     }
-    const lesions = matchToPrevious(result.spots.map(toLesion), previous?.lesions ?? []);
+    const lesions = matchToPrevious(result.spots.map((s) => toLesion(s, result.scaleReference)), previous?.lesions ?? []);
     const notes = [result.photoNote, result.scaleReference ? '' : 'No size reference in frame: sizes are estimates. Add the reference sticker next time.']
       .filter(Boolean)
       .join(' ');
@@ -193,20 +193,27 @@ class HttpError extends Error {
   }
 }
 
-/** ABCDE-based flag (see SUBMISSION.md "The HealthLens score"). E is added later by matchToPrevious. */
-function riskOf(s: ModelResult['spots'][number]): Status {
+type Spot = ModelResult['spots'][number];
+
+/**
+ * ABCDE-based flag (see SUBMISSION.md "The HealthLens score"). E is added later by matchToPrevious.
+ * A size guessed without a reference in frame is not reliable enough to escalate on its own,
+ * so "over 6 mm" gives Act only when the size was measured, Watch when it was estimated.
+ */
+export function riskOf(s: Spot, sizeMeasured: boolean): Status {
   const abc = [s.asymmetry, s.irregularBorder, s.multipleColors].filter(Boolean).length;
-  if (abc >= 2 || s.diameterMm > 6 || s.ulceratedOrBleeding) return 'act';
-  if (abc === 1) return 'watch';
+  const large = s.diameterMm > 6;
+  if (abc >= 2 || s.ulceratedOrBleeding || (large && sizeMeasured)) return 'act';
+  if (abc === 1 || large) return 'watch';
   return 'ok';
 }
 
-function toLesion(s: ModelResult['spots'][number]): Lesion {
+export function toLesion(s: Spot, sizeMeasured: boolean): Lesion {
   const notes: string[] = [];
   if (s.asymmetry) notes.push('A: asymmetric');
   if (s.irregularBorder) notes.push('B: irregular border');
   if (s.multipleColors) notes.push(MULTI_COLOR);
-  if (s.diameterMm > 6) notes.push('D: over 6 mm');
+  if (s.diameterMm > 6) notes.push(sizeMeasured ? 'D: over 6 mm' : 'D: over 6 mm (estimated, no size reference)');
   if (s.ulceratedOrBleeding) notes.push('open sore or bleeding');
   notes.push(...s.notes.slice(0, 3));
   return {
@@ -214,9 +221,10 @@ function toLesion(s: ModelResult['spots'][number]): Lesion {
     x: clamp01(s.x),
     y: clamp01(s.y),
     diameterMm: Math.round(s.diameterMm * 10) / 10,
+    sizeMeasured,
     color: s.color,
     notes,
-    risk: riskOf(s),
+    risk: riskOf(s, sizeMeasured),
     change: 'new',
   };
 }
@@ -255,7 +263,11 @@ export function matchToPrevious(current: Lesion[], previous: Lesion[]): Lesion[]
     const now = out[c];
     const before = previous[p];
     const grewMm = now.diameterMm - before.diameterMm;
-    const grew = grewMm >= GROWTH_MM || grewMm >= before.diameterMm * GROWTH_PCT;
+    const grewBy = grewMm >= GROWTH_MM || grewMm >= before.diameterMm * GROWTH_PCT;
+    // Two guessed sizes from two photos can't show growth: only compare measured sizes.
+    const comparable = now.sizeMeasured !== false && before.sizeMeasured !== false;
+    const grew = grewBy && comparable;
+    if (grewBy && !comparable) now.notes.unshift('E: size not comparable (no size reference)');
     // Free-text color names vary between calls, so only count a new "multiple colors" flag.
     const recolored = now.notes.includes(MULTI_COLOR) && !before.notes.includes(MULTI_COLOR);
     now.id = before.id;

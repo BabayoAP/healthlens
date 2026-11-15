@@ -21,10 +21,10 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
-- Dawson Phan · Skin scoring: guessed sizes (no reference) can only raise to Watch; growth only compared between measured sizes · Sat evening
 - BabayoAP · Insights list (what / why / do / escalate, PRD §5.9) + Reminders due/overdue list (PRD §5.11) · Sat evening
 
 ## Done
+- [x] Skin scoring fix: a guessed size (no reference in frame) over 6 mm gives Watch, not Act; growth (E) only compared between measured sizes, otherwise "size not comparable". Found testing a benign ISIC image that scored Act. Tests in `lib/analysis.test.ts`. Dawson Phan
 - [x] Sources: limits and guide facts checked against public sources and shown in the app (Guides screen: per-guide sources + "Where the numbers come from"). `lib/sources.ts`. Fixed: Mars delay 3 to 22 min, SpO2 act at 92% or lower. BabayoAP
 - [x] NASA data in the app: live DONKI space-weather feed on the Dashboard (radiation watch, 1-hour cache, saved real snapshot offline), linked to the radiation storm guide; OSDR skin studies OSD-238/239/240/241/254 cited (IDs confirmed on OSDR). `lib/spaceWeather.ts`. BabayoAP
 - [ ] FOLLOW-UP (unclaimed): update docs/SUBMISSION.md NASA Data + References tables and DEMO-PLAN slide 2 stat (Mars round trip about 0.66 Sv, Zeitlin 2013) from `app/src/lib/sources.ts`; browser-check the Dashboard space-weather panel
