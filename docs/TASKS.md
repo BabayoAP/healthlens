@@ -13,8 +13,6 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] Insights list: what / why / do / escalate. PRD §5.9
-- [ ] Reminders: due/overdue list on dashboard (the `due` flag per indicator already exists in `evaluateAstronaut`). PRD §5.11
 - [ ] In-app vision check (near-vision chart + Amsler grid) and reaction-time test. PRD §5.0, §5.6
 - [ ] Symptom checklist. PRD §5.4
 - [ ] Deploy to a public URL (Vercel) and test in a private window
@@ -23,6 +21,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- BabayoAP · Insights list (what / why / do / escalate, PRD §5.9) + Reminders due/overdue list (PRD §5.11) · Sat evening
 
 ## Done
 - [x] Sources: limits and guide facts checked against public sources and shown in the app (Guides screen: per-guide sources + "Where the numbers come from"). `lib/sources.ts`. Fixed: Mars delay 3 to 22 min, SpO2 act at 92% or lower. BabayoAP
