@@ -13,9 +13,6 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] **Do first, other tasks build on it:** input source layer: `source` field on every reading (`manual` / `device` / `self-report` / `measured-in-app` / `simulated` / `estimated`) + visible "simulated" tag component. PRD §5.0
-- [ ] Seeded history generator (weeks per astronaut, baseline + noise + one planned problem) + demo-mode toggle. PRD §5.0, §5.10
-- [ ] Sustained-trend + missing-measurement rules in `status.ts`. PRD §8
 - [ ] Real skin-analysis call in `app/src/lib/analysis.ts` (keep mock as offline fallback). PRD §5.1
 - [ ] Vitals + mood check-in entry forms, saved locally (IndexedDB/localStorage). PRD §5.2, §5.4
 - [ ] Measurement guide cards (How / Why / If abnormal) for skin, HR, BP, SpO₂, mood. PRD §5.12
@@ -24,7 +21,6 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 - [ ] Reminders: due/overdue list on dashboard. PRD §5.11
 - [ ] Emergency mode with 2 guides (low SpO₂, solar particle event). PRD §5.13
 - [ ] Environment switch (station vs Moon base). PRD §6
-- [ ] Seeded worked example: one astronaut, two scans, escalation to Act. PRD §12
 - [ ] Clickable 2D SVG body figure + per-system detail panel. PRD §5.8
 - [ ] In-app vision check (near-vision chart + Amsler grid) and reaction-time test. PRD §5.0, §5.6
 - [ ] Symptom checklist. PRD §5.4
@@ -36,6 +32,12 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+
+**BabayoAP · claimed Nov 14 evening. Please don't start these; they change the shared files `types.ts`, `mockData.ts`, `status.ts`. Build on them once they land (watch for the commit).**
+- [ ] Input source layer: `source` field on every reading + visible "simulated" tag component. PRD §5.0
+- [ ] Local data store (one place all readings are saved/loaded, localStorage) that check-in forms and charts will use. PRD §10
+- [ ] Seeded history generator (weeks per astronaut, baseline + noise + one planned problem, incl. the worked skin example) + demo-mode toggle. PRD §5.0, §5.10, §12
+- [ ] Sustained-trend + missing-measurement rules in `status.ts`. PRD §8
 
 ## Done
 - [x] Repo renamed to healthlens, app skeleton, PRD v1, past-winner research, submission frame
