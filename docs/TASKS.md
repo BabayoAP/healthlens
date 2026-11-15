@@ -18,6 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- BabayoAP · UI redesign: new app shell (sidebar nav), design tokens, type, dashboard + restyle of every screen. Touches App.tsx, App.css, index.css, Dashboard and shared components · Nov 14
 
 ## Done
 - [x] Tests screen: vision check (tumbling-E near-vision chart, 8 rows, then Amsler grid per eye) and reaction-time test (5 tries, middle value). New indicators `reactionTime`, `nearVision`, `amsler`, saved as measured-in-app, with guides, sources, reminders, trends and body map (head). Seeded for the demo crew; Nakamura's reaction time slows with the sleep loss. `pages/Tests.tsx`. BabayoAP
