@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { crew } from './lib/mockData';
 import { setDemoMode, useData } from './lib/store';
 import { SourceTag } from './components/SourceTag';
+import { CheckIn } from './pages/CheckIn';
 import { Dashboard } from './pages/Dashboard';
 import { Skin } from './pages/Skin';
 import { Vitals } from './pages/Vitals';
 import './App.css';
 
-type Tab = 'dashboard' | 'skin' | 'vitals';
+type Tab = 'dashboard' | 'check-in' | 'skin' | 'vitals';
+const TABS: Record<Tab, string> = { dashboard: 'Dashboard', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals' };
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('dashboard');
@@ -19,9 +21,9 @@ export default function App() {
       <header>
         <h1>HealthLens</h1>
         <nav>
-          {(['dashboard', 'skin', 'vitals'] as Tab[]).map((t) => (
+          {(Object.keys(TABS) as Tab[]).map((t) => (
             <button key={t} className={tab === t ? 'active' : ''} onClick={() => setTab(t)}>
-              {t[0].toUpperCase() + t.slice(1)}
+              {TABS[t]}
             </button>
           ))}
         </nav>
@@ -43,6 +45,7 @@ export default function App() {
 
       <main>
         {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('skin'); }} />}
+        {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
         {tab === 'skin' && <Skin astronautId={astronautId} />}
         {tab === 'vitals' && <Vitals astronautId={astronautId} />}
       </main>

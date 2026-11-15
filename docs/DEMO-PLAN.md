@@ -21,7 +21,7 @@ Decision (Nov 14): **7-slide deck**, showing the working app through short GIFs/
 | 2 | **Problem** | "No dermatologist on Mars." Up to ~20 min comm delay each way; astronauts aren't doctors; one cited stat on radiation/skin risk | none | needs stat |
 | 3 | **Meet HealthLens** | Crew dashboard: green / amber / red at a glance, reason in plain words | GIF: dashboard loads, open one astronaut (≤5 s) | can record now |
 | 4 | **Skin check that never forgets** | Same spot, Day 97 vs Day 142: 4 mm → 6.5 mm → **Act** | GIF: upload photo → spots marked → comparison table (≤8 s) | waits on real skin analysis |
-| 5 | **Catches what a fitness tracker misses** | Slow drift flagged while every value is still "normal" (heart rate 63 → 70); live entry turns status amber | GIF: type a reading → status changes (≤6 s) | waits on check-in forms |
+| 5 | **Catches what a fitness tracker misses** | Slow drift flagged while every value is still "normal" (heart rate 63 → 70); live entry turns status amber | GIF: on Check-in, pick Lindqvist (healthy), enter BP 150/95, save → status turns red with the reason (≤6 s) | can record now |
 | 6 | **Tells you what to do** | Guide card (how / why / if abnormal) + emergency mode with Moon vs Mars comm delay | GIF: open guide, switch environment (≤6 s) | waits on guides + emergency |
 | 7 | **Built on NASA data · next** | Exact datasets (HRP risks, OSDR skin studies OSD-238…254), "simulated" labels = honest data, Earth spin-off for remote clinics, live link + QR | none | needs data task |
 

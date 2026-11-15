@@ -34,10 +34,8 @@ _(name · task · started)_
 **Dawson Phan · claimed Nov 14 evening. Touches only `analysis.ts` and `Skin.tsx`.**
 - [ ] Real skin-analysis call in `app/src/lib/analysis.ts` (keep mock as offline fallback). PRD §5.1
 
-**BabayoAP · claimed Nov 14 evening. New file `pages/CheckIn.tsx`; small edit to `App.tsx` (one tab).**
-- [ ] Vitals + mood check-in entry forms with a "simulate reading" button. PRD §5.2, §5.4
-
 ## Done
+- [x] Check-in screen (`pages/CheckIn.tsx`): vitals, body mass, sleep, mood/stress/fatigue; "Simulate reading" button; typo checks; shows what each saved value means. BabayoAP
 - [x] **Foundation is in: build on it** (see "How to build on the data layer" in CLAUDE.md). BabayoAP:
   - Input source layer + `<SourceTag>` (every value says manual / device / self-report / measured-in-app / simulated / estimated)
   - Local data store `lib/store.ts` (`useData`, `addReading`, `addSkinScan`) + demo-mode toggle

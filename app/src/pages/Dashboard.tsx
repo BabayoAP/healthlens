@@ -28,7 +28,7 @@ export function Dashboard({ onOpen }: { onOpen: (id: string) => void }) {
                 <ul>
                   {ev.headlines.map((r) => (
                     <li key={r.text} className={`reason-${r.status}`}>
-                      {r.text} {r.source && <SourceTag source={r.source} />}
+                      {r.text} {(r.source === 'simulated' || r.source === 'estimated') && <SourceTag source={r.source} />}
                     </li>
                   ))}
                 </ul>

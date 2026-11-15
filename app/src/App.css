@@ -25,3 +25,22 @@ footer { margin-top: 32px; }
 .demo-toggle { font-size: .85rem; display: flex; align-items: center; gap: 4px; cursor: pointer; }
 .demo-banner { font-size: .85rem; margin: 0 0 16px; padding: 8px 12px; border: 1px dashed var(--watch); border-radius: 8px; background: var(--surface); }
 .card li.reason-act::marker { color: var(--act); } .card li.reason-watch::marker { color: var(--watch); }
+
+/* Check-in forms */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; align-items: start; margin-bottom: 12px; }
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.panel-head h3 { margin: 0; font-size: 1rem; }
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.field-label { font-size: .9rem; font-weight: 500; }
+.field-input { display: flex; align-items: center; gap: 6px; }
+.field-input input { font: inherit; width: 100%; max-width: 140px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); }
+.field-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.scale { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.scale button { font: inherit; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; }
+.scale button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.primary { font: inherit; font-weight: 600; padding: 8px 18px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; cursor: pointer; }
+button.ghost { font: inherit; font-size: .85rem; padding: 4px 10px; border: 1px dashed var(--border); border-radius: 8px; background: transparent; color: var(--text); cursor: pointer; }
+.form-error { color: var(--act); font-size: .9rem; }
+.result { margin-top: 16px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

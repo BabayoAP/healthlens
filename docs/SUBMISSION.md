@@ -110,7 +110,8 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 >
 > **What it does**
 > - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). _(status: mock AI)_
-> - Ten indicators tracked against each astronaut's **own baseline**: heart rate, blood pressure, SpO₂, temperature, body mass, sleep, mood, stress, fatigue. _(status: rules built; entry forms pending)_
+> - Ten indicators tracked against each astronaut's **own baseline**: heart rate, blood pressure, SpO₂, temperature, body mass, sleep, mood, stress, fatigue. _(status: built)_
+> - **Check-in in under a minute:** enter what you measured, tap 1–5 for mood, stress and fatigue, and the app immediately shows each value against your baseline with a status and the reason. Obvious typos are caught before saving. _(status: built)_
 > - Crew dashboard with green/amber/red status, the reason in plain words, and the next step. _(status: built)_
 > - **Slow-drift detection:** flags a steady change over two weeks even while every value is still in the normal range (demo: resting heart rate 63 → 70 bpm). _(status: built)_
 > - **False-alarm handling:** one odd reading asks for a re-measure; it only escalates when a second reading agrees or a hard safety limit is crossed. _(status: built)_
@@ -173,7 +174,7 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 
 | Challenge asks for | HealthLens | Where |
 | --- | --- | --- |
-| Astronauts assess their own health | Self check-ins + status | Dashboard + Vitals page (status built; entry forms pending) |
+| Astronauts assess their own health | Self check-ins + status | Check-in, Dashboard and Vitals screens (built) |
 | Guidance in an emergency | Emergency mode | |
 | Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator | |
 | Remind the crew | Reminders + streaks | |

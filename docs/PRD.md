@@ -246,7 +246,7 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 
 1. Dashboard with crew + personal status, color coding — *crew view built*
 2. Skin scan → lesion table → new/changed/stable — *built with mock AI; needs real model call*
-3. Vitals + mood check-in entry, saved locally
+3. Vitals + mood check-in entry, saved locally — *built*
 4. Measurement guide cards for 5 indicators (skin, HR, BP, SpO₂, mood)
 5. Insights list with "what / why / do / escalate"
 6. Trend chart for one vital + skin timeline for one lesion
