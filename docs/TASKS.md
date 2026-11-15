@@ -13,7 +13,6 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] Real skin-analysis call in `app/src/lib/analysis.ts` (keep mock as offline fallback). PRD §5.1
 - [ ] Vitals + mood check-in entry forms, saved locally (IndexedDB/localStorage). PRD §5.2, §5.4
 - [ ] Measurement guide cards (How / Why / If abnormal) for skin, HR, BP, SpO₂, mood. PRD §5.12
 - [ ] Insights list: what / why / do / escalate. PRD §5.9
@@ -32,6 +31,9 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+
+**Dawson Phan · claimed Nov 14 evening. Touches only `analysis.ts` and `Skin.tsx`.**
+- [ ] Real skin-analysis call in `app/src/lib/analysis.ts` (keep mock as offline fallback). PRD §5.1
 
 **BabayoAP · claimed Nov 14 evening. Please don't start these; they change the shared files `types.ts`, `mockData.ts`, `status.ts`. Build on them once they land (watch for the commit).**
 - [ ] Input source layer: `source` field on every reading + visible "simulated" tag component. PRD §5.0
