@@ -18,6 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- BabayoAP · UI pass 2: all-in-one dashboard (vitals tiles, body figure with callouts, checks ring, filterable trend explorer), brighter light palette. Touches Dashboard, App.tsx, CSS, BodyMap (figure moved to a shared component), Trends · Nov 14
 
 ## Done
 - [x] UI redesign (pass 1): sidebar app shell (grouped screens, crew list with status dots, location / demo mode / Emergency at the bottom; becomes a top bar on phones), astronaut header on per-person screens, design tokens with real dark mode, Geist type, crew overview with a one-line status headline and crew cards, smoother body figure, NASA event list folded away. Restyle only on other screens: no logic changed. BabayoAP
