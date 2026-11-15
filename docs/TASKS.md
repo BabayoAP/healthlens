@@ -15,7 +15,6 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 ## To do (MVP, in priority order)
 - [ ] Insights list: what / why / do / escalate. PRD §5.9
 - [ ] Reminders: due/overdue list on dashboard (the `due` flag per indicator already exists in `evaluateAstronaut`). PRD §5.11
-- [ ] Clickable 2D SVG body figure + per-system detail panel. PRD §5.8
 - [ ] In-app vision check (near-vision chart + Amsler grid) and reaction-time test. PRD §5.0, §5.6
 - [ ] Symptom checklist. PRD §5.4
 - [ ] Verify indicator ranges in PRD §7 against sources; cite them
@@ -26,6 +25,9 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+
+**BabayoAP · claimed Nov 14 night. New files `lib/bodyRegions.ts`, `pages/BodyMap.tsx`; one tab added in `App.tsx`.**
+- [ ] Clickable 2D SVG body figure + per-system detail panel. PRD §5.8
 
 ## Done
 - [x] Trends screen: a chart per indicator with personal baseline and safety-limit lines, 2-week / 6-week range, hover / touch / arrow-key values, table view; size-over-time chart for each tracked skin spot. Reusable `components/TrendChart.tsx` (plain SVG, no chart library). BabayoAP
