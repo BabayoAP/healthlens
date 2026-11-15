@@ -19,7 +19,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
-- Dawson Phan · Deploy to Vercel + private-window test · Sat evening
+- Dawson Phan · Deploy to Vercel + private-window test · Sat evening · live at https://app-tawny-mu-93.vercel.app, private-window test pending. Not linked to GitHub: redeploy by hand (`cd app && npx vercel deploy --prod --yes`)
 - BabayoAP · In-app vision check (near-vision chart + Amsler grid) + reaction-time test (PRD §5.0, §5.6) · Sat night
 - BabayoAP · Symptom checklist (PRD §5.4) · Sat night
 

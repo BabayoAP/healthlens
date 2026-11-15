@@ -77,6 +77,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 
 ### 3.4 Link to Final Project
 - Every winner linked a **live site** (vercel.app, framer, github.io, custom domain). Judges click it.
+- **Live now: https://app-tawny-mu-93.vercel.app** (deployed by hand with `npx vercel deploy --prod --yes` from `app/`; not linked to GitHub, so pushes do not redeploy. Use only this URL: the per-deployment `app-…-dawson8.vercel.app` URLs need a Vercel login.)
 - **Ours:** Vercel URL of `app/` (public, no login, demo data preloaded so it isn't empty). Link the GitHub repo inside the page too. **The repo is private now. Make it public, or link the live site only.**
 - Draft: _TBD after deploy_
 
@@ -134,7 +135,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 >
 > **Worked example**: _(add screenshots)_ Demo crew of four, each with six weeks of simulated history: Vega has a spot on the left arm that grew from 4 mm to 6.5 mm in 45 days with an irregular border → **Act**. Osei's blood pressure crept from about 121 to 134 mmHg over two weeks → **Watch**. Nakamura's resting heart rate and sleep drifted slowly while every value still looked normal, and temperature checks were skipped → **Watch**. Lindqvist is healthy → **OK**.
 >
-> **Tools & technologies**: React, TypeScript, Vite; OpenRouter API with free vision models (`nvidia/nemotron-3.5-super-vl:free`, falling back to `google/gemma-4-31b-it:free` and `openrouter/free`), structured JSON output; Zod for the response schema; _(add: chart library, hosting)_
+> **Tools & technologies**: React, TypeScript, Vite; OpenRouter API with free vision models (`nvidia/nemotron-3.5-super-vl:free`, falling back to `google/gemma-4-31b-it:free` and `openrouter/free`), structured JSON output; Zod for the response schema; charts in plain SVG (no chart library); hosted on Vercel
 
 ### 3.6 Use of Super Intelligence (SI)
 Not shown to judges, but required and must be honest. Winner pattern: list each tool + what it did + "the idea, research, logic and direction were ours; all output reviewed and tested; no NASA branding in AI output; AI images watermarked."
