@@ -2,7 +2,7 @@ import { useState, type KeyboardEvent } from 'react';
 import { FIGURE_REGIONS, SYSTEM_INFO, type FigureRegion, type FigureRegionId } from '../lib/bodyRegions';
 import { GUIDES } from '../lib/guides';
 import { formatValue } from '../lib/indicators';
-import { evaluateAstronaut, worst, type IndicatorEval } from '../lib/status';
+import { evaluateAstronaut, worst, type IndicatorEval, type Reason } from '../lib/status';
 import { readingsFor, useData } from '../lib/store';
 import type { SkinScan, Status } from '../lib/types';
 import { SourceTag } from '../components/SourceTag';
@@ -29,23 +29,27 @@ interface RegionView {
   region: FigureRegion;
   status?: Status;
   indicators: IndicatorEval[];
+  /** Symptoms reported for the body systems of this part */
+  symptoms: Reason[];
   /** Latest scan of each skin area in this region */
   scans: SkinScan[];
 }
 
-export function BodyMap({ astronautId, onNavigate }: { astronautId: string; onNavigate: (tab: 'check-in' | 'skin' | 'trends' | 'guides') => void }) {
+export function BodyMap({ astronautId, onNavigate }: { astronautId: string; onNavigate: (tab: 'check-in' | 'skin' | 'tests' | 'trends' | 'guides') => void }) {
   const data = useData();
-  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
 
   const views: RegionView[] = FIGURE_REGIONS.map((region) => {
-    const indicators = ev.indicators.filter((i) => i.def.system === region.system && i.latest);
+    const systems = [region.system, ...(region.also ?? [])];
+    const indicators = ev.indicators.filter((i) => systems.includes(i.def.system) && i.latest);
+    const symptoms = ev.reasons.filter((r) => r.kind === 'symptom' && r.system !== undefined && systems.includes(r.system));
     const scans = region.skin.flatMap((area) => {
       const all = data.skinScans.filter((s) => s.astronautId === astronautId && s.region === area);
       return all.length ? [all.reduce((a, b) => (a.takenAt > b.takenAt ? a : b))] : [];
     });
-    const statuses = [...indicators.map((i) => i.status), ...scans.flatMap((s) => s.lesions.map((l) => l.risk))];
-    const hasAny = indicators.length > 0 || scans.length > 0;
-    return { region, indicators, scans, status: hasAny ? statuses.reduce<Status>((a, b) => worst(a, b), 'ok') : undefined };
+    const statuses = [...indicators.map((i) => i.status), ...symptoms.map((r) => r.status), ...scans.flatMap((s) => s.lesions.map((l) => l.risk))];
+    const hasAny = indicators.length > 0 || scans.length > 0 || symptoms.length > 0;
+    return { region, indicators, symptoms, scans, status: hasAny ? statuses.reduce<Status>((a, b) => worst(a, b), 'ok') : undefined };
   });
 
   // Start on the part that most needs attention
@@ -60,6 +64,7 @@ export function BodyMap({ astronautId, onNavigate }: { astronautId: string; onNa
   const guides = GUIDES.filter((g) => flagged.some((i) => g.indicators.includes(i.def.id)));
   const flaggedSpots = selected.scans.flatMap((s) => s.lesions.filter((l) => l.risk !== 'ok').map((l) => ({ scan: s, lesion: l })));
   const skinGuide = GUIDES.find((g) => g.id === 'skin')!;
+  const symptomGuide = GUIDES.find((g) => g.id === 'symptoms')!;
   const focus = flagged[0] ?? selected.indicators[0];
 
   // A part flagged only because of its skin leads with the skin finding
@@ -86,7 +91,7 @@ export function BodyMap({ astronautId, onNavigate }: { astronautId: string; onNa
             </table>
           ) : <p className="muted">No measurements for this system yet.</p>}
 
-          {flagged.flatMap((i) => i.reasons).map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}
+          {[...selected.symptoms, ...flagged.flatMap((i) => i.reasons)].map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}
 
           {focus && (
             <>
@@ -181,16 +186,23 @@ export function BodyMap({ astronautId, onNavigate }: { astronautId: string; onNa
           <h4>Why this changes in space</h4>
           {skinFirst && <p>{skinGuide.why}</p>}
           <p>{info.inSpace}</p>
+          {selected.region.also?.map((sys) => <p key={sys}>{SYSTEM_INFO[sys]!.inSpace}</p>)}
           {flaggedSpots.length > 0 && !skinFirst && <p>{skinGuide.why}</p>}
 
           <h4>What you can do</h4>
-          {guides.length === 0 && flaggedSpots.length === 0 && <p>Nothing here needs attention. Keep up your regular checks.</p>}
+          {guides.length === 0 && flaggedSpots.length === 0 && selected.symptoms.length === 0 && <p>Nothing here needs attention. Keep up your regular checks.</p>}
           {guides.map((g) => (
             <div key={g.id}>
               <ol>{g.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
               <p><strong>When to contact the medical officer:</strong> {g.escalate}</p>
             </div>
           ))}
+          {selected.symptoms.length > 0 && (
+            <div>
+              <ol>{symptomGuide.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
+              <p><strong>When to contact the medical officer:</strong> {symptomGuide.escalate}</p>
+            </div>
+          )}
           {flaggedSpots.length > 0 && (
             <div>
               <ol>{skinGuide.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
@@ -200,6 +212,7 @@ export function BodyMap({ astronautId, onNavigate }: { astronautId: string; onNa
 
           <div className="row detail-nav">
             <button type="button" className="ghost" onClick={() => onNavigate('check-in')}>Log a check-in</button>
+            <button type="button" className="ghost" onClick={() => onNavigate('tests')}>Vision and reaction tests</button>
             <button type="button" className="ghost" onClick={() => onNavigate('skin')}>Scan skin</button>
             <button type="button" className="ghost" onClick={() => onNavigate('trends')}>All trends</button>
             <button type="button" className="ghost" onClick={() => onNavigate('guides')}>Measurement guides</button>

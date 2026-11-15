@@ -10,11 +10,16 @@ import type { IndicatorId } from './types';
  * sources listed on each guide (see `sources.ts`); the step-by-step advice is general health and
  * first-aid practice. Not reviewed by a clinician.
  */
+/** Screens where a check is done */
+export type CheckTab = 'check-in' | 'skin' | 'tests';
+
 export interface Guide {
   id: string;
   title: string;
-  /** Indicators this guide covers (empty for skin, which is not a numeric indicator) */
+  /** Indicators this guide covers (empty for skin and symptoms, which are not numeric indicators) */
   indicators: IndicatorId[];
+  /** Screen where the check is done. Default: `check-in` */
+  tab?: CheckTab;
   /** Which of NASA's five spaceflight hazards this relates to */
   hazard: string;
   how: (env: Environment) => string[];
@@ -138,7 +143,7 @@ export const GUIDES: Guide[] = [
     sources: ['hrpHazards', 'hrpRisks'],
   },
   {
-    id: 'skin', title: 'Skin scan', indicators: [], hazard: 'Space radiation',
+    id: 'skin', title: 'Skin scan', indicators: [], tab: 'skin', hazard: 'Space radiation',
     how: same([
       'Ask a crewmate to take the photos, or use a mirror for areas you can reach.',
       'Use the same lighting, distance and pose each time, with the reference sticker in the frame for scale.',
@@ -153,6 +158,56 @@ export const GUIDES: Guide[] = [
     ],
     escalate: 'Send the photos to the flight surgeon if a spot is new and growing, larger than 6 mm, has an uneven edge or more than one color, or bleeds.',
     sources: ['aadAbcde', 'osdrSkin', 'skinPaper', 'crucian2016', 'hrpHazards'],
+  },
+  {
+    id: 'vision', title: 'Vision check', indicators: ['nearVision', 'amsler'], tab: 'tests', hazard: 'Altered gravity',
+    how: same([
+      'Use the same screen every week, at arm\'s length (about 40 cm), in good light. Wear your reading glasses if you use them.',
+      'Near-vision chart: the letter E points up, down, left or right. Tap the way it points. It gets smaller on every row.',
+      'Amsler grid: cover one eye, look at the center dot, and say whether any lines look wavy, blurred, dark or missing. Then do the other eye.',
+    ]),
+    why: 'In weightlessness, body fluid shifts toward the head, and the back of the eye can swell and change shape. NASA calls this spaceflight associated neuro-ocular syndrome (SANS). About 70% of space station astronauts have some swelling at the back of their eyes, and in a survey of about 300 astronauts, around 60% of those on long missions said their distance and near vision got worse. A weekly check catches a change early.',
+    normal: 'The same number of chart rows as your own baseline, give or take one, and a grid where every line looks straight and complete.',
+    ifAbnormal: [
+      'Repeat the test in good light, at the same distance, with your usual glasses.',
+      'Test each eye on its own and note which one changed.',
+      'If the mission supplied stronger or adjustable reading glasses, try them and note whether they help.',
+    ],
+    escalate: 'Report any wavy, blurred, dark or missing area on the grid the same day. Report a chart result that stays 2 rows or more below your baseline. Sudden loss of vision or eye pain is an emergency.',
+    sources: ['nasaSans', 'mader2011', 'aaoAmsler'],
+  },
+  {
+    id: 'reactionTime', title: 'Reaction time', indicators: ['reactionTime'], tab: 'tests', hazard: 'Isolation and confinement',
+    how: same([
+      'Sit still and use the same device and the same hand every time.',
+      'When the circle turns green, tap it or press the space bar as fast as you can. Do not guess: a tap before green does not count.',
+      'The test takes 5 tries and keeps the middle one as your result.',
+    ]),
+    why: 'Short or poor sleep slows your reactions before you notice that you are tired, and space station crew averaged only 6.1 hours of sleep a night in a 10-year study. Reaction-time tests are a standard way to measure this, and researchers validated a 3-minute version for astronauts to run on themselves. A slower result is a signal to take extra care with tasks where a mistake matters.',
+    normal: 'Close to your own baseline on the same device. Results differ between devices, so do not compare with crewmates.',
+    ifAbnormal: [
+      'Rest for a minute and take the test again with no distractions.',
+      'Look at your sleep over the last few nights and plan a full night tonight.',
+      'Until it is back to normal, ask a crewmate to double-check safety-critical tasks.',
+    ],
+    escalate: 'Tell the medical officer if it stays 15% or more slower than your baseline for 3 days, or if it comes with confusion, a severe headache or a recent blow to the head.',
+    sources: ['basner2011', 'barger2014'],
+  },
+  {
+    id: 'symptoms', title: 'Symptoms', indicators: [], hazard: 'Hostile closed environment',
+    how: same([
+      'Once a day, tick anything you have noticed since your last check-in, even if it seems small.',
+      'If you feel fine, save "No symptoms today" so the record shows that you checked.',
+    ]),
+    why: 'Small symptoms carry more weight in space. Spaceflight changes how the immune system works: skin rashes are the most often reported medical complaint on the space station, and in one NASA study 61% of crew shed reactivated herpes viruses, the kind that cause cold sores. Moving between gravity levels also affects balance and can cause motion sickness. In a sealed habitat an infection spreads easily to the rest of the crew.',
+    normal: 'No symptoms, or a mild one that is gone the next day.',
+    ifAbnormal: [
+      'Log it every day until it is gone, so the record shows how long it lasted.',
+      'Take the measurement that goes with it: temperature for fever or a sore throat, a skin scan for a rash, the vision check for blurred vision, the reaction test for trouble concentrating.',
+      'Rest and drink fluids. If it could be an infection, keep some distance from crewmates and clean shared surfaces.',
+    ],
+    escalate: 'Chest pain, trouble breathing or fainting: call the medical officer now. Report any symptom that lasts 3 days or more, or that is getting worse.',
+    sources: ['crucian2016', 'rooney2019', 'hrpHazards'],
   },
 ];
 

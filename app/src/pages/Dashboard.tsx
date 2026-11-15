@@ -1,3 +1,4 @@
+import type { CheckTab } from '../lib/guides';
 import { crew } from '../lib/mockData';
 import { buildReminders, needsDoing } from '../lib/reminders';
 import { evaluateAstronaut, nextStep } from '../lib/status';
@@ -7,14 +8,14 @@ import { SourceTag } from '../components/SourceTag';
 import { SpaceWeatherPanel } from '../components/SpaceWeatherPanel';
 import { StatusBadge } from '../components/StatusBadge';
 
-export function Dashboard({ onOpen, onOpenCheck, onOpenStormGuide }: { onOpen: (id: string) => void; onOpenCheck: (id: string, tab: 'check-in' | 'skin') => void; onOpenStormGuide: () => void }) {
+export function Dashboard({ onOpen, onOpenCheck, onOpenStormGuide }: { onOpen: (id: string) => void; onOpenCheck: (id: string, tab: CheckTab) => void; onOpenStormGuide: () => void }) {
   const data = useData();
   return (
     <section>
       <h2>Crew status</h2>
       <div className="grid">
         {crew.map((a) => {
-          const ev = evaluateAstronaut(a.id, data.readings, data.skinScans, data.now);
+          const ev = evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs);
           const due = buildReminders(a.id, ev, data.skinScans, data.now).filter(needsDoing).length;
           return (
             <button key={a.id} className="card" onClick={() => onOpen(a.id)}>

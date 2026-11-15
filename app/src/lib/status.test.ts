@@ -87,15 +87,16 @@ describe('seeded demo crew', () => {
     expect(ev('a3')).toMatchObject({ status: 'ok', reasons: [] });
   });
 
-  it('a4: slow HR + sleep drift and skipped temperature checks → Watch', () => {
+  it('a4: slow HR + sleep drift, slower reactions and skipped temperature checks → Watch', () => {
     const r = ev('a4');
     expect(r.status).toBe('watch');
     const kinds = r.reasons.map((x) => `${x.indicator}:${x.kind}`);
     expect(kinds).toContain('heartRate:trend');
     expect(kinds).toContain('sleepHours:trend');
+    expect(kinds).toContain('reactionTime:trend');
     expect(kinds).toContain('temperature:missing');
-    expect(kinds).toHaveLength(3);
-    expect(r.headlines).toHaveLength(3);
+    expect(kinds).toHaveLength(4);
+    expect(r.headlines).toHaveLength(4);
   });
 
   it('summarises one problem as one headline per indicator', () => {

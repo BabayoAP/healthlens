@@ -43,7 +43,7 @@ export function Trends({ astronautId }: { astronautId: string }) {
   const data = useData();
   const [days, setDays] = useState(42);
   const from = data.now - days * DAY;
-  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
   const spots = spotHistories(data.skinScans.filter((s) => s.astronautId === astronautId));
   const rangeLabel = RANGES.find((r) => r.days === days)!.label;
 

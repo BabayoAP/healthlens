@@ -27,6 +27,8 @@ export interface IndicatorDef {
    * (in the indicator's unit, or in percent of baseline when `pct` is true).
    */
   baseline?: { bad: 'up' | 'down' | 'both'; watch: number; act?: number; pct?: boolean };
+  /** Wording for a value outside the limits, when "<label> is <value>" would read badly */
+  limitText?: (value: number) => string;
   /** Where the numbers above come from, in plain words (shown in the app) */
   basis: string;
   sources: SourceId[];
@@ -73,6 +75,19 @@ export const INDICATORS: IndicatorDef[] = [
     baseline: { bad: 'up', watch: 1.5 },
     basis: 'A self-rating, compared only with your own usual score. The 1.5-point change is a HealthLens setting, not a clinical scale.',
     sources: ['hrpHazards'] },
+  { id: 'reactionTime', label: 'Reaction time', unit: 'ms', system: 'behavioral', cadenceDays: 1, decimals: 0, entrySource: 'measured-in-app',
+    baseline: { bad: 'up', watch: 15, pct: true },
+    basis: 'Reaction-time tests of this kind (the psychomotor vigilance test) slow down with sleep loss, and a 3-minute version was validated for use by astronauts (Basner 2011). The in-app test is much shorter and depends on the screen and input device, so it has no fixed limit: it is compared only with your own baseline on the same device. The 15% slowdown is a HealthLens setting.',
+    sources: ['basner2011', 'barger2014'] },
+  { id: 'nearVision', label: 'Near vision (chart rows read)', unit: 'rows', system: 'vision', cadenceDays: 7, decimals: 0, entrySource: 'measured-in-app',
+    baseline: { bad: 'down', watch: 2 },
+    basis: 'About 60% of astronauts on long missions reported worse distant and near vision in a survey of about 300 astronauts (Mader 2011). The on-screen chart is not calibrated to a clinical eye chart, so it has no fixed limit: it is compared only with your own baseline on the same screen at the same distance. The 2-row drop is a HealthLens setting.',
+    sources: ['mader2011', 'nasaSans'] },
+  { id: 'amsler', label: 'Amsler grid (eyes with distorted lines)', unit: '', system: 'vision', cadenceDays: 7, decimals: 0, entrySource: 'measured-in-app',
+    limits: { actAbove: 1 },
+    limitText: (v) => `Amsler grid: wavy, blurred or missing lines seen with ${v >= 2 ? 'both eyes' : 'one eye'}`,
+    basis: 'American Academy of Ophthalmology: if any area of the grid looks darker, wavy, blank or blurry, contact an ophthalmologist right away. Treating any distortion as Act is a HealthLens setting based on that advice.',
+    sources: ['aaoAmsler', 'nasaSans'] },
 ];
 
 export const indicatorById = Object.fromEntries(INDICATORS.map((d) => [d.id, d])) as Record<IndicatorId, IndicatorDef>;

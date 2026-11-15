@@ -142,3 +142,24 @@ a { color: var(--accent); }
 .reminder-when { color: var(--muted); }
 .reminder-overdue { border-color: var(--watch); }
 .reminder-overdue .reminder-when { color: var(--watch); font-weight: 600; }
+
+/* Tests and symptoms */
+.steps { padding-left: 20px; margin: 4px 0 12px; font-size: .92rem; line-height: 1.5; }
+.reaction { display: block; width: 180px; height: 180px; margin: 12px auto; border-radius: 50%; border: 3px solid var(--border); background: var(--bg); color: var(--text); font: inherit; font-size: 1.1rem; font-weight: 600; cursor: pointer; touch-action: manipulation; user-select: none; }
+.reaction-waiting { border-style: dashed; }
+.reaction-go { background: var(--ok); border-color: var(--ok); color: #fff; font-size: 1.6rem; }
+.reaction-early { border-color: var(--watch); }
+.optotype { height: 80px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid var(--border); border-radius: 8px; margin: 8px 0; }
+.optotype path { fill: #000; }
+.arrow-pad { display: grid; grid-template-areas: ". up ." "left . right" ". down ."; grid-template-columns: repeat(3, 56px); grid-auto-rows: 48px; gap: 4px; justify-content: center; margin: 8px 0; }
+.arrow { font: inherit; font-size: 1.3rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; touch-action: manipulation; }
+.arrow-up { grid-area: up; } .arrow-left { grid-area: left; } .arrow-right { grid-area: right; } .arrow-down { grid-area: down; }
+.amsler { display: block; width: 100%; max-width: 300px; margin: 8px auto; background: #fff; border-radius: 4px; }
+.amsler line { stroke: #000; stroke-width: 1; }
+.amsler circle { fill: #000; }
+.symptoms { margin-top: 16px; }
+.symptom-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin: 8px 0 12px; }
+.symptom-groups fieldset { border: 1px solid var(--border); border-radius: 8px; margin: 0; padding: 8px 12px; min-width: 0; }
+.symptom-groups legend { font-size: .85rem; font-weight: 600; padding: 0 4px; }
+.check { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; font-size: .92rem; cursor: pointer; }
+button.primary:disabled { opacity: .5; cursor: not-allowed; }

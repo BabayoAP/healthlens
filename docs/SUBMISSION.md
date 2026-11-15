@@ -111,8 +111,10 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 >
 > **What it does**
 > - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). The photo goes to a free open vision model through OpenRouter (NVIDIA Nemotron 3.5 Super VL, with Gemma 4 as backup), which returns each spot's position, size in mm, color and the A/B/C checks of the ABCDE rule as structured JSON; the app's own code then sets OK/Watch/Act from those answers and matches each spot to the previous scan of the same region in its own code to work out Evolution (E). No API key or no connection → a clearly labeled simulated result, so the app still works offline. _(status: built)_
-> - Ten indicators tracked against each astronaut's **own baseline**: heart rate, blood pressure, SpO₂, temperature, body mass, sleep, mood, stress, fatigue. _(status: built)_
+> - Thirteen indicators tracked against each astronaut's **own baseline**: heart rate, blood pressure, SpO₂, temperature, body mass, sleep, mood, stress, fatigue, reaction time, near vision and the Amsler grid. _(status: built)_
 > - **Check-in in under a minute:** enter what you measured, tap 1–5 for mood, stress and fatigue, and the app immediately shows each value against your baseline with a status and the reason. Obvious typos are caught before saving. _(status: built)_
+> - **Tests the app runs itself:** a weekly **vision check** (a near-vision chart where the letter E gets smaller on every row and the crew member taps the way it points, then an Amsler grid for each eye) and a 30-second **reaction-time test** (tap when the circle turns green, 5 tries, middle value kept). Vision matters because of SANS: NASA says about 70% of space station astronauts have some swelling at the back of their eyes. Reaction time is a fatigue signal: it slows with sleep loss before the person feels tired. The screen is not a calibrated instrument, so both tests are judged only against the crew member's own baseline on the same device; any distortion on the Amsler grid goes straight to Act. Results are tagged "measured in app". _(status: built)_
+> - **Symptom checklist:** a daily tap list grouped by body system (infection and immune, brain and balance, eyes, heart and breathing). Any symptom is Watch, the same symptom three days in a row is Act, and chest pain, trouble breathing or fainting is Act straight away. "No symptoms today" clears the flag. Symptoms feed the same status, insight cards, body map and flight-surgeon report as the measurements. _(status: built)_
 > - Crew dashboard with green/amber/red status, the reason in plain words, and the next step. _(status: built)_
 > - **Slow-drift detection:** flags a steady change over two weeks even while every value is still in the normal range (demo: resting heart rate 63 → 70 bpm). _(status: built)_
 > - **False-alarm handling:** one odd reading asks for a re-measure; it only escalates when a second reading agrees or a hard safety limit is crossed. _(status: built)_
@@ -150,6 +152,7 @@ Not shown to judges, but required and must be honest. Winner pattern: list each 
 | Claude Code (Anthropic) | Wrote the skin-analysis integration, lesion matching and Skin screen changes, from the team's design | `app/src/lib/analysis.ts`, `app/src/pages/Skin.tsx` |
 | Claude Code (Anthropic) | Checked limits and guide facts against public sources and wrote the source list; wrote the NASA DONKI space-weather feed | `app/src/lib/sources.ts`, `spaceWeather.ts` |
 | Claude Code (Anthropic) | Wrote the insights, flight-surgeon report and reminders code and tests. The advice text is reused from the measurement guides, not newly generated | `app/src/lib/insights.ts`, `reminders.ts`, `pages/Insights.tsx`, `components/RemindersPanel.tsx` |
+| Claude Code (Anthropic) | Wrote the vision check, reaction-time test and symptom checklist (screens, rules, tests) and drafted their guide text; facts checked against the cited NASA, AAO and journal sources | `app/src/pages/Tests.tsx`, `components/SymptomChecklist.tsx`, `lib/symptoms.ts`, `guides.ts` |
 
 **Draft:** _(write from the log at the end)_
 
@@ -162,6 +165,7 @@ Needs **specific names** ("GLDS-288 RNA-Seq: Mouse Spleen in Spaceflight"), not 
 | NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information), NASA CCMC | ccmc.gsfc.nasa.gov/tools/DONKI · API `api.nasa.gov/DONKI/notifications` | **Live in the app.** Dashboard "Radiation watch": last 30 days of notifications, turned into a status and linked to the radiation storm guide. Saved real snapshot used offline | used in app |
 | NASA Human Research Program: 5 Hazards of Human Spaceflight | nasa.gov/hrp/hazards | Every measurement guide and insight card is tied to one of the five hazards; basis for the "why it matters in space" text | used in app |
 | NASA Human System Risks | nasa.gov/hhp/human-system-risks | "Why it matters in space" text for mood, stress and fatigue | used in app (cited) |
+| NASA: Risk of Spaceflight Associated Neuro-ocular Syndrome (SANS) | nasa.gov/reference/risk-of-spaceflight-associated-neuro-ocular-syndrome-sans | Reason for the weekly vision check; the "about 70% of space station astronauts have some swelling at the back of their eyes" figure in the vision guide and insight card | used in app |
 | NASA OSDR: mouse skin after spaceflight, JAXA MHU-2 | OSD-238, OSD-239 · osdr.nasa.gov/bio/repo/data/studies/OSD-238 | Evidence that spaceflight changes skin-barrier and collagen genes; cited in the skin guide and skin insight card. IDs confirmed on OSDR | used in app (cited) |
 | NASA OSDR: mouse skin after spaceflight, Rodent Research-5 | OSD-240, OSD-241 | same | used in app (cited) |
 | NASA OSDR: mouse skin after spaceflight, Rodent Research-7 | OSD-254 | same | used in app (cited) |
@@ -187,6 +191,9 @@ List **everything**: code libraries, datasets, images, papers, even open-source.
 | American Heart Association, "Understanding Blood Pressure Readings" · heart.org/bplevels | Reference values | Blood pressure limits |
 | MedlinePlus (US National Library of Medicine): Pulse, Pulse Oximetry, Body temperature norms, Fever | Reference values | Heart rate, SpO₂ and temperature limits |
 | American Academy of Dermatology, "ABCDEs of melanoma" · aad.org | Reference | Skin-spot scoring (ABCDE rule) |
+| Mader et al., Ophthalmology (2011), "Optic disc edema, globe flattening, choroidal folds, and hyperopic shifts observed in astronauts after long-duration space flight" · doi.org/10.1016/j.ophtha.2011.06.021 | Paper (NASA astronaut data) | Vision guide: about 60% of astronauts on long missions reported worse distant and near vision |
+| Basner et al., Acta Astronautica (2011), "Validity and sensitivity of a brief psychomotor vigilance test (PVT-B) to total and partial sleep deprivation" · doi.org/10.1016/j.actaastro.2011.07.015 | Paper | Reaction-time test: this kind of test slows with sleep loss; a 3-minute version was validated for astronauts |
+| American Academy of Ophthalmology, "Have AMD? Save Your Sight with an Amsler Grid" · aao.org/eye-health/tips-prevention/facts-about-amsler-grid-daily-vision-test | Reference | How to use the Amsler grid; any distortion is reported right away |
 | React, Vite, TypeScript | Open-source code | App |
 | Vitest | Open-source code | Tests for the status rules |
 | OpenRouter API (openrouter.ai) | AI model gateway | Calls free vision models from the browser for skin analysis |
@@ -202,7 +209,7 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 
 | Challenge asks for | HealthLens | Where |
 | --- | --- | --- |
-| Astronauts assess their own health | Self check-ins + status | Check-in, Dashboard and Vitals screens (built) |
+| Astronauts assess their own health | Self check-ins, in-app tests, symptom checklist + status | Check-in (with symptom checklist), Tests (vision check, reaction time), Dashboard and Vitals screens (built) |
 | Guidance in an emergency | Emergency mode | Emergency button on every screen (built, 2 guides) |
 | Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator + insight cards | Guides screen, after each flagged check-in, and the Insights screen: what we saw / why / what to do / when to get help (built) |
 | Remind the crew | Due / overdue checks | "Checks due" panel on the Dashboard + check schedule on the Insights screen (built; browser notifications and streaks not built) |

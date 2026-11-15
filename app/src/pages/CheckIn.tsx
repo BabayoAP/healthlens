@@ -7,6 +7,7 @@ import { addReadings, readingsFor, useData } from '../lib/store';
 import type { IndicatorId, Reading } from '../lib/types';
 import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
+import { SymptomChecklist } from '../components/SymptomChecklist';
 
 /** Number fields. min/max only catch typos (a heart rate of 700); they are not medical ranges. */
 const NUMBER_FIELDS: { id: IndicatorId; min: number; max: number; step: number; typical: number; hint?: string }[] = [
@@ -36,7 +37,7 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
   const [error, setError] = useState<string>();
   const [saved, setSaved] = useState<IndicatorId[]>([]);
 
-  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
   const evalOf = (id: IndicatorId) => ev.indicators.find((i) => i.def.id === id)!;
   const env = environmentById[data.environment];
   /** Guides for anything in the last save that was flagged */
@@ -196,6 +197,8 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
           <p className="next">{nextStep[ev.status]}</p>
         </div>
       )}
+
+      <SymptomChecklist astronautId={astronautId} />
     </section>
   );
 }

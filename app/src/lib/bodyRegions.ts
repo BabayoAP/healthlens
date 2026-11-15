@@ -10,12 +10,14 @@ export interface FigureRegion {
   id: FigureRegionId;
   label: string;
   system: BodySystem;
+  /** Other body systems shown on this part */
+  also?: BodySystem[];
   /** Skin-scan regions that belong to this part of the figure */
   skin: BodyRegion[];
 }
 
 export const FIGURE_REGIONS: FigureRegion[] = [
-  { id: 'head', label: 'Head', system: 'behavioral', skin: ['face', 'neck'] },
+  { id: 'head', label: 'Head', system: 'behavioral', also: ['vision'], skin: ['face', 'neck'] },
   { id: 'chest', label: 'Chest', system: 'cardiovascular', skin: ['chest', 'upper-back'] },
   { id: 'abdomen', label: 'Abdomen', system: 'immune', skin: ['abdomen', 'lower-back'] },
   { id: 'right-arm', label: 'Right arm', system: 'musculoskeletal', skin: ['right-arm'] },
@@ -34,6 +36,11 @@ export const SYSTEM_INFO: Partial<Record<BodySystem, { title: string; does: stri
     title: 'Brain, sleep and mood',
     does: 'Controls thinking, reaction time, sleep and mood.',
     inSpace: 'Isolation, confinement, a heavy workload and the loss of a normal day and night cycle affect sleep, mood and concentration. These are easier to deal with when caught early.',
+  },
+  vision: {
+    title: 'Eyes',
+    does: 'The eyes and the optic nerve carry what you see to the brain.',
+    inSpace: 'In weightlessness, body fluid shifts toward the head, and the back of the eye can swell and change shape (NASA calls this SANS). Many astronauts on long missions notice that their near vision gets worse.',
   },
   cardiovascular: {
     title: 'Heart and circulation',

@@ -37,7 +37,7 @@ describe('insights for the seeded crew', () => {
 
   it('a4: a skipped measurement gets the how-to steps, not the "looks wrong" steps', () => {
     const list = buildInsights(ev('a4'), station);
-    expect(list.map((i) => i.id).sort()).toEqual(['heartRate', 'sleep', 'temperature']);
+    expect(list.map((i) => i.id).sort()).toEqual(['heartRate', 'reactionTime', 'sleep', 'temperature']);
     const temp = list.find((i) => i.id === 'temperature')!;
     expect(temp.onlyMissing).toBe(true);
     expect(temp.todo[0]).toMatch(/Wait 15 minutes/);
@@ -75,6 +75,7 @@ describe('reminders for the seeded crew', () => {
 
   it('groups blood pressure into one check', () => {
     expect(rem('a2').map((r) => r.id)).toEqual(expect.arrayContaining(['bloodPressure', 'mood']));
-    expect(rem('a2')).toHaveLength(8);
+    expect(rem('a2').map((r) => r.id)).toEqual(expect.arrayContaining(['vision', 'reactionTime']));
+    expect(rem('a2')).toHaveLength(10);
   });
 });

@@ -1,5 +1,6 @@
 import { INDICATORS, formatValue, type IndicatorDef } from './indicators';
-import type { IndicatorId, Reading, SkinScan, Source, Status } from './types';
+import { symptomReasons } from './symptoms';
+import type { BodySystem, IndicatorId, Reading, SkinScan, Source, Status, SymptomLog } from './types';
 
 /**
  * Status rules (PRD §8). Explainable on purpose: every status comes with reasons a person can read.
@@ -11,6 +12,8 @@ import type { IndicatorId, Reading, SkinScan, Source, Status } from './types';
  *  3. Sustained trend                       → Watch when values drift steadily in a bad direction,
  *                                              even if every single value still looks normal
  *  4. Missing measurements                  → Watch when a check is well overdue
+ *
+ * Skin scans and the symptom checklist (`symptoms.ts`) add their own reasons on top.
  */
 
 const DAY = 86_400_000;
@@ -26,9 +29,11 @@ export const worst = (a: Status, b: Status): Status => (rank[a] >= rank[b] ? a :
 
 export interface Reason {
   status: Status;
-  kind: 'limit' | 'baseline' | 'trend' | 'missing' | 'skin';
+  kind: 'limit' | 'baseline' | 'trend' | 'missing' | 'skin' | 'symptom';
   text: string;
   indicator?: IndicatorId;
+  /** Body system, for reasons that do not belong to an indicator (symptoms) */
+  system?: BodySystem;
   /** Source of the data that triggered this reason, so the UI can tag simulated/estimated values */
   source?: Source;
 }
@@ -104,7 +109,7 @@ export function evaluateIndicator(def: IndicatorDef, readings: Reading[], now: n
 
   // 1. Absolute limits
   const lim = limitStatus(def, latest.value);
-  if (lim !== 'ok') add(lim, 'limit', `${def.label} is ${shown}, ${lim === 'act' ? 'outside the safe range' : 'outside the normal range'}`);
+  if (lim !== 'ok') add(lim, 'limit', def.limitText?.(latest.value) ?? `${def.label} is ${shown}, ${lim === 'act' ? 'outside the safe range' : 'outside the normal range'}`);
 
   // 2. Change vs personal baseline
   if (def.baseline && rs.length >= MIN_FOR_BASELINE) {
@@ -181,14 +186,15 @@ export interface AstronautEval extends StatusResult {
   hasData: boolean;
 }
 
-export function evaluateAstronaut(astronautId: string, readings: Reading[], skinScans: SkinScan[], now: number): AstronautEval {
+export function evaluateAstronaut(astronautId: string, readings: Reading[], skinScans: SkinScan[], now: number, symptomLogs: SymptomLog[] = []): AstronautEval {
   const mine = readings.filter((r) => r.astronautId === astronautId);
   const scans = skinScans.filter((s) => s.astronautId === astronautId);
   const indicators = INDICATORS.map((def) => evaluateIndicator(def, mine, now));
   const skin = skinStatus(scans);
-  const reasons = [...skin.reasons, ...indicators.flatMap((i) => i.reasons)].sort((a, b) => rank[b.status] - rank[a.status]);
+  const logs = symptomLogs.filter((l) => l.astronautId === astronautId);
+  const reasons = [...skin.reasons, ...symptomReasons(logs, now), ...indicators.flatMap((i) => i.reasons)].sort((a, b) => rank[b.status] - rank[a.status]);
   const status = reasons.reduce<Status>((s, r) => worst(s, r.status), 'ok');
-  const kindRank: Record<Reason['kind'], number> = { skin: 4, trend: 3, baseline: 2, limit: 1, missing: 0 };
+  const kindRank: Record<Reason['kind'], number> = { skin: 4, symptom: 4, trend: 3, baseline: 2, limit: 1, missing: 0 };
   const best = new Map<string, Reason>();
   for (const r of reasons) {
     const key = r.indicator ?? r.text;
@@ -196,7 +202,7 @@ export function evaluateAstronaut(astronautId: string, readings: Reading[], skin
     if (!cur || rank[r.status] > rank[cur.status] || (rank[r.status] === rank[cur.status] && kindRank[r.kind] > kindRank[cur.kind])) best.set(key, r);
   }
   const headlines = [...best.values()].sort((a, b) => rank[b.status] - rank[a.status]);
-  return { status, reasons, headlines, indicators, hasData: mine.length > 0 || scans.length > 0 };
+  return { status, reasons, headlines, indicators, hasData: mine.length > 0 || scans.length > 0 || logs.length > 0 };
 }
 
 export const nextStep: Record<Status, string> = {

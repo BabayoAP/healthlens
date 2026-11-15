@@ -8,7 +8,7 @@ import { StatusBadge } from '../components/StatusBadge';
 // from the registry with its latest value, personal baseline and status.
 export function Vitals({ astronautId }: { astronautId: string }) {
   const data = useData();
-  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
   const rows = ev.indicators;
 
   return (

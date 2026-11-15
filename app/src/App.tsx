@@ -10,12 +10,13 @@ import { Emergency } from './pages/Emergency';
 import { Guides } from './pages/Guides';
 import { Insights } from './pages/Insights';
 import { Skin } from './pages/Skin';
+import { Tests } from './pages/Tests';
 import { Trends } from './pages/Trends';
 import { Vitals } from './pages/Vitals';
 import './App.css';
 
-type Tab = 'dashboard' | 'body' | 'insights' | 'check-in' | 'skin' | 'vitals' | 'trends' | 'guides';
-const TABS: Record<Tab, string> = { dashboard: 'Dashboard', body: 'Body map', insights: 'Insights', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
+type Tab = 'dashboard' | 'body' | 'insights' | 'check-in' | 'tests' | 'skin' | 'vitals' | 'trends' | 'guides';
+const TABS: Record<Tab, string> = { dashboard: 'Dashboard', body: 'Body map', insights: 'Insights', 'check-in': 'Check-in', tests: 'Tests', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
 
 export default function App() {
   const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
@@ -59,6 +60,7 @@ export default function App() {
         {tab === 'body' && <BodyMap key={astronautId} astronautId={astronautId} onNavigate={setTab} />}
         {tab === 'insights' && <Insights astronautId={astronautId} onNavigate={setTab} />}
         {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
+        {tab === 'tests' && <Tests key={astronautId} astronautId={astronautId} />}
         {tab === 'skin' && <Skin astronautId={astronautId} />}
         {tab === 'vitals' && <Vitals astronautId={astronautId} />}
         {tab === 'trends' && <Trends astronautId={astronautId} />}

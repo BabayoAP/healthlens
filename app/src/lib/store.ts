@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import type { EnvironmentId } from './environment';
 import { generateSeed } from './mockData';
-import type { IndicatorId, Reading, SkinScan } from './types';
+import type { IndicatorId, Reading, SkinScan, SymptomLog } from './types';
 
 /**
  * The one place health data is saved and loaded (PRD §10). Browser-only, works offline.
@@ -20,6 +20,7 @@ interface Saved {
   environment: EnvironmentId;
   readings: Reading[];
   skinScans: SkinScan[];
+  symptomLogs: SymptomLog[];
 }
 
 export interface Data {
@@ -29,6 +30,8 @@ export interface Data {
   /** Seeded + entered, when demo mode is on */
   readings: Reading[];
   skinScans: SkinScan[];
+  /** Symptom checklists entered on this device (the demo crew has none seeded) */
+  symptomLogs: SymptomLog[];
   /** Timestamp to evaluate "how long ago" against. Refreshed whenever data changes. */
   now: number;
 }
@@ -36,9 +39,9 @@ export interface Data {
 function load(): Saved {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return { demoMode: true, environment: 'station', readings: [], skinScans: [], ...JSON.parse(raw) };
+    if (raw) return { demoMode: true, environment: 'station', readings: [], skinScans: [], symptomLogs: [], ...JSON.parse(raw) };
   } catch { /* storage blocked or corrupt: start fresh */ }
-  return { demoMode: true, environment: 'station', readings: [], skinScans: [] };
+  return { demoMode: true, environment: 'station', readings: [], skinScans: [], symptomLogs: [] };
 }
 
 let saved = load();
@@ -53,6 +56,7 @@ function build(): Data {
     environment: saved.environment,
     readings: [...seed.readings, ...saved.readings],
     skinScans: [...seed.skinScans, ...saved.skinScans],
+    symptomLogs: saved.symptomLogs,
     now,
   };
 }
@@ -80,6 +84,11 @@ export function addSkinScan(s: Omit<SkinScan, 'id'>) {
   update({ ...saved, skinScans: [...saved.skinScans, { ...s, id: crypto.randomUUID() }] });
 }
 
+/** Saves one symptom checklist. Pass an empty list for "no symptoms today". */
+export function addSymptomLog(l: Omit<SymptomLog, 'id'>) {
+  update({ ...saved, symptomLogs: [...saved.symptomLogs, { ...l, id: crypto.randomUUID() }] });
+}
+
 export function setDemoMode(on: boolean) {
   update({ ...saved, demoMode: on });
 }
@@ -90,7 +99,7 @@ export function setEnvironment(environment: EnvironmentId) {
 
 /** Deletes everything entered on this device. Seeded demo data is not affected. */
 export function clearEnteredData() {
-  update({ ...saved, readings: [], skinScans: [] });
+  update({ ...saved, readings: [], skinScans: [], symptomLogs: [] });
 }
 
 /** One astronaut's readings for one indicator, oldest first. */

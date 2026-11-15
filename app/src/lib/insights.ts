@@ -1,5 +1,5 @@
 import type { Environment } from './environment';
-import { GUIDES } from './guides';
+import { GUIDES, type CheckTab, type Guide } from './guides';
 import { formatValue } from './indicators';
 import { worst, type AstronautEval, type Reason } from './status';
 import type { Astronaut, Status } from './types';
@@ -28,7 +28,7 @@ export interface Insight {
   /** When to get help */
   escalate: string;
   /** Screen where the crew member acts on it */
-  tab: 'check-in' | 'skin';
+  tab: CheckTab;
 }
 
 const rank: Record<Status, number> = { ok: 0, watch: 1, act: 2 };
@@ -40,12 +40,17 @@ export function reportAdvice(env: Environment): string {
     : `This is at the Act level: send a report to the flight surgeon today and start the steps above without waiting for the reply (signal delay ${env.commDelay}).`;
 }
 
+/** The reasons a guide is about: by indicator, or by kind for skin and symptoms. */
+export function reasonsForGuide(ev: AstronautEval, g: Guide): Reason[] {
+  if (g.id === 'skin') return ev.reasons.filter((r) => r.kind === 'skin');
+  if (g.id === 'symptoms') return ev.reasons.filter((r) => r.kind === 'symptom');
+  return ev.reasons.filter((r) => r.indicator !== undefined && g.indicators.includes(r.indicator));
+}
+
 export function buildInsights(ev: AstronautEval, env: Environment): Insight[] {
   const out: Insight[] = [];
   for (const g of GUIDES) {
-    const saw = g.id === 'skin'
-      ? ev.reasons.filter((r) => r.kind === 'skin')
-      : ev.reasons.filter((r) => r.indicator !== undefined && g.indicators.includes(r.indicator));
+    const saw = reasonsForGuide(ev, g);
     if (saw.length === 0) continue;
     const status = saw.reduce<Status>((s, r) => worst(s, r.status), 'ok');
     const onlyMissing = saw.every((r) => r.kind === 'missing');
@@ -55,7 +60,7 @@ export function buildInsights(ev: AstronautEval, env: Environment): Insight[] {
       onlyMissing,
       todo: onlyMissing ? g.how(env) : g.ifAbnormal,
       escalate: status === 'act' ? `${g.escalate} ${reportAdvice(env)}` : g.escalate,
-      tab: g.id === 'skin' ? 'skin' : 'check-in',
+      tab: g.tab ?? 'check-in',
     });
   }
   return out.sort((a, b) => rank[b.status] - rank[a.status]);

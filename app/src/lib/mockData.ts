@@ -9,7 +9,8 @@ import type { Astronaut, IndicatorId, Reading, SkinScan } from './types';
  *   a2 Osei      — blood pressure creeps up over the last 2 weeks                         → Watch
  *   a3 Lindqvist — nothing wrong (the healthy contrast)                                   → OK
  *   a4 Nakamura  — resting HR and sleep drift slowly while every value still looks
- *                  "normal" (sustained-trend rule), and temperature checks were skipped   → Watch
+ *                  "normal" (sustained-trend rule), and temperature checks were skipped   → Watch.
+ *                  Reaction time slows over the same days as the sleep loss.
  *
  * TODO: shape the trends on published findings (NASA Twins Study) so they can be cited.
  */
@@ -57,6 +58,9 @@ const healthy = (hr: number, sys: number, dia: number, mass: number): Series[] =
   { indicator: 'mood', base: 4, wobble: 0.7, decimals: 0 },
   { indicator: 'stress', base: 2, wobble: 0.7, decimals: 0 },
   { indicator: 'fatigue', base: 2, wobble: 0.7, decimals: 0 },
+  { indicator: 'reactionTime', base: 250 + hr, wobble: 9, decimals: 0 },
+  { indicator: 'nearVision', base: 7, wobble: 0.4, decimals: 0, everyDays: 7 },
+  { indicator: 'amsler', base: 0, wobble: 0, decimals: 0, everyDays: 7 },
 ];
 
 const withProblem = (series: Series[], changes: Partial<Record<IndicatorId, Partial<Series>>>): Series[] =>
@@ -73,6 +77,7 @@ const plans: Record<string, Series[]> = {
     heartRate: { drift: { perDay: 0.6, lastDays: 12 } },
     sleepHours: { drift: { perDay: -0.12, lastDays: 10 }, wobble: 0.25 },
     temperature: { missingLastDays: 5 },
+    reactionTime: { drift: { perDay: 2.6, lastDays: 10 }, wobble: 6 },
   }),
 };
 

@@ -2,6 +2,7 @@ import { environmentById } from '../lib/environment';
 import { INDICATORS, formatValue } from '../lib/indicators';
 import { SOURCES, type SourceId } from '../lib/sources';
 import { GUIDES } from '../lib/guides';
+import { reasonsForGuide } from '../lib/insights';
 import { evaluateAstronaut, worst } from '../lib/status';
 import { useData } from '../lib/store';
 import type { Status } from '../lib/types';
@@ -22,7 +23,7 @@ const SourceLinks = ({ ids }: { ids: SourceId[] }) => (
 export function Guides({ astronautId }: { astronautId: string }) {
   const data = useData();
   const env = environmentById[data.environment];
-  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
 
   return (
     <section>
@@ -31,7 +32,7 @@ export function Guides({ astronautId }: { astronautId: string }) {
 
       {GUIDES.map((g) => {
         const mine = ev.indicators.filter((i) => g.indicators.includes(i.def.id) && i.latest);
-        const skinReasons = g.id === 'skin' ? ev.reasons.filter((r) => r.kind === 'skin') : [];
+        const skinReasons = g.indicators.length === 0 ? reasonsForGuide(ev, g) : [];
         const status = [...mine.map((i) => i.status), ...skinReasons.map((r) => r.status)]
           .reduce<Status | undefined>((s, x) => (s ? worst(s, x) : x), undefined);
         return (

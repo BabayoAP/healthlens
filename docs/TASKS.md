@@ -18,10 +18,10 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
-- BabayoAP · In-app vision check (near-vision chart + Amsler grid) + reaction-time test (PRD §5.0, §5.6) · Sat night
-- BabayoAP · Symptom checklist (PRD §5.4) · Sat night
 
 ## Done
+- [x] Tests screen: vision check (tumbling-E near-vision chart, 8 rows, then Amsler grid per eye) and reaction-time test (5 tries, middle value). New indicators `reactionTime`, `nearVision`, `amsler`, saved as measured-in-app, with guides, sources, reminders, trends and body map (head). Seeded for the demo crew; Nakamura's reaction time slows with the sleep loss. `pages/Tests.tsx`. BabayoAP
+- [x] Symptom checklist on the Check-in screen: 16 symptoms in 4 groups; any = Watch, 3 days in a row or an urgent one = Act, "No symptoms today" clears it. Feeds status, insights, body map and the report. `lib/symptoms.ts`, `components/SymptomChecklist.tsx`. Not seeded for the demo crew. BabayoAP
 - [x] Deployed to Vercel: https://app-tawny-mu-93.vercel.app (public, tested in a private window). Not linked to GitHub yet: redeploy by hand (`cd app && npx vercel deploy --prod --yes`). Dawson Phan
 - [x] Insights screen: one card per finding with what we saw / why it matters in space / what to do / when to get help, plus how to reach the flight surgeon at the Act level (changes with environment); copy / download report for the flight surgeon. `lib/insights.ts`, `pages/Insights.tsx`. BabayoAP
 - [x] Reminders: "Checks due" panel on the Dashboard (per crew member, each item opens the right screen) and a check schedule per astronaut. One check per guide; skin scan weekly. `lib/reminders.ts`, `components/RemindersPanel.tsx`. Not built: browser notifications, schedule changes by environment. BabayoAP

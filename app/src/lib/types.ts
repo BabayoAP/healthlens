@@ -9,7 +9,8 @@ export type BodySystem =
 /** To add an indicator: add its id here and one entry in `indicators.ts`. Nothing else needs to change. */
 export type IndicatorId =
   | 'heartRate' | 'systolic' | 'diastolic' | 'spo2' | 'temperature'
-  | 'bodyMass' | 'sleepHours' | 'mood' | 'stress' | 'fatigue';
+  | 'bodyMass' | 'sleepHours' | 'mood' | 'stress' | 'fatigue'
+  | 'reactionTime' | 'nearVision' | 'amsler';
 
 /** One measured value. Blood pressure is stored as two readings (systolic + diastolic) with the same time. */
 export interface Reading {
@@ -18,6 +19,15 @@ export interface Reading {
   indicator: IndicatorId;
   takenAt: string; // ISO date-time
   value: number;
+  source: Source;
+}
+
+/** One filled-in symptom checklist (PRD §5.4). An empty list means "no symptoms today". Ids are in `symptoms.ts`. */
+export interface SymptomLog {
+  id: string;
+  astronautId: string;
+  takenAt: string; // ISO date-time
+  symptoms: string[];
   source: Source;
 }
 

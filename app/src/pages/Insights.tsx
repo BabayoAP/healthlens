@@ -8,14 +8,14 @@ import { useData } from '../lib/store';
 import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
 
-type Target = 'check-in' | 'skin' | 'trends' | 'guides';
+type Target = 'check-in' | 'skin' | 'tests' | 'trends' | 'guides';
 
 /** What the data means and what to do about it: one card per finding, plus the check schedule and a report. */
 export function Insights({ astronautId, onNavigate }: { astronautId: string; onNavigate: (tab: Target) => void }) {
   const data = useData();
   const env = environmentById[data.environment];
   const astronaut = crew.find((a) => a.id === astronautId)!;
-  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
   const insights = buildInsights(ev, env);
   const reminders = buildReminders(astronautId, ev, data.skinScans, data.now);
   const report = buildReport(astronaut, ev, insights, env, data.now);
@@ -75,7 +75,7 @@ export function Insights({ astronautId, onNavigate }: { astronautId: string; onN
             <p>{ins.escalate}</p>
 
             <div className="row detail-nav">
-              <button type="button" className="ghost" onClick={() => onNavigate(ins.tab)}>{ins.tab === 'skin' ? 'Scan again' : ins.onlyMissing ? 'Measure now' : 'Measure again'}</button>
+              <button type="button" className="ghost" onClick={() => onNavigate(ins.tab)}>{ins.tab === 'skin' ? 'Scan again' : ins.id === 'symptoms' ? 'Update symptoms' : ins.tab === 'tests' ? (ins.onlyMissing ? 'Take the test' : 'Test again') : ins.onlyMissing ? 'Measure now' : 'Measure again'}</button>
               <button type="button" className="ghost" onClick={() => onNavigate('trends')}>See the trend</button>
               <button type="button" className="ghost" onClick={() => onNavigate('guides')}>Full guide and sources</button>
             </div>

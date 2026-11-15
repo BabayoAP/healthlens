@@ -1,4 +1,4 @@
-import { GUIDES } from './guides';
+import { GUIDES, type CheckTab } from './guides';
 import type { AstronautEval } from './status';
 import type { SkinScan } from './types';
 
@@ -21,7 +21,7 @@ export interface Reminder {
   dueInDays: number;
   state: 'overdue' | 'due' | 'upcoming';
   /** Screen where the check is done */
-  tab: 'check-in' | 'skin';
+  tab: CheckTab;
 }
 
 function make(id: string, label: string, cadenceDays: number, daysSince: number | undefined, tab: Reminder['tab']): Reminder {
@@ -36,7 +36,7 @@ export function buildReminders(astronautId: string, ev: AstronautEval, scans: Sk
     if (g.id === 'skin') {
       const times = scans.filter((s) => s.astronautId === astronautId).map((s) => Date.parse(s.takenAt));
       const daysSince = times.length ? Math.floor((now - Math.max(...times)) / DAY) : undefined;
-      out.push(make(g.id, g.title, SKIN_CADENCE_DAYS, daysSince, 'skin'));
+      out.push(make(g.id, g.title, SKIN_CADENCE_DAYS, daysSince, g.tab ?? 'skin'));
       continue;
     }
     const mine = ev.indicators.filter((i) => g.indicators.includes(i.def.id));
@@ -44,7 +44,7 @@ export function buildReminders(astronautId: string, ev: AstronautEval, scans: Sk
     // The group is as stale as its most stale indicator; never measured counts as due now
     const never = mine.some((i) => i.daysSince === undefined);
     const daysSince = never ? undefined : Math.max(...mine.map((i) => i.daysSince!));
-    out.push(make(g.id, g.title, Math.min(...mine.map((i) => i.def.cadenceDays)), daysSince, 'check-in'));
+    out.push(make(g.id, g.title, Math.min(...mine.map((i) => i.def.cadenceDays)), daysSince, g.tab ?? 'check-in'));
   }
   return out.sort((a, b) => a.dueInDays - b.dueInDays);
 }
