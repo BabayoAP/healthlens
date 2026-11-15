@@ -32,7 +32,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 _(name · task · started)_
 
 ## Done
-- [x] **Real skin analysis** (Dawson Phan): Claude vision call (`claude-opus-5-5`) returns spots as structured JSON; matching to the previous scan (new/changed/stable, same ID over time) is in code; API key entered on the Skin screen, stored in the browser only; simulated fallback when offline/no key. Live call not yet tested with a real key. PRD §5.1
+- [x] **Real skin analysis** (Dawson Phan): Claude vision call (`claude-opus-5-5`) returns spots as structured JSON; matching to the previous scan (new/changed/stable, same ID over time) is in code; API key entered on the Skin screen, stored in the browser only; simulated fallback when offline/no key. Live call not yet tested with a real key. PRD §5.1 · `d11874a`
 - [x] Check-in screen (`pages/CheckIn.tsx`): vitals, body mass, sleep, mood/stress/fatigue; "Simulate reading" button; typo checks; shows what each saved value means. BabayoAP
 - [x] **Foundation is in: build on it** (see "How to build on the data layer" in CLAUDE.md). BabayoAP:
   - Input source layer + `<SourceTag>` (every value says manual / device / self-report / measured-in-app / simulated / estimated)
