@@ -5,7 +5,9 @@ Astronaut health monitoring for long-duration missions. NASA Space Apps Challeng
 Crewmates scan each other's skin. An AI model maps every mole and spot into a personal profile and flags anything new or changing. Vitals (heart rate, blood pressure, SpO₂) sit alongside, so each astronaut gets a clear **OK / Watch / Act** status and a next step, with no doctor on board.
 
 - **Challenge:** [Create Health Monitoring Software for Astronauts on Space Missions](https://www.spaceappschallenge.org/)
-- **Concept + MVP scope:** [`docs/CONCEPT.md`](docs/CONCEPT.md)
+- **PRD (source of truth):** [`docs/PRD.md`](docs/PRD.md)
+- **Past-winner research:** [`docs/research/PAST-WINNERS.md`](docs/research/PAST-WINNERS.md)
+- **Early concept:** [`docs/CONCEPT.md`](docs/CONCEPT.md)
 - **Original brainstorm:** [`brainstorm.md`](brainstorm.md)
 
 ## Run it
