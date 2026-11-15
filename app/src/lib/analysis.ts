@@ -1,13 +1,12 @@
-import Anthropic from '@anthropic-ai/sdk';
-import { betaZodOutputFormat } from '@anthropic-ai/sdk/helpers/beta/zod';
 import { z } from 'zod';
 import type { BodyRegion, Lesion, SkinScan, Source, Status } from './types';
 
 /**
  * Skin-lesion analysis (PRD §5.1).
  *
- * Live mode: sends the photo to Claude (vision) and gets back a structured
- * list of spots. Matching against the previous scan (new / changed / stable)
+ * Live mode: sends the photo to a free vision model through OpenRouter and gets
+ * back a structured list of spots. OK / Watch / Act is decided here in code from
+ * the model's A/B/C answers and size, not by the model. Matching against the previous scan (new / changed / stable)
  * is done here in code, so it is deterministic and explainable.
  *
  * Offline / no key / error: falls back to a mock result labeled "simulated".
@@ -15,7 +14,19 @@ import type { BodyRegion, Lesion, SkinScan, Source, Status } from './types';
  * Not a medical device: the model is told to flag spots for review, never diagnose.
  */
 
-export const MODEL = 'claude-opus-5-5';
+const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+/**
+ * Free OpenRouter vision models, tried in order (OpenRouter falls back when one is
+ * down or rate limited). Free models change often: check openrouter.ai/models?q=free
+ * and keep only ones that accept images.
+ */
+export const MODELS = [
+  'nvidia/nemotron-3.5-super-vl:free',
+  'google/gemma-4-31b-it:free',
+  'openrouter/free',
+];
+export const MODEL = MODELS[0];
 
 /** Live model results count as measured in the app; the fallback is always labeled simulated. */
 export type AnalysisSource = Extract<Source, 'measured-in-app' | 'simulated'>;
@@ -29,7 +40,7 @@ export interface AnalysisResult {
 
 // ---------- API key (kept in this browser only, never in the build) ----------
 
-const KEY_STORAGE = 'healthlens.anthropicKey';
+const KEY_STORAGE = 'healthlens.openrouterKey';
 
 export function getApiKey(): string | undefined {
   try {
@@ -58,8 +69,8 @@ const SpotSchema = z.object({
   asymmetry: z.boolean().describe('A: one half does not match the other'),
   irregularBorder: z.boolean().describe('B: ragged, notched or blurred edge'),
   multipleColors: z.boolean().describe('C: more than one shade or color'),
+  ulceratedOrBleeding: z.boolean().describe('Open sore, crust, or bleeding'),
   notes: z.array(z.string()).describe('Short plain-language observations, max 3'),
-  risk: z.enum(['ok', 'watch', 'act']).describe('ok = looks routine; watch = recheck at next scan; act = ask the flight surgeon to review soon'),
 });
 
 const ResultSchema = z.object({
@@ -71,6 +82,10 @@ const ResultSchema = z.object({
 
 type ModelResult = z.infer<typeof ResultSchema>;
 
+// Plain JSON Schema for the API (without the `$schema` key some providers reject).
+const { $schema: _drop, ...RESULT_JSON_SCHEMA } = z.toJSONSchema(ResultSchema);
+void _drop;
+
 const SYSTEM = `You help astronauts track skin spots between self-scans on a long space mission.
 You are NOT diagnosing. You describe each visible spot so changes can be tracked over time, and you flag spots that a flight surgeon should look at.
 
@@ -78,9 +93,12 @@ For each spot:
 - Give its center position as fractions of the image (x across, y down).
 - Estimate the largest diameter in mm. If a ruler or reference sticker is visible, measure against it; otherwise estimate from typical skin features and say so via scaleReference=false.
 - Check ABC of the ABCDE rule (Asymmetry, Border, Color). Diameter and Evolution are computed by the app from your size and from earlier scans.
-- risk: "act" if two or more of A/B/C are present, the spot is over 6 mm, or it looks ulcerated or bleeding; "watch" if exactly one is present; otherwise "ok".
+- Say whether it looks ulcerated, crusted or bleeding.
 Keep notes short and factual. Never name a disease.
-If the photo is unusable, set photoUsable=false, explain in photoNote, and return no spots.`;
+If the photo is unusable, set photoUsable=false, explain in photoNote, and return no spots.
+
+Reply with only a JSON object matching this JSON Schema, no other text:
+${JSON.stringify(RESULT_JSON_SCHEMA)}`;
 
 // ---------- Main entry ----------
 
@@ -114,34 +132,73 @@ export async function analyzeSkinPhoto(
 
 async function callModel(apiKey: string, image: File, region: BodyRegion): Promise<ModelResult> {
   // Browser-only app (no backend, PRD §10). The key is typed in by the user and kept in localStorage.
-  const client = new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
-  const { data, mediaType } = await toBase64Jpeg(image);
+  const dataUrl = await toJpegDataUrl(image);
 
-  const response = await client.beta.messages.parse({
-    model: MODEL,
-    max_tokens: 16000,
-    betas: ['server-side-fallback-2026-07-01'],
-    fallbacks: 'default',
-    output_config: { effort: 'medium', format: betaZodOutputFormat(ResultSchema) },
-    system: SYSTEM,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data } },
-          { type: 'text', text: `Body region: ${region}. List every visible skin spot.` },
-        ],
+  const res = await fetch(OPENROUTER_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+      'X-Title': 'HealthLens',
+    },
+    body: JSON.stringify({
+      models: MODELS,
+      max_tokens: 4000,
+      temperature: 0,
+      response_format: {
+        type: 'json_schema',
+        json_schema: { name: 'skin_scan', strict: true, schema: RESULT_JSON_SCHEMA },
       },
-    ],
+      messages: [
+        { role: 'system', content: SYSTEM },
+        {
+          role: 'user',
+          content: [
+            { type: 'image_url', image_url: { url: dataUrl } },
+            { type: 'text', text: `Body region: ${region}. List every visible skin spot.` },
+          ],
+        },
+      ],
+    }),
   });
 
-  if (response.stop_reason === 'refusal') {
-    throw new Error('the model declined this image');
+  if (!res.ok) throw new HttpError(res.status, await res.text().catch(() => ''));
+  const body = await res.json();
+  const choice = body.choices?.[0];
+  if (!choice) throw new Error(body.error?.message ?? 'empty response');
+  if (choice.finish_reason === 'length') throw new Error('response was cut off');
+
+  const parsed = ResultSchema.safeParse(extractJson(choice.message?.content ?? ''));
+  if (!parsed.success) throw new Error(`model reply did not match the expected format (${body.model ?? 'unknown model'})`);
+  return parsed.data;
+}
+
+/** Free models sometimes wrap JSON in ``` fences or add a sentence; pull out the object. */
+function extractJson(text: string): unknown {
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start < 0 || end <= start) return undefined;
+  try {
+    return JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return undefined;
   }
-  if (!response.parsed_output) {
-    throw new Error(response.stop_reason === 'max_tokens' ? 'response was cut off' : 'could not read the response');
+}
+
+class HttpError extends Error {
+  status: number;
+  constructor(status: number, body: string) {
+    super(`HTTP ${status}${body ? `: ${body.slice(0, 200)}` : ''}`);
+    this.status = status;
   }
-  return response.parsed_output;
+}
+
+/** ABCDE-based flag (see SUBMISSION.md "The HealthLens score"). E is added later by matchToPrevious. */
+function riskOf(s: ModelResult['spots'][number]): Status {
+  const abc = [s.asymmetry, s.irregularBorder, s.multipleColors].filter(Boolean).length;
+  if (abc >= 2 || s.diameterMm > 6 || s.ulceratedOrBleeding) return 'act';
+  if (abc === 1) return 'watch';
+  return 'ok';
 }
 
 function toLesion(s: ModelResult['spots'][number]): Lesion {
@@ -150,6 +207,7 @@ function toLesion(s: ModelResult['spots'][number]): Lesion {
   if (s.irregularBorder) notes.push('B: irregular border');
   if (s.multipleColors) notes.push(MULTI_COLOR);
   if (s.diameterMm > 6) notes.push('D: over 6 mm');
+  if (s.ulceratedOrBleeding) notes.push('open sore or bleeding');
   notes.push(...s.notes.slice(0, 3));
   return {
     id: crypto.randomUUID(),
@@ -158,7 +216,7 @@ function toLesion(s: ModelResult['spots'][number]): Lesion {
     diameterMm: Math.round(s.diameterMm * 10) / 10,
     color: s.color,
     notes,
-    risk: s.risk,
+    risk: riskOf(s),
     change: 'new',
   };
 }
@@ -242,7 +300,7 @@ async function simulated(previous: SkinScan | undefined, message: string): Promi
 // ---------- Helpers ----------
 
 /** Downscale to ≤1568 px on the long edge and re-encode as JPEG (keeps requests small). */
-async function toBase64Jpeg(file: File): Promise<{ data: string; mediaType: 'image/jpeg' }> {
+async function toJpegDataUrl(file: File): Promise<string> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, 1568 / Math.max(bitmap.width, bitmap.height));
   const canvas = document.createElement('canvas');
@@ -250,15 +308,17 @@ async function toBase64Jpeg(file: File): Promise<{ data: string; mediaType: 'ima
   canvas.height = Math.round(bitmap.height * scale);
   canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-  return { data: dataUrl.slice(dataUrl.indexOf(',') + 1), mediaType: 'image/jpeg' };
+  return canvas.toDataURL('image/jpeg', 0.9);
 }
 
 function describeError(err: unknown): string {
-  if (err instanceof Anthropic.AuthenticationError) return 'API key was rejected';
-  if (err instanceof Anthropic.RateLimitError) return 'rate limited, try again shortly';
-  if (err instanceof Anthropic.APIConnectionError) return 'could not reach the API';
-  if (err instanceof Anthropic.APIError) return `API error ${err.status ?? ''}`.trim();
+  if (err instanceof HttpError) {
+    if (err.status === 401) return 'OpenRouter key was rejected';
+    if (err.status === 402) return 'OpenRouter account needs credit or the free limit is used up';
+    if (err.status === 429) return 'free model is rate limited, try again in a minute';
+    return err.message;
+  }
+  if (err instanceof TypeError) return 'could not reach OpenRouter';
   return err instanceof Error ? err.message : 'unknown error';
 }
 

@@ -109,7 +109,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 > **No dermatologist on Mars.** _(add stat: radiation dose / skin cancer risk, cited)_
 >
 > **What it does**
-> - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). The photo goes to a vision model (Claude Opus 5.5), which returns each spot's position, size in mm, color and the A/B/C checks of the ABCDE rule as structured JSON; the app then matches each spot to the previous scan of the same region in its own code to work out Evolution (E). No API key or no connection → a clearly labeled simulated result, so the app still works offline. _(status: built)_
+> - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). The photo goes to a free open vision model through OpenRouter (NVIDIA Nemotron 3.5 Super VL, with Gemma 4 as backup), which returns each spot's position, size in mm, color and the A/B/C checks of the ABCDE rule as structured JSON; the app's own code then sets OK/Watch/Act from those answers and matches each spot to the previous scan of the same region in its own code to work out Evolution (E). No API key or no connection → a clearly labeled simulated result, so the app still works offline. _(status: built)_
 > - Ten indicators tracked against each astronaut's **own baseline**: heart rate, blood pressure, SpO₂, temperature, body mass, sleep, mood, stress, fatigue. _(status: built)_
 > - **Check-in in under a minute:** enter what you measured, tap 1–5 for mood, stress and fatigue, and the app immediately shows each value against your baseline with a status and the reason. Obvious typos are caught before saving. _(status: built)_
 > - Crew dashboard with green/amber/red status, the reason in plain words, and the next step. _(status: built)_
@@ -130,7 +130,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 >
 > **Worked example**: _(add screenshots)_ Demo crew of four, each with six weeks of simulated history: Vega has a spot on the left arm that grew from 4 mm to 6.5 mm in 45 days with an irregular border → **Act**. Osei's blood pressure crept from about 121 to 134 mmHg over two weeks → **Watch**. Nakamura's resting heart rate and sleep drifted slowly while every value still looked normal, and temperature checks were skipped → **Watch**. Lindqvist is healthy → **OK**.
 >
-> **Tools & technologies**: React, TypeScript, Vite; Anthropic Claude API (model `claude-opus-5-5`, vision + structured output) via the `@anthropic-ai/sdk` library; Zod for the response schema; _(add: chart library, hosting)_
+> **Tools & technologies**: React, TypeScript, Vite; OpenRouter API with free vision models (`nvidia/nemotron-3.5-super-vl:free`, falling back to `google/gemma-4-31b-it:free` and `openrouter/free`), structured JSON output; Zod for the response schema; _(add: chart library, hosting)_
 
 ### 3.6 Use of Super Intelligence (SI)
 Not shown to judges, but required and must be honest. Winner pattern: list each tool + what it did + "the idea, research, logic and direction were ours; all output reviewed and tested; no NASA branding in AI output; AI images watermarked."
@@ -141,7 +141,7 @@ Not shown to judges, but required and must be honest. Winner pattern: list each 
 | Claude Code (Anthropic) | Project scaffolding, code generation and review, research summaries, document drafting | Whole repo |
 | Claude Code (Anthropic) | Drafted the measurement-guide and emergency-step text from general first-aid practice and NASA hazard descriptions; team to check against sources | `app/src/lib/guides.ts`, `emergency.ts` |
 | Claude Code (Anthropic) | Wrote the data layer, status rules, seeded demo data and tests, from the team's PRD | `app/src/lib/` |
-| Claude Opus 5.5 (`claude-opus-5-5`, Anthropic API) | Runs inside the app: finds skin spots in a photo and returns position, size, color and A/B/C checks as structured JSON. The new/changed/stable matching and risk rules are our own code | `app/src/lib/analysis.ts` |
+| Free vision models via OpenRouter (`nvidia/nemotron-3.5-super-vl:free`, falling back to `google/gemma-4-31b-it:free` and `openrouter/free`) | Runs inside the app: finds skin spots in a photo and returns position, size, color and A/B/C checks as structured JSON. The OK/Watch/Act rules and new/changed/stable matching are our own code | `app/src/lib/analysis.ts` |
 | Claude Code (Anthropic) | Wrote the skin-analysis integration, lesion matching and Skin screen changes, from the team's design | `app/src/lib/analysis.ts`, `app/src/pages/Skin.tsx` |
 
 **Draft:** _(write from the log at the end)_
@@ -171,7 +171,8 @@ List **everything**: code libraries, datasets, images, papers, even open-source.
 | Communications Medicine (2024), "Transcriptomics analysis reveals molecular alterations underpinning spaceflight dermatology" | Paper | Skin evidence |
 | React, Vite, TypeScript | Open-source code | App |
 | Vitest | Open-source code | Tests for the status rules |
-| Anthropic TypeScript SDK (`@anthropic-ai/sdk`) | Open-source code | Calls the Claude API from the browser for skin analysis |
+| OpenRouter API (openrouter.ai) | AI model gateway | Calls free vision models from the browser for skin analysis |
+| NVIDIA Nemotron 3.5 Super VL · Google Gemma 4 31B | Open-weight vision models | Skin-spot detection |
 | Zod | Open-source code | Schema for the skin-analysis response |
 | _(ISIC / HAM10000 if used)_ | Public dataset | Demo lesion images / model testing |
 

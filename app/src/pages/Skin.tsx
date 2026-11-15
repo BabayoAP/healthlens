@@ -74,12 +74,12 @@ export function Skin({ astronautId }: { astronautId: string }) {
       <details className="muted">
         <summary>AI analysis: {hasKey ? `live (${MODEL})` : 'simulated (no API key)'}</summary>
         {hasKey ? (
-          <p>An Anthropic API key is saved in this browser only. <button onClick={clearKey}>Remove key</button></p>
+          <p>An OpenRouter API key is saved in this browser only. <button onClick={clearKey}>Remove key</button></p>
         ) : (
           <p>
-            <input type="password" placeholder="Anthropic API key (sk-ant-…)" value={keyDraft} onChange={(e) => setKeyDraft(e.target.value)} />{' '}
+            <input type="password" placeholder="OpenRouter API key (sk-or-…)" value={keyDraft} onChange={(e) => setKeyDraft(e.target.value)} />{' '}
             <button onClick={saveKey} disabled={!keyDraft}>Save</button>
-            <br />The key stays in this browser's storage and is sent only to the Anthropic API. Without it, results are simulated.
+            <br />The key stays in this browser's storage and is sent only to OpenRouter. Get a free key at openrouter.ai/keys. Without it, results are simulated.
           </p>
         )}
       </details>
