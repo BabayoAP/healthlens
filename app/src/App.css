@@ -449,83 +449,34 @@ h3.with-icon { display: flex; align-items: center; gap: 10px; }
  * Appearance only: same classes, same structure.
  * ===================================================================== */
 
-/* Shell: glass sidebar over the instrument grid */
+/* Shell: solid sidebar over the instrument grid */
 .app { background: none; }
-.sidebar { background: var(--sidebar); -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur); }
-.brand { font-family: var(--font-display); font-weight: 650; font-size: 1.15rem; letter-spacing: .02em; }
-.brand-mark { filter: drop-shadow(0 0 6px var(--accent)); }
-:root[data-theme='light'] .brand-mark { filter: none; }
-.nav-label { font-family: var(--font-display); letter-spacing: .04em; }
+.sidebar { background: var(--sidebar); }
 .nav-item.active, .crew-item.active {
   position: relative; background: var(--accent-soft); color: var(--text);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
 }
-.nav-item.active::before {
-  content: ''; position: absolute; left: -12px; top: 7px; bottom: 7px; width: 3px; border-radius: 0 2px 2px 0;
-  background: var(--accent); box-shadow: 0 0 10px var(--accent);
-}
-.status-dot-ok { box-shadow: 0 0 6px var(--ok); } .status-dot-watch { box-shadow: 0 0 6px var(--watch); } .status-dot-act { box-shadow: 0 0 6px var(--act); }
-:root[data-theme='light'] .status-dot { box-shadow: none; }
 
-/* Display type: headings and the numbers people read at a glance */
-main section > h2, .page-head h2, .dash-head h2,
-.panel-head h3, .explorer-head h3, .step h3, .region-detail .panel-head h3 { font-family: var(--font-display); letter-spacing: 0; }
-main section > h2, .page-head h2, .dash-head h2 { font-weight: 600; }
-.vital-value strong, .stat-value, .ring-big, .dose strong, .chart-latest strong, .reaction-go {
-  font-family: var(--font-display); font-weight: 600; letter-spacing: 0;
-}
-.vital-value strong, .stat-main .stat-value, .dose strong, .chart-latest strong { text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 35%, transparent); }
-:root[data-theme='light'] .vital-value strong, :root[data-theme='light'] .stat-main .stat-value,
-:root[data-theme='light'] .dose strong, :root[data-theme='light'] .chart-latest strong { text-shadow: none; }
-
-/* Panels: glass with bracket corners, like a lens frame */
-.panel, .card, .figure-wrap {
-  -webkit-backdrop-filter: var(--blur); backdrop-filter: var(--blur);
-  box-shadow: var(--shadow), var(--glow);
-}
+/* Panels: solid surfaces, no glow or corner decoration */
 .panel, .card { position: relative; }
-.panel::after, .card::after {
-  content: ''; position: absolute; inset: -1px; pointer-events: none; border-radius: inherit;
-  --c: color-mix(in srgb, var(--accent) 70%, transparent);
-  background:
-    linear-gradient(var(--c), var(--c)) top left / 14px 1.5px no-repeat,
-    linear-gradient(var(--c), var(--c)) top left / 1.5px 14px no-repeat,
-    linear-gradient(var(--c), var(--c)) bottom right / 14px 1.5px no-repeat,
-    linear-gradient(var(--c), var(--c)) bottom right / 1.5px 14px no-repeat;
-}
-:root[data-theme='light'] .panel::after, :root[data-theme='light'] .card::after {
-  --c: color-mix(in srgb, var(--accent) 45%, transparent);
-}
-.card:hover { border-color: var(--border-strong); box-shadow: var(--shadow), 0 0 0 1px var(--border-strong), 0 0 28px -10px var(--accent); }
+.card:hover { border-color: var(--border-strong); }
 .demo-banner { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 25%, transparent); }
 
 /* Controls */
-button.primary { transition: box-shadow .15s, opacity .15s; }
-button.primary:hover:not(:disabled) { opacity: 1; box-shadow: 0 0 0 1px var(--accent), 0 0 18px -4px var(--accent); }
-:root[data-theme='light'] button.primary:hover:not(:disabled) { opacity: .88; box-shadow: none; }
 button.ghost:hover, .upload:hover { border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--text); }
-.emergency-btn { box-shadow: 0 0 22px -6px var(--act); }
-:root[data-theme='light'] .emergency-btn { box-shadow: none; }
 .chip.on, .range button.active, .scale button.active { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
 .range button.active, .scale button.active { background: var(--accent-soft); color: var(--accent); }
-.crew-pick.active { box-shadow: 0 0 0 1px var(--accent), 0 0 24px -8px var(--accent), var(--shadow); }
+.crew-pick.active { box-shadow: 0 0 0 1px var(--accent), var(--shadow); }
 .switch-track { background: color-mix(in srgb, var(--muted) 45%, transparent); }
-.meter-fill { background: linear-gradient(90deg, color-mix(in srgb, var(--series) 35%, transparent), var(--series)); box-shadow: 0 0 10px -2px var(--series); }
-.ring-fill { filter: drop-shadow(0 0 4px var(--accent)); }
-:root[data-theme='light'] .meter-fill { box-shadow: none; }
-:root[data-theme='light'] .ring-fill { filter: none; }
-.chart-line { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--series) 60%, transparent)); }
-:root[data-theme='light'] .chart-line { filter: none; }
+.meter-fill { background: linear-gradient(90deg, color-mix(in srgb, var(--series) 35%, transparent), var(--series)); }
 .report { background: var(--surface-solid); }
 
-/* Body figure (2D) in the hologram palette */
+/* Body figure (2D) in the theme palette */
 .viewfinder { background: radial-gradient(ellipse 42% 58% at 50% 52%, var(--accent-soft), transparent 75%), var(--surface-2); }
-.viewfinder::before { --c: color-mix(in srgb, var(--accent) 60%, transparent); }
 .region path { fill: color-mix(in srgb, var(--accent) 8%, transparent); stroke: color-mix(in srgb, var(--accent) 45%, transparent); }
 .region-ok path { fill: color-mix(in srgb, var(--ok) 16%, transparent); stroke: color-mix(in srgb, var(--ok) 55%, transparent); }
-.region-watch path { fill: color-mix(in srgb, var(--watch) 26%, transparent); stroke: var(--watch); filter: drop-shadow(0 0 5px color-mix(in srgb, var(--watch) 60%, transparent)); }
-.region-act path { fill: color-mix(in srgb, var(--act) 28%, transparent); stroke: var(--act); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--act) 65%, transparent)); }
-:root[data-theme='light'] .region path { filter: none; }
+.region-watch path { fill: color-mix(in srgb, var(--watch) 26%, transparent); stroke: var(--watch); }
+.region-act path { fill: color-mix(in srgb, var(--act) 28%, transparent); stroke: var(--act); }
 .region-selected path, .region:focus-visible path { stroke: var(--text); }
 
 /* Theme switch in the sidebar */
@@ -548,19 +499,10 @@ button.ghost:hover, .upload:hover { border-color: color-mix(in srgb, var(--accen
 .holo:active { cursor: grabbing; }
 .holo.holo-hover { cursor: pointer; }
 .holo canvas { display: block; width: 100%; height: 100%; }
-/* One moment of motion: a scan line passing over the figure */
-.holo::after {
-  content: ''; position: absolute; left: 8%; right: 8%; height: 2px; top: 10%; pointer-events: none; opacity: .7;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  box-shadow: 0 0 14px 2px color-mix(in srgb, var(--accent) 60%, transparent);
-  animation: holo-scan 4.5s ease-in-out infinite alternate;
-}
-@keyframes holo-scan { from { top: 8%; } to { top: 90%; } }
 .holo-hint { position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; text-align: center; font-size: .76rem; color: var(--muted); pointer-events: none; }
 .holo-label {
   position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 8px; margin: 0;
-  font-family: var(--font-display); font-size: .9rem; font-weight: 600; pointer-events: none;
+  font-size: .9rem; font-weight: 600; pointer-events: none;
 }
-@media (prefers-reduced-motion: reduce) { .holo::after { animation: none; opacity: 0; } }
-@media (max-width: 860px) { .nav-item.active::before { display: none; } .holo { height: 380px; } }
+@media (max-width: 860px) { .holo { height: 380px; } }
 @media (min-width: 861px) { .bodymap:has(.holo) { grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); } }

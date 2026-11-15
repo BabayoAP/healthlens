@@ -1,15 +1,14 @@
 @import '@fontsource-variable/geist';
-@import '@fontsource-variable/oxanium';
 
 /*
  * Design tokens: a holographic medical HUD in two themes.
- * Dark "hologram" is the default look; light "daylight console" is for bright cabins.
+ * Dark is the default look; light is for bright cabins.
  * Status colors (ok / watch / act) stay green / amber / red and are reserved for status only.
  * Chart lines use --series. Category tints are for icons only.
  */
 :root {
   /* Dark: hologram */
-  --bg: #040a14; --sidebar: rgb(6 16 30 / .82); --surface: rgb(9 24 42 / .72); --surface-2: rgb(56 225 255 / .06);
+  --bg: #040a14; --sidebar: #061220; --surface: #0a1a2e; --surface-2: rgb(56 225 255 / .06);
   --surface-solid: #0a1a2e;
   --text: #dcf4ff; --muted: #86a6bc; --faint: #56718a;
   --border: rgb(56 225 255 / .16); --border-strong: rgb(56 225 255 / .34);
@@ -20,13 +19,9 @@
   --rose: #ff7ab6; --rose-soft: rgb(255 122 182 / .13); --violet: #b59cff; --violet-soft: rgb(181 156 255 / .14);
   --sky: #5cc8ff; --sky-soft: rgb(92 200 255 / .13); --teal: #3ee6cf; --teal-soft: rgb(62 230 207 / .12);
   --amber: #ffc861; --amber-soft: rgb(255 200 97 / .13);
-  --glow: 0 0 0 1px rgb(56 225 255 / .05), 0 0 24px -8px rgb(56 225 255 / .35);
   --shadow: 0 1px 0 rgb(56 225 255 / .06) inset, 0 12px 32px -16px rgb(0 0 0 / .7);
   --grid-line: rgb(56 225 255 / .045);
-  --halo: rgb(56 225 255 / .14);
-  --blur: blur(14px);
   --r-lg: 14px; --r-md: 10px; --r-sm: 7px;
-  --font-display: 'Oxanium Variable', 'Geist Variable', sans-serif;
   color-scheme: dark;
   font-family: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px; line-height: 1.5; color: var(--text); background: var(--bg);
@@ -35,7 +30,7 @@
 
 :root[data-theme='light'] {
   /* Light: daylight console */
-  --bg: #edf3f8; --sidebar: rgb(255 255 255 / .86); --surface: rgb(255 255 255 / .9); --surface-2: #e9f1f7;
+  --bg: #edf3f8; --sidebar: #ffffff; --surface: #ffffff; --surface-2: #e9f1f7;
   --surface-solid: #ffffff;
   --text: #0b1e2c; --muted: #4c6373; --faint: #8399a8;
   --border: #d3e0ea; --border-strong: #a9c2d3;
@@ -46,22 +41,19 @@
   --rose: #d6246e; --rose-soft: #fde7f1; --violet: #6d3ee0; --violet-soft: #eee8fd;
   --sky: #0578b5; --sky-soft: #def0fb; --teal: #0b8a7f; --teal-soft: #d8f3ef;
   --amber: #a85500; --amber-soft: #fdefd9;
-  --glow: 0 0 0 1px rgb(10 127 174 / .04);
   --shadow: 0 1px 2px rgb(11 30 44 / .05), 0 6px 18px -8px rgb(11 30 44 / .12);
   --grid-line: rgb(10 127 174 / .07);
-  --halo: rgb(10 127 174 / .1);
   color-scheme: light;
 }
 
 * { box-sizing: border-box; }
 body {
   margin: 0; background-color: var(--bg);
-  /* Faint instrument grid with a glow behind the content */
+  /* Faint instrument grid behind the content */
   background-image:
-    radial-gradient(ellipse 70% 50% at 60% -10%, var(--halo), transparent 70%),
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 100% 100%, 44px 44px, 44px 44px;
+  background-size: 44px 44px, 44px 44px;
   background-attachment: fixed;
 }
 h1, h2, h3, h4 { letter-spacing: -0.005em; }
