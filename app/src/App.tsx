@@ -8,11 +8,12 @@ import { Dashboard } from './pages/Dashboard';
 import { Emergency } from './pages/Emergency';
 import { Guides } from './pages/Guides';
 import { Skin } from './pages/Skin';
+import { Trends } from './pages/Trends';
 import { Vitals } from './pages/Vitals';
 import './App.css';
 
-type Tab = 'dashboard' | 'check-in' | 'skin' | 'vitals' | 'guides';
-const TABS: Record<Tab, string> = { dashboard: 'Dashboard', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', guides: 'Guides' };
+type Tab = 'dashboard' | 'check-in' | 'skin' | 'vitals' | 'trends' | 'guides';
+const TABS: Record<Tab, string> = { dashboard: 'Dashboard', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
 
 export default function App() {
   const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
@@ -55,6 +56,7 @@ export default function App() {
         {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
         {tab === 'skin' && <Skin astronautId={astronautId} />}
         {tab === 'vitals' && <Vitals astronautId={astronautId} />}
+        {tab === 'trends' && <Trends astronautId={astronautId} />}
         {tab === 'guides' && <Guides astronautId={astronautId} />}
         {tab === 'emergency' && <Emergency />}
       </main>

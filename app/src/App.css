@@ -64,3 +64,31 @@ button.ghost { font: inherit; font-size: .85rem; padding: 4px 10px; border: 1px 
 .step-log { margin-top: 12px; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--bg); }
 .step-nav { margin-top: 12px; justify-content: space-between; }
 .step-nav button { padding: 10px 20px; font-size: 1rem; }
+
+/* Trend charts */
+.range button { font: inherit; font-size: .85rem; padding: 4px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; }
+.range button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chart-grid-layout { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; align-items: start; margin-bottom: 16px; }
+.panel-head h4 { margin: 0; font-size: .95rem; }
+.chart-latest { margin: 0 0 6px; font-size: .9rem; }
+.chart-latest strong { font-size: 1.25rem; }
+.chart { position: relative; }
+.chart svg { display: block; touch-action: pan-y; border-radius: 4px; }
+.chart-grid { stroke: var(--border); stroke-width: 1; }
+.chart-tick, .chart-ref-label { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+/* Surface-colored outline keeps reference labels readable where they cross the line */
+.chart-ref-label { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.chart-line { fill: none; stroke: var(--series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart-dot { fill: var(--series); stroke: var(--surface); stroke-width: 2; }
+.chart-ref { stroke-width: 1; stroke-dasharray: 4 3; }
+.chart-ref-baseline { stroke: var(--muted); }
+.chart-ref-watch { stroke: var(--watch); }
+.chart-ref-act { stroke: var(--act); }
+.chart-cross { stroke: var(--muted); stroke-width: 1; }
+.chart-tip { position: absolute; top: 4px; display: flex; flex-direction: column; gap: 2px; align-items: flex-start; padding: 6px 8px; font-size: .8rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 2px 8px rgb(0 0 0 / .15); pointer-events: none; white-space: nowrap; }
+.chart-reason { margin: 6px 0 0; font-size: .82rem; padding-left: 8px; border-left: 3px solid var(--border); }
+.chart-reason.reason-watch { border-color: var(--watch); } .chart-reason.reason-act { border-color: var(--act); }
+.chart-table { margin-top: 8px; font-size: .82rem; }
+.chart-table summary { cursor: pointer; color: var(--muted); }
+.chart-table table { max-height: 200px; overflow-y: auto; }
+.chart-empty { margin: 24px 0; }

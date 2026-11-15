@@ -224,7 +224,7 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 - **App:** Vite + React + TypeScript in `app/`, browser-only, works offline (no internet in deep space). Data in IndexedDB/localStorage.
 - **Skin AI:** one function (`app/src/lib/analysis.ts`). MVP = a vision-model API call returning structured JSON; fallback = mock for offline demo. Roadmap: on-device model trained on ISIC (no internet needed in space).
 - **Rules engine:** `app/src/lib/status.ts`; thresholds in one config table matching §7.
-- **Charts:** Recharts. **Icons:** lucide-react.
+- **Charts:** our own small SVG component (`TrendChart`), no chart library. **Icons:** lucide-react if needed.
 - **Body figure:** 2D SVG with clickable regions (3D later, if ever).
 - **No backend.** Everything runs in the browser, because deep-space missions can't count on a connection to Earth.
 - **Deploy:** Vercel, public URL early.
@@ -249,7 +249,7 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 3. Vitals + mood check-in entry, saved locally — *built*
 4. Measurement guide cards for 5 indicators (skin, HR, BP, SpO₂, mood) — *built*
 5. Insights list with "what / why / do / escalate"
-6. Trend chart for one vital + skin timeline for one lesion
+6. Trend chart for one vital + skin timeline for one lesion — *built (all indicators + skin spots)*
 7. Reminders list (due / overdue)
 8. Emergency mode with 2 guides (low SpO₂, solar particle event) — *built*
 9. Environment switch (station vs Moon base) changing at least the guides and the body-mass method — *built*

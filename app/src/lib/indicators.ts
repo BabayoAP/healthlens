@@ -53,5 +53,5 @@ export const INDICATORS: IndicatorDef[] = [
 export const indicatorById = Object.fromEntries(INDICATORS.map((d) => [d.id, d])) as Record<IndicatorId, IndicatorDef>;
 
 export function formatValue(def: IndicatorDef, value: number): string {
-  return `${value.toFixed(def.decimals)}${def.unit ? ` ${def.unit}` : ''}`;
+  return `${value.toFixed(def.decimals)}${def.unit ? `${def.unit === '%' ? '' : ' '}${def.unit}` : ''}`;
 }

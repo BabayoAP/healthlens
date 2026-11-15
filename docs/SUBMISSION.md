@@ -119,6 +119,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 > - **Measurement guides for non-doctors:** for every measurement, how to take it, why it matters in space (tied to NASA's five spaceflight hazards), what is normal, what to do if it looks wrong, and when to get help. Guides for anything flagged open on their own, and the steps appear right after a flagged check-in. _(status: built; medical text needs source check)_
 > - **Emergency mode:** a red button on every screen opens step-by-step guides (low oxygen, solar radiation storm), one step per screen, with what to write down. _(status: built, 2 guides)_
 > - **Adapts to where the crew is:** space station, deep-space spacecraft, Moon base or Mars base. This changes how body mass is measured (a scale does not work in microgravity), where to shelter from radiation, and the emergency advice: near Earth "call the flight surgeon now"; on Mars, with up to 24 minutes of signal delay each way, "send a report and keep going, the crew acts first". _(status: built)_
+> - **Trends:** a chart for every indicator over the last 2 or 6 weeks, drawn against the astronaut's own baseline and the safety limits, so a slow drift is visible at a glance. Each tracked skin spot gets a size-over-time chart with the 6 mm line. Charts work by mouse, touch and keyboard, and each has a table view. _(status: built)_
 > - **Honest data labels:** every value shows where it came from (entered, device, self-report, measured in app, simulated, estimated). Demo mode loads a simulated crew; judges can add their own readings on top. _(status: built)_
 > - _(add each feature as it lands: guides, emergency mode, reminders, trends, environments, body figure)_
 >
@@ -189,7 +190,7 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 | Use NASA HRP + OSDR | Hazard mapping + skin datasets | |
 | Any input incl. camera images | Skin photo scans | Skin page: camera/upload → AI spot map → comparison table |
 | Clickable human figure (suggested) | Body figure | |
-| Gamification, dynamic charts, color coding (suggested) | Streaks, trend charts, green/amber/red | Color coding built; charts + streaks pending |
+| Gamification, dynamic charts, color coding (suggested) | Streaks, trend charts, green/amber/red | Color coding + Trends screen built; streaks pending |
 | Earth spin-off for remote communities | Impact section | |
 
 ## Part 5: Final checklist (Sunday)
