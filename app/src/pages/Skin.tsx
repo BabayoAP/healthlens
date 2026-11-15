@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ANALYSIS_IS_MOCK, analyzeSkinPhoto } from '../lib/analysis';
+import { analyzeSkinPhoto, getApiKey, MODEL, setApiKey } from '../lib/analysis';
 import { addSkinScan, useData } from '../lib/store';
 import type { BodyRegion } from '../lib/types';
 import { SourceTag } from '../components/SourceTag';
@@ -15,6 +15,9 @@ export function Skin({ astronautId }: { astronautId: string }) {
   const [region, setRegion] = useState<BodyRegion>('left-arm');
   const [preview, setPreview] = useState<string>();
   const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string>();
+  const [hasKey, setHasKey] = useState(() => !!getApiKey());
+  const [keyDraft, setKeyDraft] = useState('');
 
   // Scans of this region, newest first
   const scans = data.skinScans
@@ -25,18 +28,31 @@ export function Skin({ astronautId }: { astronautId: string }) {
 
   async function onFile(file: File) {
     setPreview(URL.createObjectURL(file));
+    setMessage(undefined);
     setBusy(true);
     try {
-      const lesions = await analyzeSkinPhoto(file, region, latest);
+      const result = await analyzeSkinPhoto(file, region, latest);
+      setMessage(result.message);
       // The photo itself is not saved yet (TODO: store images). The lesion results are.
       addSkinScan({
-        astronautId, region, lesions,
+        astronautId, region, lesions: result.lesions,
         takenAt: new Date().toISOString(),
-        source: ANALYSIS_IS_MOCK ? 'simulated' : 'measured-in-app',
+        source: result.source,
       });
     } finally {
       setBusy(false);
     }
+  }
+
+  function saveKey() {
+    setApiKey(keyDraft || undefined);
+    setHasKey(!!keyDraft);
+    setKeyDraft('');
+  }
+
+  function clearKey() {
+    setApiKey(undefined);
+    setHasKey(false);
   }
 
   return (
@@ -45,7 +61,7 @@ export function Skin({ astronautId }: { astronautId: string }) {
       <div className="row">
         <label>
           Body region{' '}
-          <select value={region} onChange={(e) => { setRegion(e.target.value as BodyRegion); setPreview(undefined); }}>
+          <select value={region} onChange={(e) => { setRegion(e.target.value as BodyRegion); setPreview(undefined); setMessage(undefined); }}>
             {regions.map((r) => <option key={r}>{r}</option>)}
           </select>
         </label>
@@ -54,6 +70,19 @@ export function Skin({ astronautId }: { astronautId: string }) {
           <input type="file" accept="image/*" capture="environment" hidden onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
         </label>
       </div>
+
+      <details className="muted">
+        <summary>AI analysis: {hasKey ? `live (${MODEL})` : 'simulated (no API key)'}</summary>
+        {hasKey ? (
+          <p>An Anthropic API key is saved in this browser only. <button onClick={clearKey}>Remove key</button></p>
+        ) : (
+          <p>
+            <input type="password" placeholder="Anthropic API key (sk-ant-…)" value={keyDraft} onChange={(e) => setKeyDraft(e.target.value)} />{' '}
+            <button onClick={saveKey} disabled={!keyDraft}>Save</button>
+            <br />The key stays in this browser's storage and is sent only to the Anthropic API. Without it, results are simulated.
+          </p>
+        )}
+      </details>
 
       <p className="muted">
         {latest
@@ -64,13 +93,14 @@ export function Skin({ astronautId }: { astronautId: string }) {
       {preview && (
         <div className="photo">
           <img src={preview} alt={`Skin scan of ${region}`} />
-          {!busy && latest?.lesions.map((l) => (
-            <span key={l.id} className={`dot dot-${l.risk}`} style={{ left: `${l.x * 100}%`, top: `${l.y * 100}%` }} />
+          {!busy && latest?.lesions.map((l, i) => (
+            <span key={l.id} title={`#${i + 1} · ${l.diameterMm} mm · ${l.change}`} className={`dot dot-${l.risk}`} style={{ left: `${l.x * 100}%`, top: `${l.y * 100}%` }} />
           ))}
         </div>
       )}
 
       {busy && <p>Analyzing…</p>}
+      {!busy && message && <p className="muted">{message}</p>}
 
       {latest && latest.lesions.length > 0 && (
         <table>
@@ -90,6 +120,8 @@ export function Skin({ astronautId }: { astronautId: string }) {
           </tbody>
         </table>
       )}
+
+      <p className="muted">Flags spots for review by the flight surgeon. Does not diagnose.</p>
     </section>
   );
 }

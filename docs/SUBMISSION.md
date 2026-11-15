@@ -109,7 +109,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 > **No dermatologist on Mars.** _(add stat: radiation dose / skin cancer risk, cited)_
 >
 > **What it does**
-> - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). _(status: mock AI)_
+> - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). The photo goes to a vision model (Claude Opus 5.5), which returns each spot's position, size in mm, color and the A/B/C checks of the ABCDE rule as structured JSON; the app then matches each spot to the previous scan of the same region in its own code to work out Evolution (E). No API key or no connection → a clearly labeled simulated result, so the app still works offline. _(status: built)_
 > - Ten indicators tracked against each astronaut's **own baseline**: heart rate, blood pressure, SpO₂, temperature, body mass, sleep, mood, stress, fatigue. _(status: built)_
 > - **Check-in in under a minute:** enter what you measured, tap 1–5 for mood, stress and fatigue, and the app immediately shows each value against your baseline with a status and the reason. Obvious typos are caught before saving. _(status: built)_
 > - Crew dashboard with green/amber/red status, the reason in plain words, and the next step. _(status: built)_
@@ -119,13 +119,13 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 > - **Honest data labels:** every value shows where it came from (entered, device, self-report, measured in app, simulated, estimated). Demo mode loads a simulated crew; judges can add their own readings on top. _(status: built)_
 > - _(add each feature as it lands: guides, emergency mode, reminders, trends, environments, body figure)_
 >
-> **How it works**: _(add diagram)_ Each indicator is checked in four steps: (1) absolute safety limits, (2) change against the astronaut's personal baseline (their first 7 readings), (3) a sustained trend over the last 14 days (least-squares line; flagged when the drift is steady, R² ≥ 0.6, and at least half the size of a baseline warning), (4) overdue measurements. The astronaut's status is the worst of all indicators plus the latest skin scan per body region. All data stays in the browser, so it works with no connection to Earth.
+> **How it works**: _(add diagram)_ Each indicator is checked in four steps: (1) absolute safety limits, (2) change against the astronaut's personal baseline (their first 7 readings), (3) a sustained trend over the last 14 days (least-squares line; flagged when the drift is steady, R² ≥ 0.6, and at least half the size of a baseline warning), (4) overdue measurements. The astronaut's status is the worst of all indicators plus the latest skin scan per body region. **Skin:** each spot in a new scan is paired with the nearest unused spot from the last scan of that body region (within 12% of the photo width); a pair keeps the same ID, so one spot can be followed for the whole mission. All data stays in the browser, so it works with no connection to Earth.
 >
-> **The HealthLens score**: _(skin-lesion scoring weights: define when the real skin model lands. The vitals rules above are in `status.ts`; thresholds live in `indicators.ts` and still need source checks.)_
+> **The HealthLens score**: **Skin spots** use the ABCDE rule dermatologists teach for self-checks. The model checks A (asymmetry), B (irregular border) and C (multiple colors) and estimates D (diameter); the app works out E (evolution) by comparing against the last scan. A spot is **Act** if two or more of A/B/C are present, it is over 6 mm, or it looks ulcerated or bleeding; **Watch** if one is present; **OK** otherwise. A spot that is new since the last scan, grew by ≥1 mm or ≥20%, or gained a new color is raised to at least **Watch**. Sizes are marked as estimates unless a reference sticker of known size is in the photo. _(Vitals: The vitals rules above are in `status.ts`; thresholds live in `indicators.ts` and still need source checks.)_
 >
 > **Worked example**: _(add screenshots)_ Demo crew of four, each with six weeks of simulated history: Vega has a spot on the left arm that grew from 4 mm to 6.5 mm in 45 days with an irregular border → **Act**. Osei's blood pressure crept from about 121 to 134 mmHg over two weeks → **Watch**. Nakamura's resting heart rate and sleep drifted slowly while every value still looked normal, and temperature checks were skipped → **Watch**. Lindqvist is healthy → **OK**.
 >
-> **Tools & technologies**: React, TypeScript, Vite; _(add: AI model/API, chart library, hosting)_
+> **Tools & technologies**: React, TypeScript, Vite; Anthropic Claude API (model `claude-opus-5-5`, vision + structured output) via the `@anthropic-ai/sdk` library; Zod for the response schema; _(add: chart library, hosting)_
 
 ### 3.6 Use of Super Intelligence (SI)
 Not shown to judges, but required and must be honest. Winner pattern: list each tool + what it did + "the idea, research, logic and direction were ours; all output reviewed and tested; no NASA branding in AI output; AI images watermarked."
@@ -135,7 +135,8 @@ Not shown to judges, but required and must be honest. Winner pattern: list each 
 | --- | --- | --- |
 | Claude Code (Anthropic) | Project scaffolding, code generation and review, research summaries, document drafting | Whole repo |
 | Claude Code (Anthropic) | Wrote the data layer, status rules, seeded demo data and tests, from the team's PRD | `app/src/lib/` |
-| _(skin-analysis model/API)_ | Lesion detection inside the app | `app/src/lib/analysis.ts` |
+| Claude Opus 5.5 (`claude-opus-5-5`, Anthropic API) | Runs inside the app: finds skin spots in a photo and returns position, size, color and A/B/C checks as structured JSON. The new/changed/stable matching and risk rules are our own code | `app/src/lib/analysis.ts` |
+| Claude Code (Anthropic) | Wrote the skin-analysis integration, lesion matching and Skin screen changes, from the team's design | `app/src/lib/analysis.ts`, `app/src/pages/Skin.tsx` |
 
 **Draft:** _(write from the log at the end)_
 
@@ -164,6 +165,8 @@ List **everything**: code libraries, datasets, images, papers, even open-source.
 | Communications Medicine (2024), "Transcriptomics analysis reveals molecular alterations underpinning spaceflight dermatology" | Paper | Skin evidence |
 | React, Vite, TypeScript | Open-source code | App |
 | Vitest | Open-source code | Tests for the status rules |
+| Anthropic TypeScript SDK (`@anthropic-ai/sdk`) | Open-source code | Calls the Claude API from the browser for skin analysis |
+| Zod | Open-source code | Schema for the skin-analysis response |
 | _(ISIC / HAM10000 if used)_ | Public dataset | Demo lesion images / model testing |
 
 ---
@@ -180,7 +183,7 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 | Remind the crew | Reminders + streaks | |
 | Adapt to spacecraft / station / Moon base | Environment modes | |
 | Use NASA HRP + OSDR | Hazard mapping + skin datasets | |
-| Any input incl. camera images | Skin photo scans | |
+| Any input incl. camera images | Skin photo scans | Skin page: camera/upload → AI spot map → comparison table |
 | Clickable human figure (suggested) | Body figure | |
 | Gamification, dynamic charts, color coding (suggested) | Streaks, trend charts, green/amber/red | Color coding built; charts + streaks pending |
 | Earth spin-off for remote communities | Impact section | |
