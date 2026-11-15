@@ -13,8 +13,6 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] In-app vision check (near-vision chart + Amsler grid) and reaction-time test. PRD §5.0, §5.6
-- [ ] Symptom checklist. PRD §5.4
 - [ ] Deploy to a public URL (Vercel) and test in a private window
 - [ ] Demo: 7-slide deck with short GIFs (≤30 s of motion in total). Plan in DEMO-PLAN.md
 - [ ] Fill the Space Apps Project page from SUBMISSION.md and click **Submit for Judging**
@@ -22,6 +20,8 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 ## In progress
 _(name · task · started)_
 - Dawson Phan · Deploy to Vercel + private-window test · Sat evening
+- BabayoAP · In-app vision check (near-vision chart + Amsler grid) + reaction-time test (PRD §5.0, §5.6) · Sat night
+- BabayoAP · Symptom checklist (PRD §5.4) · Sat night
 
 ## Done
 - [x] Insights screen: one card per finding with what we saw / why it matters in space / what to do / when to get help, plus how to reach the flight surgeon at the Act level (changes with environment); copy / download report for the flight surgeon. `lib/insights.ts`, `pages/Insights.tsx`. BabayoAP
