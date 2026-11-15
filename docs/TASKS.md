@@ -21,6 +21,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- Dawson Phan · Deploy to Vercel + private-window test · Sat evening
 
 ## Done
 - [x] Insights screen: one card per finding with what we saw / why it matters in space / what to do / when to get help, plus how to reach the flight surgeon at the Act level (changes with environment); copy / download report for the flight surgeon. `lib/insights.ts`, `pages/Insights.tsx`. BabayoAP
