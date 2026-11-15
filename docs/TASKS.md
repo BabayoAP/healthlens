@@ -18,6 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- BabayoAP · UI pass 3: full-width dashboard layout, new body figure, dark mode + theme toggle, decluttering. Touches App.tsx, CSS, Dashboard, BodyFigure · Nov 14
 - Dawson Phan · UI pass 3: futuristic HUD theme (look only, no logic changes), dark / light toggle, draggable 3D body figure on the Body map · Sat night
 
 ## Done
