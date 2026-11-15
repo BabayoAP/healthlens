@@ -13,17 +13,16 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] Deploy to a public URL (Vercel) and test in a private window
 - [ ] Demo: 7-slide deck with short GIFs (≤30 s of motion in total). Plan in DEMO-PLAN.md
 - [ ] Fill the Space Apps Project page from SUBMISSION.md and click **Submit for Judging**
 
 ## In progress
 _(name · task · started)_
-- Dawson Phan · Deploy to Vercel + private-window test · Sat evening · live at https://app-tawny-mu-93.vercel.app, private-window test pending. Not linked to GitHub: redeploy by hand (`cd app && npx vercel deploy --prod --yes`)
 - BabayoAP · In-app vision check (near-vision chart + Amsler grid) + reaction-time test (PRD §5.0, §5.6) · Sat night
 - BabayoAP · Symptom checklist (PRD §5.4) · Sat night
 
 ## Done
+- [x] Deployed to Vercel: https://app-tawny-mu-93.vercel.app (public, tested in a private window). Not linked to GitHub yet: redeploy by hand (`cd app && npx vercel deploy --prod --yes`). Dawson Phan
 - [x] Insights screen: one card per finding with what we saw / why it matters in space / what to do / when to get help, plus how to reach the flight surgeon at the Act level (changes with environment); copy / download report for the flight surgeon. `lib/insights.ts`, `pages/Insights.tsx`. BabayoAP
 - [x] Reminders: "Checks due" panel on the Dashboard (per crew member, each item opens the right screen) and a check schedule per astronaut. One check per guide; skin scan weekly. `lib/reminders.ts`, `components/RemindersPanel.tsx`. Not built: browser notifications, schedule changes by environment. BabayoAP
 - [x] Follow-up from the sources task: SUBMISSION.md NASA Data + References tables and DEMO-PLAN slide 2 stat updated from `lib/sources.ts`; Dashboard space-weather panel checked in the browser (live DONKI data loads). BabayoAP
