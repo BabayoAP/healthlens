@@ -1,11 +1,13 @@
 import { crew } from '../lib/mockData';
+import { buildReminders, needsDoing } from '../lib/reminders';
 import { evaluateAstronaut, nextStep } from '../lib/status';
 import { useData } from '../lib/store';
+import { RemindersPanel } from '../components/RemindersPanel';
 import { SourceTag } from '../components/SourceTag';
 import { SpaceWeatherPanel } from '../components/SpaceWeatherPanel';
 import { StatusBadge } from '../components/StatusBadge';
 
-export function Dashboard({ onOpen, onOpenStormGuide }: { onOpen: (id: string) => void; onOpenStormGuide: () => void }) {
+export function Dashboard({ onOpen, onOpenCheck, onOpenStormGuide }: { onOpen: (id: string) => void; onOpenCheck: (id: string, tab: 'check-in' | 'skin') => void; onOpenStormGuide: () => void }) {
   const data = useData();
   return (
     <section>
@@ -13,7 +15,7 @@ export function Dashboard({ onOpen, onOpenStormGuide }: { onOpen: (id: string) =
       <div className="grid">
         {crew.map((a) => {
           const ev = evaluateAstronaut(a.id, data.readings, data.skinScans, data.now);
-          const due = ev.indicators.filter((i) => i.due && i.latest).length;
+          const due = buildReminders(a.id, ev, data.skinScans, data.now).filter(needsDoing).length;
           return (
             <button key={a.id} className="card" onClick={() => onOpen(a.id)}>
               <div className="card-head">
@@ -37,11 +39,12 @@ export function Dashboard({ onOpen, onOpenStormGuide }: { onOpen: (id: string) =
                 <p className="muted">All indicators within your baseline.</p>
               )}
               {ev.hasData && <p className="next">{nextStep[ev.status]}</p>}
-              {due > 0 && <p className="muted">{due} check{due > 1 ? 's' : ''} due today</p>}
+              {due > 0 && <p className="muted">{due} check{due > 1 ? 's' : ''} due</p>}
             </button>
           );
         })}
       </div>
+      <RemindersPanel onOpen={onOpenCheck} />
       <SpaceWeatherPanel onOpenStormGuide={onOpenStormGuide} />
     </section>
   );

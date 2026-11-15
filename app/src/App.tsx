@@ -8,13 +8,14 @@ import { CheckIn } from './pages/CheckIn';
 import { Dashboard } from './pages/Dashboard';
 import { Emergency } from './pages/Emergency';
 import { Guides } from './pages/Guides';
+import { Insights } from './pages/Insights';
 import { Skin } from './pages/Skin';
 import { Trends } from './pages/Trends';
 import { Vitals } from './pages/Vitals';
 import './App.css';
 
-type Tab = 'dashboard' | 'body' | 'check-in' | 'skin' | 'vitals' | 'trends' | 'guides';
-const TABS: Record<Tab, string> = { dashboard: 'Dashboard', body: 'Body map', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
+type Tab = 'dashboard' | 'body' | 'insights' | 'check-in' | 'skin' | 'vitals' | 'trends' | 'guides';
+const TABS: Record<Tab, string> = { dashboard: 'Dashboard', body: 'Body map', insights: 'Insights', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
 
 export default function App() {
   const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
@@ -54,8 +55,9 @@ export default function App() {
       )}
 
       <main>
-        {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} onOpenStormGuide={() => { setEmergencyGuide('solar-storm'); setTab('emergency'); }} />}
+        {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} onOpenCheck={(id, t) => { setAstronautId(id); setTab(t); }} onOpenStormGuide={() => { setEmergencyGuide('solar-storm'); setTab('emergency'); }} />}
         {tab === 'body' && <BodyMap key={astronautId} astronautId={astronautId} onNavigate={setTab} />}
+        {tab === 'insights' && <Insights astronautId={astronautId} onNavigate={setTab} />}
         {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
         {tab === 'skin' && <Skin astronautId={astronautId} />}
         {tab === 'vitals' && <Vitals astronautId={astronautId} />}

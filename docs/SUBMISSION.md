@@ -106,7 +106,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 
 **Draft (fill section by section as features land):**
 
-> **No dermatologist on Mars.** _(add stat: radiation dose / skin cancer risk, cited)_
+> **No dermatologist on Mars.** A round trip to Mars alone exposes the crew to about 0.66 sievert of radiation, measured by the Curiosity rover's instrument on the way there (Zeitlin et al., Science, 2013), and a question to Earth can take up to 44 minutes to come back with an answer.
 >
 > **What it does**
 > - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). The photo goes to a free open vision model through OpenRouter (NVIDIA Nemotron 3.5 Super VL, with Gemma 4 as backup), which returns each spot's position, size in mm, color and the A/B/C checks of the ABCDE rule as structured JSON; the app's own code then sets OK/Watch/Act from those answers and matches each spot to the previous scan of the same region in its own code to work out Evolution (E). No API key or no connection → a clearly labeled simulated result, so the app still works offline. _(status: built)_
@@ -122,7 +122,11 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 > - **Interactive body map:** a human figure where each part is clickable and colored by status. Selecting a part shows its body system (heart and circulation, brain and sleep, immune system, muscles and bones), the latest measurements against the astronaut's baseline, a trend chart, skin scans of that area, why spaceflight affects it, what to do, and when to contact the medical officer. It opens on the part that most needs attention. _(status: built)_
 > - **Trends:** a chart for every indicator over the last 2 or 6 weeks, drawn against the astronaut's own baseline and the safety limits, so a slow drift is visible at a glance. Each tracked skin spot gets a size-over-time chart with the 6 mm line. Charts work by mouse, touch and keyboard, and each has a table view. _(status: built)_
 > - **Honest data labels:** every value shows where it came from (entered, device, self-report, measured in app, simulated, estimated). Demo mode loads a simulated crew; judges can add their own readings on top. _(status: built)_
-> - _(add each feature as it lands: guides, emergency mode, reminders, trends, environments, body figure)_
+> - **Insights that say what to do:** every flag becomes a card with four parts: what we saw, why it matters in space, what to do, and when to get help. The "what we saw" line comes from the status rules, the rest from the measurement guide for that indicator, so the advice is never a black box. At the Act level the card adds how to reach the flight surgeon from where the crew is (live call near Earth; on Mars, send the report and start the steps without waiting). A skipped measurement gets the how-to-measure steps instead. _(status: built)_
+> - **Report for the flight surgeon:** one button copies or downloads a plain-text summary of the findings, what the crew was told to do, and the latest readings against baseline, with simulated values still labeled. _(status: built)_
+> - **Reminders:** the dashboard lists every check that is due or overdue for each crew member (daily vitals, sleep and mood; weekly body mass and skin scan), and each item opens the right screen for that person. Each astronaut also gets a full check schedule: how often, last done, next due. _(status: built; browser notifications not built)_
+> - **Live NASA space weather:** the dashboard shows the last 30 days of NASA DONKI notifications (coronal mass ejections, radiation belt enhancements, geomagnetic storms, solar energetic particles) as a radiation watch with its own status, and links straight to the radiation storm guide. It caches for an hour and falls back to a saved real snapshot when offline. _(status: built)_
+> - **Sources shown in the app:** every guide lists its sources, and a "Where the numbers come from" panel says, for each indicator, which limits are public reference values and which are HealthLens settings. _(status: built)_
 >
 > **How it works**: _(add diagram)_ Each indicator is checked in four steps: (1) absolute safety limits, (2) change against the astronaut's personal baseline (their first 7 readings), (3) a sustained trend over the last 14 days (least-squares line; flagged when the drift is steady, R² ≥ 0.6, and at least half the size of a baseline warning), (4) overdue measurements. The astronaut's status is the worst of all indicators plus the latest skin scan per body region. **Skin:** each spot in a new scan is paired with the nearest unused spot from the last scan of that body region (within 12% of the photo width); a pair keeps the same ID, so one spot can be followed for the whole mission. All data stays in the browser, so it works with no connection to Earth.
 >
@@ -143,6 +147,8 @@ Not shown to judges, but required and must be honest. Winner pattern: list each 
 | Claude Code (Anthropic) | Wrote the data layer, status rules, seeded demo data and tests, from the team's PRD | `app/src/lib/` |
 | Free vision models via OpenRouter (`nvidia/nemotron-3.5-super-vl:free`, falling back to `google/gemma-4-31b-it:free` and `openrouter/free`) | Runs inside the app: finds skin spots in a photo and returns position, size, color and A/B/C checks as structured JSON. The OK/Watch/Act rules and new/changed/stable matching are our own code | `app/src/lib/analysis.ts` |
 | Claude Code (Anthropic) | Wrote the skin-analysis integration, lesion matching and Skin screen changes, from the team's design | `app/src/lib/analysis.ts`, `app/src/pages/Skin.tsx` |
+| Claude Code (Anthropic) | Checked limits and guide facts against public sources and wrote the source list; wrote the NASA DONKI space-weather feed | `app/src/lib/sources.ts`, `spaceWeather.ts` |
+| Claude Code (Anthropic) | Wrote the insights, flight-surgeon report and reminders code and tests. The advice text is reused from the measurement guides, not newly generated | `app/src/lib/insights.ts`, `reminders.ts`, `pages/Insights.tsx`, `components/RemindersPanel.tsx` |
 
 **Draft:** _(write from the log at the end)_
 
@@ -152,14 +158,16 @@ Needs **specific names** ("GLDS-288 RNA-Seq: Mouse Spleen in Spaceflight"), not 
 **Log (append as we go; mark "used in app" vs "cited"):**
 | Source | ID / link | How HealthLens uses it | Status |
 | --- | --- | --- | --- |
-| NASA Human Research Program: 5 hazards (RIDGE) & risks | nasa.gov/hrp | Maps each indicator to a hazard; "why it matters" text | planned |
-| NASA OSDR: mouse skin RNA-seq, MHU-2 | OSD-238, OSD-239 | Evidence spaceflight alters skin barrier/collagen | planned (verify IDs) |
-| NASA OSDR: mouse skin RNA-seq, RR-5 | OSD-240, OSD-241 | same | planned (verify IDs) |
-| NASA OSDR: mouse skin RNA-seq, RR-7 | OSD-254 | same | planned (verify IDs) |
-| NASA Human System Risks + Human Research Roadmap | nasa.gov/hhp/human-system-risks · humanresearchroadmap.nasa.gov/Risks | Per-system "why it matters in space" text in guide cards and body-map panels | planned |
-| NASA-STD-3001 Vol. 1 (Crew Health) + NASA Medical Operations | nasa.gov/reference/nasa-std-3001v1 | Grounding for monitoring cadence and escalation wording | planned |
-| NASA Twins Study (results) | _TBD_ | Realistic trend scenarios for vitals/vision/cognition | idea |
-| NASA DONKI space-weather API | _TBD_ | Live solar-event alert → shelter guide | idea |
+| NASA DONKI (Space Weather Database Of Notifications, Knowledge, Information), NASA CCMC | ccmc.gsfc.nasa.gov/tools/DONKI · API `api.nasa.gov/DONKI/notifications` | **Live in the app.** Dashboard "Radiation watch": last 30 days of notifications, turned into a status and linked to the radiation storm guide. Saved real snapshot used offline | used in app |
+| NASA Human Research Program: 5 Hazards of Human Spaceflight | nasa.gov/hrp/hazards | Every measurement guide and insight card is tied to one of the five hazards; basis for the "why it matters in space" text | used in app |
+| NASA Human System Risks | nasa.gov/hhp/human-system-risks | "Why it matters in space" text for mood, stress and fatigue | used in app (cited) |
+| NASA OSDR: mouse skin after spaceflight, JAXA MHU-2 | OSD-238, OSD-239 · osdr.nasa.gov/bio/repo/data/studies/OSD-238 | Evidence that spaceflight changes skin-barrier and collagen genes; cited in the skin guide and skin insight card. IDs confirmed on OSDR | used in app (cited) |
+| NASA OSDR: mouse skin after spaceflight, Rodent Research-5 | OSD-240, OSD-241 | same | used in app (cited) |
+| NASA OSDR: mouse skin after spaceflight, Rodent Research-7 | OSD-254 | same | used in app (cited) |
+| NASA Science: "How NASA Will Protect Astronauts From Space Radiation at the Moon" | science.nasa.gov/science-research/heliophysics/how-nasa-will-protect-astronauts-from-space-radiation-at-the-moon | Shelter step in the solar storm emergency guide (Orion storm-shelter procedure) | used in app |
+| NASA-funded crew studies: body mass (Zwart 2014), sleep (Barger 2014), herpes virus reactivation (Rooney 2019), symptoms on ISS (Crucian 2016) | see Other References for links | The numbers in the guides: 2.8% average body mass loss, 6.1 h average sleep, 61% of ISS crew shedding herpes viruses, skin as the most reported complaint | used in app (cited) |
+| NASA-STD-3001 Vol. 1 (Crew Health) | nasa.gov/reference/nasa-std-3001v1 | Background for monitoring and escalation wording; listed in the app's source file, not yet shown on a screen | cited |
+| NASA Twins Study (results) | _TBD_ | Realistic trend scenarios for vitals/vision/cognition | idea, not used |
 
 ### 3.8 Space Agency Partner Data and Other References
 List **everything**: code libraries, datasets, images, papers, even open-source. Partner-agency data is "highly encouraged": candidates are ESA, JAXA (the MHU-2 skin study is a JAXA mission), CSA, ISRO.
@@ -169,6 +177,15 @@ List **everything**: code libraries, datasets, images, papers, even open-source.
 | --- | --- | --- |
 | JAXA Mouse Habitat Unit-2 (MHU-2) | Space Agency Partner data (via OSDR) | Skin study context |
 | Communications Medicine (2024), "Transcriptomics analysis reveals molecular alterations underpinning spaceflight dermatology" | Paper | Skin evidence |
+| Zeitlin et al., Science (2013), "Measurements of energetic particle radiation in transit to Mars on the Mars Science Laboratory" · doi.org/10.1126/science.1235989 | Paper (NASA MSL/RAD data) | Hook stat: about 0.66 Sv for a Mars round trip |
+| Crucian et al., Int J Gen Med (2016), "Incidence of clinical symptoms during long-duration orbital spaceflight" · pmc.ncbi.nlm.nih.gov/articles/PMC5098747 | Paper | Skin problems as the most reported complaint on ISS (skin guide) |
+| Barger et al., Lancet Neurology (2014), "Prevalence of sleep deficiency and use of hypnotic drugs in astronauts" · doi.org/10.1016/S1474-4422(14)70122-X | Paper | Sleep guide: 8.5 h scheduled, 6.1 h slept |
+| Rooney et al., Frontiers in Microbiology (2019), "Herpes virus reactivation in astronauts during spaceflight" · doi.org/10.3389/fmicb.2019.00016 | Paper | Temperature guide: immune changes |
+| Stavnichuk et al., npj Microgravity (2020), "A systematic review and meta-analysis of bone loss in space travelers" · doi.org/10.1038/s41526-020-0103-2 | Paper | Body mass guide: bone loss per month |
+| Zwart et al., Aviat Space Environ Med (2014), "Body mass changes during long-duration spaceflight" · pubmed.ncbi.nlm.nih.gov/25197887 | Paper | Body mass limits and guide |
+| American Heart Association, "Understanding Blood Pressure Readings" · heart.org/bplevels | Reference values | Blood pressure limits |
+| MedlinePlus (US National Library of Medicine): Pulse, Pulse Oximetry, Body temperature norms, Fever | Reference values | Heart rate, SpO₂ and temperature limits |
+| American Academy of Dermatology, "ABCDEs of melanoma" · aad.org | Reference | Skin-spot scoring (ABCDE rule) |
 | React, Vite, TypeScript | Open-source code | App |
 | Vitest | Open-source code | Tests for the status rules |
 | OpenRouter API (openrouter.ai) | AI model gateway | Calls free vision models from the browser for skin analysis |
@@ -186,10 +203,10 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 | --- | --- | --- |
 | Astronauts assess their own health | Self check-ins + status | Check-in, Dashboard and Vitals screens (built) |
 | Guidance in an emergency | Emergency mode | Emergency button on every screen (built, 2 guides) |
-| Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator | Guides screen + after each flagged check-in (built) |
-| Remind the crew | Reminders + streaks | |
+| Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator + insight cards | Guides screen, after each flagged check-in, and the Insights screen: what we saw / why / what to do / when to get help (built) |
+| Remind the crew | Due / overdue checks | "Checks due" panel on the Dashboard + check schedule on the Insights screen (built; browser notifications and streaks not built) |
 | Adapt to spacecraft / station / Moon base | Environment modes | Environment selector in the header: station, spacecraft, Moon, Mars (built) |
-| Use NASA HRP + OSDR | Hazard mapping + skin datasets | |
+| Use NASA HRP + OSDR | Hazard mapping + skin datasets + live DONKI space weather | Hazard tag on every guide and insight card; OSDR studies cited in the skin guide; "Radiation watch" on the Dashboard (built) |
 | Any input incl. camera images | Skin photo scans | Skin page: camera/upload → AI spot map → comparison table |
 | Clickable human figure (suggested) | Body figure | Body map screen; opens from each crew card (built) |
 | Gamification, dynamic charts, color coding (suggested) | Streaks, trend charts, green/amber/red | Color coding + Trends screen built; streaks pending |

@@ -126,3 +126,19 @@ a { color: var(--accent); }
 .space-weather h4 { margin: 14px 0 4px; font-size: .9rem; }
 .space-weather p, .sw-list { font-size: .92rem; line-height: 1.5; max-width: 80ch; margin: 4px 0; }
 .sw-list li { margin: 6px 0; }
+
+/* Insights and reminders */
+.insight { margin-bottom: 12px; border-left-width: 4px; }
+.insight-watch { border-left-color: var(--watch); } .insight-act { border-left-color: var(--act); }
+.insight h4 { margin: 14px 0 4px; font-size: .9rem; }
+.insight p, .insight ol, .insight ul { margin: 4px 0; font-size: .92rem; line-height: 1.5; max-width: 70ch; }
+.insight ol, .insight ul { padding-left: 20px; }
+.due-now { font-weight: 600; }
+.report { white-space: pre-wrap; font-size: .8rem; line-height: 1.45; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
+.reminders { margin-top: 16px; }
+.reminder-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 8px 0; border-top: 1px solid var(--border); font-size: .9rem; }
+.reminder-row strong { min-width: 130px; }
+.reminder { font: inherit; font-size: .85rem; padding: 4px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--text); cursor: pointer; }
+.reminder-when { color: var(--muted); }
+.reminder-overdue { border-color: var(--watch); }
+.reminder-overdue .reminder-when { color: var(--watch); font-weight: 600; }
