@@ -77,7 +77,7 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 
 ### 3.4 Link to Final Project
 - Every winner linked a **live site** (vercel.app, framer, github.io, custom domain). Judges click it.
-- **Live now: https://app-tawny-mu-93.vercel.app** (deployed by hand with `npx vercel deploy --prod --yes` from `app/`; not linked to GitHub, so pushes do not redeploy. Use only this URL: the per-deployment `app-…-dawson8.vercel.app` URLs need a Vercel login.)
+- **Live now: https://healthlens-one.vercel.app** (Vercel team `health-lens`, project `healthlens`, linked to this GitHub repo with root directory `app/`: every push to `main` redeploys by itself. Public, no login.) The earlier hand-deployed copy at https://app-tawny-mu-93.vercel.app is not updated by pushes; do not use it on the submission page.
 - **Ours:** Vercel URL of `app/` (public, no login, demo data preloaded so it isn't empty). Link the GitHub repo inside the page too. **The repo is private now. Make it public, or link the live site only.**
 - Draft: _TBD after deploy_
 
