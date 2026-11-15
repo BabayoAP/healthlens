@@ -18,7 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
-- BabayoAP · queued, starts after Dawson's UI pass 3 lands: full-width dashboard layout (use the empty right side, less scrolling) and decluttering, built on his theme. Not touching the theme, the toggle or the Body map figure · Nov 14
+- BabayoAP · UI pass 4 (started, on top of Dawson's pass 3): full-width dashboard layout (use the empty right side, less scrolling) and decluttering, built on his theme. Not touching the theme, the toggle or the Body map figure · Nov 14
 
 ## Done
 - [x] UI pass 3 (look only, no logic changed): holographic HUD theme (glass panels, cyan accent, Oxanium display type, instrument grid), **dark / light switch** in the sidebar (follows the device setting until picked, `lib/theme.ts`), **3D body hologram** on the Body map (drag to turn, scroll to zoom, click a part; 2D view one click away and the automatic fallback; three.js loaded only for the 3D view, `components/BodyFigure3D.tsx`). Status colors unchanged. Dawson Phan
