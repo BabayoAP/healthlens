@@ -6,7 +6,6 @@ import type { CheckTab } from '../lib/guides';
 import { formatValue, indicatorById } from '../lib/indicators';
 import { crew } from '../lib/mockData';
 import { buildReminders, dueText, needsDoing } from '../lib/reminders';
-import { assessSpaceWeather, useSpaceWeather } from '../lib/spaceWeather';
 import { evaluateAstronaut, nextStep, type AstronautEval } from '../lib/status';
 import { readingsFor, useData } from '../lib/store';
 import type { IndicatorId, Status } from '../lib/types';
@@ -57,8 +56,6 @@ interface Props {
 /** All-in-one view: crew at a glance, then one astronaut's vitals, body, checks, trends and wellbeing. */
 export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, onOpenCheck, onOpenStormGuide }: Props) {
   const data = useData();
-  const weather = useSpaceWeather();
-  const sw = assessSpaceWeather(weather.events, data.now, data.environment);
 
   const rows = crew.map((a) => ({ a, ev: evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs) }));
   const groups: Record<Status, string[]> = { act: [], watch: [], ok: [] };
@@ -86,7 +83,7 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
       <div className="crew-strip" role="group" aria-label="Choose a crew member">
         {rows.map(({ a: c, ev: e }) => (
           <button key={c.id} type="button" aria-pressed={c.id === a.id} className={`crew-pick${c.id === a.id ? ' active' : ''}`} onClick={() => onSelect(c.id)}>
-            <span className={`avatar avatar-lg avatar-${e.hasData ? e.status : 'none'}`} aria-hidden="true">{c.name.split(' ').pop()![0]}</span>
+            <span className={`avatar avatar-lg`} aria-hidden="true">{c.name.split(' ').pop()![0]}</span>
             <span className="crew-pick-who">
               <strong>{c.name}</strong>
               <span className="muted">{c.role}</span>
@@ -96,14 +93,15 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
         ))}
       </div>
 
-      <div className="dash-grid">
-        <div className="dash-col vitals-col">
+      {/* One grid; CSS moves the areas around with the screen width so nothing leaves an empty column */}
+      <div className="board">
+        <div className="area-vitals">
           {VITALS.map((v) => <VitalTile key={v.id} v={v} ev={ev} astronautId={a.id} />)}
         </div>
 
-        <div className="panel body-card">
+        <div className="panel body-card area-body">
           <div className="panel-head">
-            <h3>Body overview</h3>
+            <h3>Body</h3>
             <button type="button" className="ghost" onClick={() => onOpenBody()}>Open body map</button>
           </div>
           <div className="viewfinder">
@@ -114,21 +112,26 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
               const n = views.filter((x) => x.status === st).length;
               return n > 0 && <li key={st}><span className={`status-dot status-dot-${st}`} />{n} {st === 'ok' ? 'OK' : st === 'act' ? 'need action' : 'to watch'}</li>;
             })}
-            <li className="muted">Select a part to see details</li>
           </ul>
         </div>
 
-        <div className="dash-col">
+        <div className="area-trend">
+          <TrendExplorer key={a.id} astronautId={a.id} title="Trends" />
+        </div>
+
+        <div className="area-rail">
+          <Attention ev={ev} onOpenInsights={onOpenInsights} />
+
           <div className="panel checks-card">
-            <div className="panel-head"><h3>Checks</h3></div>
+            <div className="panel-head"><h3>Today's checks</h3></div>
             <div className="ring-row">
               <Ring value={done} total={reminders.length} />
               <div>
                 <p className="ring-big">{done} of {reminders.length}</p>
-                <p className="muted">checks up to date</p>
+                <p className="muted">up to date</p>
               </div>
             </div>
-            {todo.length > 0 ? (
+            {todo.length > 0 && (
               <ul className="todo-list">
                 {todo.map((r) => (
                   <li key={r.id}>
@@ -138,26 +141,9 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
                   </li>
                 ))}
               </ul>
-            ) : <p className="muted">All checks are done for now.</p>}
+            )}
           </div>
 
-          <div className="panel radiation-card">
-            <div className="panel-head">
-              <h3 className="with-icon"><span className="tile-icon tint-amber" aria-hidden="true"><Radiation size={15} strokeWidth={2} /></span>Radiation</h3>
-              <StatusBadge status={sw.status} />
-            </div>
-            <p className="dose"><strong>{a.radiationMSv}</strong> mSv so far <SourceTag source="estimated" /></p>
-            <p className="muted">{sw.headline}.</p>
-            {sw.status !== 'ok' && <button type="button" className="ghost" onClick={onOpenStormGuide}>Radiation storm guide</button>}
-          </div>
-        </div>
-      </div>
-
-      <div className="dash-row">
-        <TrendExplorer key={a.id} astronautId={a.id} title="Health trends" />
-
-        <div className="dash-col">
-          <Attention ev={ev} onOpenInsights={onOpenInsights} />
           <div className="panel wellbeing">
             <div className="panel-head"><h3>Sleep and wellbeing</h3></div>
             {WELLBEING.map((w) => {
@@ -178,12 +164,19 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
             })}
             <p className="muted meter-key"><span className="meter-base-key" aria-hidden="true" /> your baseline</p>
           </div>
-        </div>
-      </div>
 
-      <div className="dash-row dash-row-even">
-        <RemindersPanel onOpen={onOpenCheck} />
-        <SpaceWeatherPanel onOpenStormGuide={onOpenStormGuide} />
+          <div className="panel radiation-card">
+            <div className="panel-head">
+              <h3 className="with-icon"><span className="tile-icon tint-amber" aria-hidden="true"><Radiation size={15} strokeWidth={2} /></span>Radiation dose</h3>
+            </div>
+            <p className="dose"><strong>{a.radiationMSv}</strong> mSv so far <SourceTag source="estimated" /></p>
+          </div>
+        </div>
+
+        <div className="area-bottom">
+          <RemindersPanel onOpen={onOpenCheck} />
+          <SpaceWeatherPanel onOpenStormGuide={onOpenStormGuide} />
+        </div>
       </div>
     </section>
   );
@@ -205,7 +198,7 @@ function VitalTile({ v, ev, astronautId }: { v: (typeof VITALS)[number]; ev: Ast
       <div className="vital-head">
         <span className={`tile-icon tint-${v.tint}`} aria-hidden="true"><I size={16} strokeWidth={2} /></span>
         <span className="vital-label">{v.label}</span>
-        {status && <StatusBadge status={status} />}
+        {status && status !== 'ok' && <StatusBadge status={status} />}
       </div>
       <div className="vital-body">
         <p className="vital-value"><strong>{value}</strong> <span className="vital-unit">{def.unit}</span></p>

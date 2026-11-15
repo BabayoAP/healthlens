@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SYSTEM_INFO } from '../lib/bodyRegions';
 import { formatValue } from '../lib/indicators';
 import { evaluateAstronaut } from '../lib/status';
@@ -56,6 +56,17 @@ export function TrendExplorer({ astronautId, title = 'Health trends' }: { astron
   const [days, setDays] = useState(0);
   const [showBaseline, setShowBaseline] = useState(true);
   const [showLimits, setShowLimits] = useState(true);
+  // The chart takes whatever height its slot gives it (it fills the row on the dashboard), never less than 240px
+  const hasSeries = series.length > 0;
+  const slot = useRef<HTMLDivElement>(null);
+  const [chartHeight, setChartHeight] = useState(240);
+  useEffect(() => {
+    const el = slot.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => setChartHeight(Math.max(240, Math.floor(e.contentRect.height))));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [hasSeries]);
 
   if (series.length === 0) {
     return (
@@ -119,10 +130,12 @@ export function TrendExplorer({ astronautId, title = 'Health trends' }: { astron
         )}
       </div>
 
+      <div className="explorer-chart" ref={slot}>
       <TrendChart
         key={s.key} label={`${s.label}, ${days ? `last ${days} days` : 'all readings'}`}
-        points={points} format={s.format} lines={lines} from={from} to={data.now} minSpan={s.minSpan} height={250} area
+        points={points} format={s.format} lines={lines} from={from} to={data.now} minSpan={s.minSpan} height={chartHeight} area
       />
+      </div>
       {s.reasons.map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}
     </div>
   );

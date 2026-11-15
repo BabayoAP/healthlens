@@ -40,7 +40,10 @@ export function BodyFigure({ views, selectedId, onPick, callouts = false }: Prop
     return Math.max(ideal, 40 + i * 70);
   };
 
-  const viewBox = callouts ? '-150 0 500 410' : '0 0 200 410';
+  // Only make room for callouts on the sides that have them, so the figure stays as large as possible
+  const minX = sides.left.length ? -150 : 0;
+  const maxX = sides.right.length ? 350 : 200;
+  const viewBox = callouts ? `${minX} 0 ${maxX - minX} 410` : '0 0 200 410';
 
   return (
     <svg viewBox={viewBox} className={`figure${callouts ? ' figure-callouts' : ''}`} role="group" aria-label="Body figure, facing you">

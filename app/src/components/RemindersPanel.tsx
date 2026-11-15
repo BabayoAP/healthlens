@@ -18,7 +18,7 @@ export function RemindersPanel({ onOpen }: { onOpen: (astronautId: string, tab: 
   return (
     <div className="panel reminders">
       <div className="panel-head">
-        <h3>Checks due</h3>
+        <h3>Crew checks due</h3>
         <span className="muted">{total === 0 ? 'All done' : `${total} to do`}</span>
       </div>
       {total === 0 ? (
