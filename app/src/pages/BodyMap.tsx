@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { SYSTEM_INFO, type FigureRegionId } from '../lib/bodyRegions';
 import { buildRegionViews } from '../lib/bodyView';
 import { GUIDES } from '../lib/guides';
@@ -13,6 +13,12 @@ import { TrendChart } from '../components/TrendChart';
 
 const DAY = 86_400_000;
 
+// three.js is only downloaded when someone opens the 3D view
+const BodyFigure3D = lazy(() => import('../components/BodyFigure3D'));
+const canWebGL = (() => {
+  try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; }
+})();
+
 export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautId: string; initialRegion?: FigureRegionId; onNavigate: (tab: 'check-in' | 'skin' | 'tests' | 'trends' | 'guides') => void }) {
   const data = useData();
   const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
@@ -24,6 +30,7 @@ export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautI
   const firstFlagged = [...views].sort((a, b) => rank(a.status) - rank(b.status))[0].region.id;
   const [picked, setPicked] = useState<FigureRegionId | undefined>(initialRegion);
   const selectedId = picked ?? firstFlagged;
+  const [view, setView] = useState<'3d' | '2d'>(canWebGL ? '3d' : '2d');
   const selected = views.find((v) => v.region.id === selectedId)!;
   const info = SYSTEM_INFO[selected.region.system]!;
 
@@ -107,7 +114,19 @@ export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautI
 
       <div className="bodymap">
         <div className="figure-wrap">
-          <BodyFigure views={views} selectedId={selectedId} onPick={setPicked} />
+          {canWebGL && (
+            <div className="range view-toggle" role="group" aria-label="Figure view">
+              <button type="button" className={view === '3d' ? 'active' : ''} aria-pressed={view === '3d'} onClick={() => setView('3d')}>3D</button>
+              <button type="button" className={view === '2d' ? 'active' : ''} aria-pressed={view === '2d'} onClick={() => setView('2d')}>2D</button>
+            </div>
+          )}
+          {view === '3d' ? (
+            <Suspense fallback={<BodyFigure views={views} selectedId={selectedId} onPick={setPicked} />}>
+              <BodyFigure3D views={views} selectedId={selectedId} onPick={setPicked} onUnavailable={() => setView('2d')} />
+            </Suspense>
+          ) : (
+            <BodyFigure views={views} selectedId={selectedId} onPick={setPicked} />
+          )}
           <ul className="region-list">
             {views.map(({ region, status }) => (
               <li key={region.id}>

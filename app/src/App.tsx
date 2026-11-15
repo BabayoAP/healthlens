@@ -1,10 +1,11 @@
 import { useState, type ComponentType } from 'react';
-import { Activity, BookOpen, ClipboardCheck, Eye, LayoutGrid, LineChart, ScanFace, Siren, Sparkles, PersonStanding } from 'lucide-react';
+import { Activity, BookOpen, ClipboardCheck, Eye, LayoutGrid, LineChart, Moon, ScanFace, Siren, Sparkles, PersonStanding, Sun } from 'lucide-react';
 import type { FigureRegionId } from './lib/bodyRegions';
 import { crew } from './lib/mockData';
 import { ENVIRONMENTS, type EnvironmentId } from './lib/environment';
 import { evaluateAstronaut } from './lib/status';
 import { setDemoMode, setEnvironment, useData } from './lib/store';
+import { setTheme, useTheme } from './lib/theme';
 import { SourceTag } from './components/SourceTag';
 import { StatusBadge } from './components/StatusBadge';
 import { BodyMap } from './pages/BodyMap';
@@ -43,6 +44,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
   const [astronautId, setAstronautId] = useState(crew[0].id);
   const data = useData();
+  const theme = useTheme();
   const { demoMode, environment } = data;
   const [emergencyGuide, setEmergencyGuide] = useState<string>();
   const perAstronaut = tab !== 'dashboard' && tab !== 'emergency';
@@ -105,6 +107,10 @@ export default function App() {
             <span className="switch-track" aria-hidden="true" />
             Demo mode
           </label>
+          <div className="theme-toggle" role="group" aria-label="Display theme">
+            <button type="button" aria-pressed={theme === 'dark'} onClick={() => setTheme('dark')}><Moon size={14} strokeWidth={1.75} aria-hidden /> Dark</button>
+            <button type="button" aria-pressed={theme === 'light'} onClick={() => setTheme('light')}><Sun size={14} strokeWidth={1.75} aria-hidden /> Light</button>
+          </div>
           <button type="button" className={`emergency-btn${tab === 'emergency' ? ' active' : ''}`} onClick={() => { setEmergencyGuide(undefined); setTab('emergency'); }}>
             <Siren size={16} strokeWidth={2} aria-hidden /> Emergency
           </button>

@@ -1,26 +1,68 @@
 @import '@fontsource-variable/geist';
+@import '@fontsource-variable/oxanium';
 
-/* Design tokens: one bright, light theme. Status colors (ok / watch / act) are reserved for status only. */
+/*
+ * Design tokens: a holographic medical HUD in two themes.
+ * Dark "hologram" is the default look; light "daylight console" is for bright cabins.
+ * Status colors (ok / watch / act) stay green / amber / red and are reserved for status only.
+ * Chart lines use --series. Category tints are for icons only.
+ */
 :root {
-  --bg: #f3f6fb; --sidebar: #ffffff; --surface: #ffffff; --surface-2: #f2f5fa;
-  --text: #121826; --muted: #5d6676; --faint: #97a0ae;
-  --border: #e4e9f1; --border-strong: #ccd4e0;
-  --accent: #2563eb; --accent-soft: #e8f0fe; --series: #3b82f6;
-  --ink-btn: #121826; --ink-btn-text: #ffffff;
-  --ok: #15803d; --watch: #c26a00; --act: #dc2626; --act-strong: #dc2626;
-  --ok-soft: #e3f6e9; --watch-soft: #fff1d6; --act-soft: #fde8e8;
-  /* Category tints, for icons only (never status) */
-  --rose: #e11d74; --rose-soft: #fde7f1; --violet: #7c3aed; --violet-soft: #efe9fe;
-  --sky: #0284c7; --sky-soft: #e0f2fe; --teal: #0d9488; --teal-soft: #d9f5f1;
-  --amber: #b45309; --amber-soft: #fdf0dc;
-  --shadow: 0 1px 2px rgb(18 24 38 / .04), 0 4px 16px -6px rgb(18 24 38 / .08);
-  --r-lg: 16px; --r-md: 11px; --r-sm: 8px;
-  color-scheme: light;
+  /* Dark: hologram */
+  --bg: #040a14; --sidebar: rgb(6 16 30 / .82); --surface: rgb(9 24 42 / .72); --surface-2: rgb(56 225 255 / .06);
+  --surface-solid: #0a1a2e;
+  --text: #dcf4ff; --muted: #86a6bc; --faint: #56718a;
+  --border: rgb(56 225 255 / .16); --border-strong: rgb(56 225 255 / .34);
+  --accent: #38e1ff; --accent-soft: rgb(56 225 255 / .12); --series: #38e1ff;
+  --ink-btn: #38e1ff; --ink-btn-text: #02121c;
+  --ok: #2fe39b; --watch: #ffb020; --act: #ff4f62; --act-strong: #e5243b;
+  --ok-soft: rgb(47 227 155 / .13); --watch-soft: rgb(255 176 32 / .14); --act-soft: rgb(255 79 98 / .15);
+  --rose: #ff7ab6; --rose-soft: rgb(255 122 182 / .13); --violet: #b59cff; --violet-soft: rgb(181 156 255 / .14);
+  --sky: #5cc8ff; --sky-soft: rgb(92 200 255 / .13); --teal: #3ee6cf; --teal-soft: rgb(62 230 207 / .12);
+  --amber: #ffc861; --amber-soft: rgb(255 200 97 / .13);
+  --glow: 0 0 0 1px rgb(56 225 255 / .05), 0 0 24px -8px rgb(56 225 255 / .35);
+  --shadow: 0 1px 0 rgb(56 225 255 / .06) inset, 0 12px 32px -16px rgb(0 0 0 / .7);
+  --grid-line: rgb(56 225 255 / .045);
+  --halo: rgb(56 225 255 / .14);
+  --blur: blur(14px);
+  --r-lg: 14px; --r-md: 10px; --r-sm: 7px;
+  --font-display: 'Oxanium Variable', 'Geist Variable', sans-serif;
+  color-scheme: dark;
   font-family: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px; line-height: 1.5; color: var(--text); background: var(--bg);
   font-feature-settings: 'tnum' 1; -webkit-font-smoothing: antialiased;
 }
+
+:root[data-theme='light'] {
+  /* Light: daylight console */
+  --bg: #edf3f8; --sidebar: rgb(255 255 255 / .86); --surface: rgb(255 255 255 / .9); --surface-2: #e9f1f7;
+  --surface-solid: #ffffff;
+  --text: #0b1e2c; --muted: #4c6373; --faint: #8399a8;
+  --border: #d3e0ea; --border-strong: #a9c2d3;
+  --accent: #0a7fae; --accent-soft: #dcf0f8; --series: #0a86b8;
+  --ink-btn: #0b1e2c; --ink-btn-text: #ffffff;
+  --ok: #0e8a55; --watch: #b46100; --act: #d21f37; --act-strong: #d21f37;
+  --ok-soft: #dff4ea; --watch-soft: #fff0d6; --act-soft: #fde6e9;
+  --rose: #d6246e; --rose-soft: #fde7f1; --violet: #6d3ee0; --violet-soft: #eee8fd;
+  --sky: #0578b5; --sky-soft: #def0fb; --teal: #0b8a7f; --teal-soft: #d8f3ef;
+  --amber: #a85500; --amber-soft: #fdefd9;
+  --glow: 0 0 0 1px rgb(10 127 174 / .04);
+  --shadow: 0 1px 2px rgb(11 30 44 / .05), 0 6px 18px -8px rgb(11 30 44 / .12);
+  --grid-line: rgb(10 127 174 / .07);
+  --halo: rgb(10 127 174 / .1);
+  color-scheme: light;
+}
+
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); }
-h1, h2, h3, h4 { letter-spacing: -0.01em; }
+body {
+  margin: 0; background-color: var(--bg);
+  /* Faint instrument grid with a glow behind the content */
+  background-image:
+    radial-gradient(ellipse 70% 50% at 60% -10%, var(--halo), transparent 70%),
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 100% 100%, 44px 44px, 44px 44px;
+  background-attachment: fixed;
+}
+h1, h2, h3, h4 { letter-spacing: -0.005em; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
