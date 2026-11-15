@@ -27,7 +27,9 @@ Then open http://localhost:5173.
 
 ```
 app/                 Vite + React + TypeScript web app
-  src/lib/types.ts       data model (astronaut, skin scan, lesion, vitals)
+  src/lib/types.ts       data model (reading, source, skin scan, lesion)
+  src/lib/indicators.ts  indicator registry (thresholds, cadence)
+  src/lib/store.ts       saves/loads all data in the browser
   src/lib/mockData.ts    seeded crew + history for the demo
   src/lib/analysis.ts    skin-scan analysis (mock for now, real model later)
   src/lib/status.ts      OK / Watch / Act rules

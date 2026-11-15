@@ -1,25 +1,35 @@
-import { vitals } from '../lib/mockData';
-import { vitalsStatus } from '../lib/status';
+import { formatValue } from '../lib/indicators';
+import { evaluateAstronaut } from '../lib/status';
+import { useData } from '../lib/store';
+import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
 
+// TODO (other tasks): entry forms, trend charts, guide cards. This page lists every indicator
+// from the registry with its latest value, personal baseline and status.
 export function Vitals({ astronautId }: { astronautId: string }) {
-  const rows = vitals
-    .filter((r) => r.astronautId === astronautId)
-    .sort((a, b) => a.takenAt.localeCompare(b.takenAt));
-  const { status, reasons } = vitalsStatus(rows);
+  const data = useData();
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
+  const rows = ev.indicators;
 
-  // TODO: replace table with trend charts + a manual-entry / sensor form.
   return (
     <section>
-      <h2>Vitals <StatusBadge status={status} /></h2>
-      {reasons.length > 0 && <ul>{reasons.map((r) => <li key={r}>{r}</li>)}</ul>}
+      <h2>Indicators</h2>
       <table>
-        <thead><tr><th>Date</th><th>HR (bpm)</th><th>BP (mmHg)</th><th>SpO₂</th></tr></thead>
+        <thead>
+          <tr><th>Indicator</th><th>Latest</th><th>Your baseline</th><th>Last measured</th><th>Status</th><th>Why</th></tr>
+        </thead>
         <tbody>
-          {rows.slice().reverse().map((r) => (
-            <tr key={r.takenAt}>
-              <td>{r.takenAt.slice(0, 10)}</td><td>{r.heartRate}</td>
-              <td>{r.systolic}/{r.diastolic}</td><td>{r.spo2}%</td>
+          {rows.map((i) => (
+            <tr key={i.def.id}>
+              <td>{i.def.label}</td>
+              <td>{i.latest ? <>{formatValue(i.def, i.latest.value)} <SourceTag source={i.latest.source} /></> : '—'}</td>
+              <td>{i.baseline !== undefined ? formatValue(i.def, i.baseline) : '—'}</td>
+              <td>
+                {i.daysSince === undefined ? 'never' : i.daysSince === 0 ? 'today' : `${i.daysSince} d ago`}
+                {i.due && <span className="muted"> · due</span>}
+              </td>
+              <td>{i.latest ? <StatusBadge status={i.status} /> : '—'}</td>
+              <td>{i.reasons.map((r) => <div key={r.text}>{r.text}</div>)}</td>
             </tr>
           ))}
         </tbody>

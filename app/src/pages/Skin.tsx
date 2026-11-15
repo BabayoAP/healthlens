@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { analyzeSkinPhoto } from '../lib/analysis';
-import { skinScans } from '../lib/mockData';
-import type { BodyRegion, Lesion } from '../lib/types';
+import { ANALYSIS_IS_MOCK, analyzeSkinPhoto } from '../lib/analysis';
+import { addSkinScan, useData } from '../lib/store';
+import type { BodyRegion } from '../lib/types';
+import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
 
 const regions: BodyRegion[] = [
@@ -10,27 +11,33 @@ const regions: BodyRegion[] = [
 ];
 
 export function Skin({ astronautId }: { astronautId: string }) {
+  const data = useData();
   const [region, setRegion] = useState<BodyRegion>('left-arm');
   const [preview, setPreview] = useState<string>();
-  const [lesions, setLesions] = useState<Lesion[]>();
   const [busy, setBusy] = useState(false);
 
-  const previous = skinScans
+  // Scans of this region, newest first
+  const scans = data.skinScans
     .filter((s) => s.astronautId === astronautId && s.region === region)
-    .sort((a, b) => b.takenAt.localeCompare(a.takenAt))[0];
+    .sort((a, b) => b.takenAt.localeCompare(a.takenAt));
+  const latest = scans[0];
+  const before = scans[1];
 
   async function onFile(file: File) {
     setPreview(URL.createObjectURL(file));
-    setLesions(undefined);
     setBusy(true);
     try {
-      setLesions(await analyzeSkinPhoto(file, region, previous));
+      const lesions = await analyzeSkinPhoto(file, region, latest);
+      // The photo itself is not saved yet (TODO: store images). The lesion results are.
+      addSkinScan({
+        astronautId, region, lesions,
+        takenAt: new Date().toISOString(),
+        source: ANALYSIS_IS_MOCK ? 'simulated' : 'measured-in-app',
+      });
     } finally {
       setBusy(false);
     }
   }
-
-  const shown = lesions ?? previous?.lesions ?? [];
 
   return (
     <section>
@@ -38,7 +45,7 @@ export function Skin({ astronautId }: { astronautId: string }) {
       <div className="row">
         <label>
           Body region{' '}
-          <select value={region} onChange={(e) => { setRegion(e.target.value as BodyRegion); setLesions(undefined); setPreview(undefined); }}>
+          <select value={region} onChange={(e) => { setRegion(e.target.value as BodyRegion); setPreview(undefined); }}>
             {regions.map((r) => <option key={r}>{r}</option>)}
           </select>
         </label>
@@ -49,13 +56,15 @@ export function Skin({ astronautId }: { astronautId: string }) {
       </div>
 
       <p className="muted">
-        {previous ? `Last scan of this region: ${previous.takenAt.slice(0, 10)}` : 'No earlier scan of this region yet. This one becomes the baseline.'}
+        {latest
+          ? <>Last scan of this region: {latest.takenAt.slice(0, 10)} <SourceTag source={latest.source} />{before && ` · previous: ${before.takenAt.slice(0, 10)}`}</>
+          : 'No scan of this region yet. The first one becomes the baseline.'}
       </p>
 
       {preview && (
         <div className="photo">
           <img src={preview} alt={`Skin scan of ${region}`} />
-          {lesions?.map((l) => (
+          {!busy && latest?.lesions.map((l) => (
             <span key={l.id} className={`dot dot-${l.risk}`} style={{ left: `${l.x * 100}%`, top: `${l.y * 100}%` }} />
           ))}
         </div>
@@ -63,16 +72,21 @@ export function Skin({ astronautId }: { astronautId: string }) {
 
       {busy && <p>Analyzing…</p>}
 
-      {shown.length > 0 && (
+      {latest && latest.lesions.length > 0 && (
         <table>
-          <thead><tr><th>Spot</th><th>Size</th><th>Color</th><th>Change</th><th>Notes</th><th>Risk</th></tr></thead>
+          <thead><tr><th>Spot</th><th>Size</th>{before && <th>Previous size</th>}<th>Color</th><th>Change</th><th>Notes</th><th>Risk</th></tr></thead>
           <tbody>
-            {shown.map((l, i) => (
-              <tr key={l.id}>
-                <td>#{i + 1}</td><td>{l.diameterMm} mm</td><td>{l.color}</td><td>{l.change}</td>
-                <td>{l.notes.join(', ')}</td><td><StatusBadge status={l.risk} /></td>
-              </tr>
-            ))}
+            {latest.lesions.map((l, i) => {
+              const was = before?.lesions.find((p) => p.id === l.id);
+              return (
+                <tr key={l.id}>
+                  <td>#{i + 1}</td><td>{l.diameterMm} mm</td>
+                  {before && <td>{was ? `${was.diameterMm} mm` : '—'}</td>}
+                  <td>{l.color}</td><td>{l.change}</td>
+                  <td>{l.notes.join(', ')}</td><td><StatusBadge status={l.risk} /></td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}

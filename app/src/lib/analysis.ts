@@ -1,5 +1,8 @@
 import type { BodyRegion, Lesion, SkinScan } from './types';
 
+/** While true, scan results are saved with the `simulated` source tag. Set to false once a real model is wired in. */
+export const ANALYSIS_IS_MOCK = true;
+
 /**
  * Analyze a skin photo and return detected lesions, compared against the
  * previous scan of the same region.
@@ -7,6 +10,7 @@ import type { BodyRegion, Lesion, SkinScan } from './types';
  * MOCK for now: returns fake lesions so the UI can be built.
  * TODO: replace with a real vision-model call that returns this same shape
  * (location, size, color, ABCDE notes, risk), then diff against `previous`.
+ * Keep each lesion's `id` the same as in `previous` when it is the same spot.
  */
 export async function analyzeSkinPhoto(
   image: File,

@@ -121,15 +121,19 @@ English captions on the video regardless; AI-generated visuals watermarked; AI v
 >
 > **What it does**
 > - Skin scans: crewmates photograph each other by body region; AI finds and tracks every lesion (new / changed / stable). _(status: mock AI)_
-> - Vitals: heart rate, blood pressure, SpO₂, temperature vs personal baseline. _(status: built, mock data)_
-> - Crew dashboard with green/amber/red status and reasons. _(status: built)_
+> - Ten indicators tracked against each astronaut's **own baseline**: heart rate, blood pressure, SpO₂, temperature, body mass, sleep, mood, stress, fatigue. _(status: rules built; entry forms pending)_
+> - Crew dashboard with green/amber/red status, the reason in plain words, and the next step. _(status: built)_
+> - **Slow-drift detection:** flags a steady change over two weeks even while every value is still in the normal range (demo: resting heart rate 63 → 70 bpm). _(status: built)_
+> - **False-alarm handling:** one odd reading asks for a re-measure; it only escalates when a second reading agrees or a hard safety limit is crossed. _(status: built)_
+> - **Missed-check detection:** an overdue measurement becomes a warning ("no temperature reading in 5 days"). _(status: built)_
+> - **Honest data labels:** every value shows where it came from (entered, device, self-report, measured in app, simulated, estimated). Demo mode loads a simulated crew; judges can add their own readings on top. _(status: built)_
 > - _(add each feature as it lands: guides, emergency mode, reminders, trends, environments, body figure)_
 >
-> **How it works**: _(diagram + 3–5 sentences)_
+> **How it works**: _(add diagram)_ Each indicator is checked in four steps: (1) absolute safety limits, (2) change against the astronaut's personal baseline (their first 7 readings), (3) a sustained trend over the last 14 days (least-squares line; flagged when the drift is steady, R² ≥ 0.6, and at least half the size of a baseline warning), (4) overdue measurements. The astronaut's status is the worst of all indicators plus the latest skin scan per body region. All data stays in the browser, so it works with no connection to Earth.
 >
-> **The HealthLens score**: _(define once status.ts weights are final)_
+> **The HealthLens score**: _(skin-lesion scoring weights: define when the real skin model lands. The vitals rules above are in `status.ts`; thresholds live in `indicators.ts` and still need source checks.)_
 >
-> **Worked example**: _(screenshots of the seeded astronaut)_
+> **Worked example**: _(add screenshots)_ Demo crew of four, each with six weeks of simulated history: Vega has a spot on the left arm that grew from 4 mm to 6.5 mm in 45 days with an irregular border → **Act**. Osei's blood pressure crept from about 121 to 134 mmHg over two weeks → **Watch**. Nakamura's resting heart rate and sleep drifted slowly while every value still looked normal, and temperature checks were skipped → **Watch**. Lindqvist is healthy → **OK**.
 >
 > **Tools & technologies**: React, TypeScript, Vite; _(add: AI model/API, chart library, hosting)_
 
@@ -140,6 +144,7 @@ Not shown to judges, but required and must be honest. Winner pattern: list each 
 | Tool | Used for | Where |
 | --- | --- | --- |
 | Claude Code (Anthropic) | Project scaffolding, code generation and review, research summaries, document drafting | Whole repo |
+| Claude Code (Anthropic) | Wrote the data layer, status rules, seeded demo data and tests, from the team's PRD | `app/src/lib/` |
 | _(skin-analysis model/API)_ | Lesion detection inside the app | `app/src/lib/analysis.ts` |
 
 **Draft:** _(write from the log at the end)_
@@ -168,6 +173,7 @@ List **everything**: code libraries, datasets, images, papers, even open-source.
 | JAXA Mouse Habitat Unit-2 (MHU-2) | Space Agency Partner data (via OSDR) | Skin study context |
 | Communications Medicine (2024), "Transcriptomics analysis reveals molecular alterations underpinning spaceflight dermatology" | Paper | Skin evidence |
 | React, Vite, TypeScript | Open-source code | App |
+| Vitest | Open-source code | Tests for the status rules |
 | _(ISIC / HAM10000 if used)_ | Public dataset | Demo lesion images / model testing |
 
 ---
@@ -178,7 +184,7 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 
 | Challenge asks for | HealthLens | Where |
 | --- | --- | --- |
-| Astronauts assess their own health | Self check-ins + status | |
+| Astronauts assess their own health | Self check-ins + status | Dashboard + Vitals page (status built; entry forms pending) |
 | Guidance in an emergency | Emergency mode | |
 | Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator | |
 | Remind the crew | Reminders + streaks | |
@@ -186,7 +192,7 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 | Use NASA HRP + OSDR | Hazard mapping + skin datasets | |
 | Any input incl. camera images | Skin photo scans | |
 | Clickable human figure (suggested) | Body figure | |
-| Gamification, dynamic charts, color coding (suggested) | Streaks, trend charts, green/amber/red | |
+| Gamification, dynamic charts, color coding (suggested) | Streaks, trend charts, green/amber/red | Color coding built; charts + streaks pending |
 | Earth spin-off for remote communities | Impact section | |
 
 ## Part 5: Final checklist (Sunday)

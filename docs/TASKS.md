@@ -13,11 +13,11 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
-- [ ] Vitals + mood check-in entry forms, saved locally (IndexedDB/localStorage). PRD §5.2, §5.4
+- [ ] Vitals + mood check-in entry forms with a "simulate reading" button; save with `addReading` from `lib/store.ts`. PRD §5.2, §5.4
 - [ ] Measurement guide cards (How / Why / If abnormal) for skin, HR, BP, SpO₂, mood. PRD §5.12
 - [ ] Insights list: what / why / do / escalate. PRD §5.9
 - [ ] Trend chart for one vital + skin timeline for one lesion. PRD §5.10
-- [ ] Reminders: due/overdue list on dashboard. PRD §5.11
+- [ ] Reminders: due/overdue list on dashboard (the `due` flag per indicator already exists in `evaluateAstronaut`). PRD §5.11
 - [ ] Emergency mode with 2 guides (low SpO₂, solar particle event). PRD §5.13
 - [ ] Environment switch (station vs Moon base). PRD §6
 - [ ] Clickable 2D SVG body figure + per-system detail panel. PRD §5.8
@@ -35,11 +35,11 @@ _(name · task · started)_
 **Dawson Phan · claimed Nov 14 evening. Touches only `analysis.ts` and `Skin.tsx`.**
 - [ ] Real skin-analysis call in `app/src/lib/analysis.ts` (keep mock as offline fallback). PRD §5.1
 
-**BabayoAP · claimed Nov 14 evening. Please don't start these; they change the shared files `types.ts`, `mockData.ts`, `status.ts`. Build on them once they land (watch for the commit).**
-- [ ] Input source layer: `source` field on every reading + visible "simulated" tag component. PRD §5.0
-- [ ] Local data store (one place all readings are saved/loaded, localStorage) that check-in forms and charts will use. PRD §10
-- [ ] Seeded history generator (weeks per astronaut, baseline + noise + one planned problem, incl. the worked skin example) + demo-mode toggle. PRD §5.0, §5.10, §12
-- [ ] Sustained-trend + missing-measurement rules in `status.ts`. PRD §8
-
 ## Done
+- [x] **Foundation is in: build on it** (see "How to build on the data layer" in CLAUDE.md). BabayoAP:
+  - Input source layer + `<SourceTag>` (every value says manual / device / self-report / measured-in-app / simulated / estimated)
+  - Local data store `lib/store.ts` (`useData`, `addReading`, `addSkinScan`) + demo-mode toggle
+  - Indicator registry `lib/indicators.ts` (10 indicators with cadence + thresholds)
+  - Seeded 6-week history for 4 astronauts, one planned problem each, incl. the worked skin example
+  - Rules: safety limits, own-baseline change, re-measure before escalating, sustained trend, missing measurements; 14 tests (`npm test`)
 - [x] Repo renamed to healthlens, app skeleton, PRD v1, past-winner research, submission frame

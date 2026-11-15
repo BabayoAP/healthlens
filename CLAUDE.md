@@ -17,13 +17,21 @@ Challenge: "Create Health Monitoring Software for Astronauts on Space Missions".
 
 ## Repo layout
 - `app/`: Vite + React + TypeScript, browser-only, offline-first
-  - `src/lib/types.ts` data model · `mockData.ts` seeded demo crew · `analysis.ts` skin AI (mock now) · `status.ts` OK/Watch/Act rules
+  - `src/lib/types.ts` data model · `indicators.ts` indicator registry (thresholds, cadence) · `store.ts` the only place data is saved/loaded · `status.ts` OK/Watch/Act rules · `mockData.ts` seeded demo crew · `analysis.ts` skin AI (mock now)
   - `src/pages/` one file per screen · `src/components/` shared UI
 - `docs/`: PRD, tasks, submission draft, research
 
 ## Commands (run from `app/`)
-- `npm install` · `npm run dev` (http://localhost:5173) · `npm run build` (typecheck + build) · `npm run lint`
-- Run `npm run build` and `npm run lint` before every commit that touches `app/`.
+- `npm install` · `npm run dev` (http://localhost:5173) · `npm run build` (typecheck + build) · `npm run lint` · `npm test`
+- Run `npm run build`, `npm run lint` and `npm test` before every commit that touches `app/`.
+
+## How to build on the data layer (read before writing a feature)
+- **Read data:** `const data = useData()` from `lib/store.ts` → `data.readings`, `data.skinScans`, `data.now`. Helper: `readingsFor(data, astronautId, 'heartRate')`.
+- **Save data:** `addReading({ astronautId, indicator, value, takenAt, source })` or `addReadings([...])` (blood pressure = one `systolic` + one `diastolic` reading with the same `takenAt`); `addSkinScan(...)`. Never write to localStorage directly.
+- **Every value has a `source`** (`manual`, `device`, `self-report`, `measured-in-app`, `simulated`, `estimated`). Forms use `indicatorById[id].entrySource`; a "simulate reading" button must save `simulated`. Show `<SourceTag source={...} />` next to any value on screen.
+- **Status:** `evaluateAstronaut(id, data.readings, data.skinScans, data.now)` → `status`, `headlines` (one line per indicator, for summaries), `reasons` (all), `indicators` (per-indicator latest / baseline / due). Don't re-implement thresholds in a component.
+- **New indicator:** add its id to `IndicatorId` in `types.ts` and one entry in `INDICATORS` in `indicators.ts`. Rules, due/overdue, and the Vitals table pick it up automatically. Add a seed series in `mockData.ts` if the demo crew should have history for it.
+- **Don't change the seeded demo story** (`mockData.ts` header comment) without updating `status.test.ts`; those tests lock in which astronaut shows which problem.
 
 ## Team workflow (whole team uses Claude Code on one repo)
 - **Always `git pull --rebase` before starting and before pushing.** Teammates push to `main` constantly.

@@ -244,7 +244,7 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 
 ## 11. Hackathon MVP cut (by Sunday)
 
-1. Dashboard with crew + personal status, color coding — *partly built*
+1. Dashboard with crew + personal status, color coding — *crew view built*
 2. Skin scan → lesion table → new/changed/stable — *built with mock AI; needs real model call*
 3. Vitals + mood check-in entry, saved locally
 4. Measurement guide cards for 5 indicators (skin, HR, BP, SpO₂, mood)
@@ -253,10 +253,10 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 7. Reminders list (due / overdue)
 8. Emergency mode with 2 guides (low SpO₂, solar particle event)
 9. Environment switch (station vs Moon base) changing at least the guides and the body-mass method
-10. Seeded demo astronaut with the worked example
-11. Source layer with visible "simulated" tags + demo-mode toggle (§5.0)
-12. Seeded history generator with one planned problem per astronaut (§5.10)
-13. Sustained-trend rule (§8)
+10. Seeded demo astronaut with the worked example — *data built; screens pending*
+11. Source layer with visible "simulated" tags + demo-mode toggle (§5.0) — *built*
+12. Seeded history generator with one planned problem per astronaut (§5.10) — *built*
+13. Sustained-trend rule (§8) — *built*
 
 Everything else = roadmap slide.
 
@@ -264,7 +264,7 @@ Everything else = roadmap slide.
 
 1. Hook: "No dermatologist on Mars."
 2. Dashboard: crew status; one astronaut amber/red.
-3. Tap the astronaut → body figure → left arm → lesion timeline: Day 97 vs Day 142, spot grew → **Act**.
+3. Tap the astronaut → body figure → left arm → lesion timeline: Day 97 vs Day 142, spot grew from 4 mm to 6.5 mm → **Act**.
 4. Insight card: what / why / do / escalate → export flight-surgeon report.
 5. Switch to Moon base → guides and comm delay change.
 6. Close: NASA data used + Earth spin-off (remote clinics).
