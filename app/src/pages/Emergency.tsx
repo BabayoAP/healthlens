@@ -4,10 +4,10 @@ import { environmentById } from '../lib/environment';
 import { useData } from '../lib/store';
 
 /** Step-by-step emergency guidance, one step per screen, adjusted for the comm delay of the current environment. */
-export function Emergency() {
+export function Emergency({ initialGuide }: { initialGuide?: string }) {
   const { environment } = useData();
   const env = environmentById[environment];
-  const [guideId, setGuideId] = useState<string>();
+  const [guideId, setGuideId] = useState<string | undefined>(initialGuide);
   const [step, setStep] = useState(0);
 
   const guide = EMERGENCY_GUIDES.find((g) => g.id === guideId);

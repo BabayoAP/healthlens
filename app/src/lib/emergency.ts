@@ -26,13 +26,13 @@ export const EMERGENCY_GUIDES: EmergencyGuide[] = [
   {
     id: 'low-oxygen',
     title: 'Low oxygen or trouble breathing',
-    when: 'SpO₂ below 92%, shortness of breath, blue lips, or confusion.',
+    when: 'SpO₂ at 92% or lower, shortness of breath, blue lips, or confusion.',
     steps: (env) => [
       { title: 'Stop and get help', detail: 'Stop what you are doing. Call a crewmate to stay with you. Do not stay alone.' },
       { title: 'Sit upright', detail: 'Sit or hold yourself upright. Loosen tight clothing. Breathe slowly in through the nose and out through the mouth.' },
       { title: 'Check the reading', detail: 'Warm the finger, re-seat the oximeter and measure again on another finger.', log: 'SpO₂ and heart rate, with the time' },
       { title: 'Check the air', detail: 'Look at the cabin oxygen and carbon dioxide readings. Ask whether anyone else has a headache, dizziness or shortness of breath. If the air is the problem, move everyone to a different module or area and follow the air-quality alarm procedure.' },
-      { title: 'Give oxygen', detail: 'If SpO₂ is still below 92%, give oxygen from the medical kit as its instructions say.' },
+      { title: 'Give oxygen', detail: 'If SpO₂ is still 92% or lower, give oxygen from the medical kit as its instructions say.' },
       { title: 'Contact the flight surgeon', detail: env.helpAdvice },
       { title: 'Keep monitoring', detail: 'Measure every 5 minutes until SpO₂ is 95% or more for 30 minutes. If the person becomes unresponsive, start the crew\'s life-support procedure.', log: 'SpO₂, heart rate and breathing rate every 5 minutes' },
     ],

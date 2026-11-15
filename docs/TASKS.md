@@ -24,11 +24,10 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 ## In progress
 _(name · task · started)_
 
-**BabayoAP · claimed Nov 15. New files `lib/sources.ts`, `lib/spaceWeather.ts`; edits to `indicators.ts`, `guides.ts`, `environment.ts`, `emergency.ts`, Guides/Dashboard pages.**
-- [ ] Verify indicator ranges and guide text against sources; show the sources in the app. PRD §7
-- [ ] Use NASA data in the app: live DONKI space-weather feed for the radiation alert; cite HRP + OSDR skin studies. PRD §9
-
 ## Done
+- [x] Sources: limits and guide facts checked against public sources and shown in the app (Guides screen: per-guide sources + "Where the numbers come from"). `lib/sources.ts`. Fixed: Mars delay 3 to 22 min, SpO2 act at 92% or lower. BabayoAP
+- [x] NASA data in the app: live DONKI space-weather feed on the Dashboard (radiation watch, 1-hour cache, saved real snapshot offline), linked to the radiation storm guide; OSDR skin studies OSD-238/239/240/241/254 cited (IDs confirmed on OSDR). `lib/spaceWeather.ts`. BabayoAP
+- [ ] FOLLOW-UP (unclaimed): update docs/SUBMISSION.md NASA Data + References tables and DEMO-PLAN slide 2 stat (Mars round trip about 0.66 Sv, Zeitlin 2013) from `app/src/lib/sources.ts`; browser-check the Dashboard space-weather panel
 - [x] Body map: clickable 2D figure (7 parts, colored and marked by status, keyboard-friendly), detail panel with latest measurements, trend, skin scans of that area, why it changes in space, what to do, when to contact the medical officer. Dashboard cards now open it. `lib/bodyRegions.ts`, `pages/BodyMap.tsx`. BabayoAP
 - [x] Trends screen: a chart per indicator with personal baseline and safety-limit lines, 2-week / 6-week range, hover / touch / arrow-key values, table view; size-over-time chart for each tracked skin spot. Reusable `components/TrendChart.tsx` (plain SVG, no chart library). BabayoAP
 - [x] Measurement guides (8 cards: how / why in space / normal / if it looks wrong / when to get help), flagged ones open automatically, and shown after a flagged check-in. `lib/guides.ts`, `pages/Guides.tsx`. BabayoAP

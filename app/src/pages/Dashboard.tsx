@@ -2,9 +2,10 @@ import { crew } from '../lib/mockData';
 import { evaluateAstronaut, nextStep } from '../lib/status';
 import { useData } from '../lib/store';
 import { SourceTag } from '../components/SourceTag';
+import { SpaceWeatherPanel } from '../components/SpaceWeatherPanel';
 import { StatusBadge } from '../components/StatusBadge';
 
-export function Dashboard({ onOpen }: { onOpen: (id: string) => void }) {
+export function Dashboard({ onOpen, onOpenStormGuide }: { onOpen: (id: string) => void; onOpenStormGuide: () => void }) {
   const data = useData();
   return (
     <section>
@@ -41,6 +42,7 @@ export function Dashboard({ onOpen }: { onOpen: (id: string) => void }) {
           );
         })}
       </div>
+      <SpaceWeatherPanel onOpenStormGuide={onOpenStormGuide} />
     </section>
   );
 }

@@ -20,6 +20,7 @@ export default function App() {
   const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
   const [astronautId, setAstronautId] = useState(crew[0].id);
   const { demoMode, environment } = useData();
+  const [emergencyGuide, setEmergencyGuide] = useState<string>();
 
   return (
     <div className="app">
@@ -40,7 +41,7 @@ export default function App() {
         <select aria-label="Environment" value={environment} onChange={(e) => setEnvironment(e.target.value as EnvironmentId)}>
           {ENVIRONMENTS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
         </select>
-        <button type="button" className="emergency-btn" onClick={() => setTab('emergency')}>Emergency</button>
+        <button type="button" className="emergency-btn" onClick={() => { setEmergencyGuide(undefined); setTab('emergency'); }}>Emergency</button>
         <label className="demo-toggle" title="Loads a seeded demo crew with 6 weeks of simulated history. Your own entries are kept either way.">
           <input type="checkbox" checked={demoMode} onChange={(e) => setDemoMode(e.target.checked)} /> Demo mode
         </label>
@@ -53,14 +54,14 @@ export default function App() {
       )}
 
       <main>
-        {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} />}
+        {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} onOpenStormGuide={() => { setEmergencyGuide('solar-storm'); setTab('emergency'); }} />}
         {tab === 'body' && <BodyMap key={astronautId} astronautId={astronautId} onNavigate={setTab} />}
         {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
         {tab === 'skin' && <Skin astronautId={astronautId} />}
         {tab === 'vitals' && <Vitals astronautId={astronautId} />}
         {tab === 'trends' && <Trends astronautId={astronautId} />}
         {tab === 'guides' && <Guides astronautId={astronautId} />}
-        {tab === 'emergency' && <Emergency />}
+        {tab === 'emergency' && <Emergency key={emergencyGuide ?? 'all'} initialGuide={emergencyGuide} />}
       </main>
 
       <footer className="muted">Not a medical device. HealthLens flags changes for review; it does not diagnose.</footer>

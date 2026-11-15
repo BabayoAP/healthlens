@@ -1,0 +1,245 @@
+{
+ "source": "NASA CCMC DONKI notifications, https://api.nasa.gov/DONKI/notifications",
+ "fetchedAt": "2026-11-15T01:37:00Z",
+ "range": "2026-10-16 to 2026-11-15",
+ "notifications": [
+  {
+   "messageType": "RBE",
+   "messageID": "20261016-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49130/1",
+   "messageIssueTime": "2026-10-16T13:28Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux is above 1000 pfu starting at 2026-10-16T13:20Z. \n\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-10-16T13:20:00-RBE-001."
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261016-AL-002",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49131/1",
+   "messageIssueTime": "2026-10-16T13:43Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux is above 1000 pfu starting at 2026-10-16T13:20Z. \n\nThe elevated energetic electron flux levels are caused by the arrival of the coronal hole high speed stream starting on 2026-10-10, reaching maximum sustained speeds of approximately 850 km/s. The solar wind speed observed at L1 is currently around 445 km/s. The elevated energetic electron flux levels may also be associated with the combined arrival of CME with ID 2026-10-08T16:24:00-CME-001 and CME with ID 2026-10-08T16:53:00-CME-001. These CMEs and the coronal hole high speed stream were detected at L1 by"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261017-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49153/1",
+   "messageIssueTime": "2026-10-17T13:12Z",
+   "messageBody": "## Summary:\n\nO-type CME detected by STEREO A / GOES / SOHO. \n\nStart time of the event: 2026-10-17T02:48Z.\n\nEstimated speed: ~1048 km/s.\n\nEstimated opening half-angle: 38 deg.\n\nDirection (lon./lat.): -99/-4 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-10-17T02:48:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact BepiColombo, Parker Solar Probe, and OSIRIS-APEX (glancing blow).  The leading edge of the CME will reach BepiColombo at 2026-10-17T21:43Z and Parker Solar Probe at 2026-10-18T16:32Z (plus minus 7 hours). The flan"
+  },
+  {
+   "messageType": "Report",
+   "messageID": "20261021-7D-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49196/1",
+   "messageIssueTime": "2026-10-21T20:09Z",
+   "messageBody": "## Summary:\n\n## Community Coordinated Modeling Center Database Of Notifications, Knowledge, Information (CCMC DONKI)"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261021-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49203/1",
+   "messageIssueTime": "2026-10-21T23:44Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by STEREO A / GOES / SOHO. \n\nStart time of the event: 2026-10-21T20:36Z.\n\nEstimated speed: ~841 km/s.\n\nEstimated opening half-angle: 38 deg.\n\nDirection (lon./lat.): -169/28 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-10-21T20:36:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact Lucy (minor impact). The leading edge of the CME will reach Lucy at 2026-11-06T00:00Z (plus minus 7 hours). \n\nLinks to the movies of the modeled event (includes CME: 2026-10-21T20:36:00-CME-001):\n\n(a) 2 AU outer b"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261022-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49206/1",
+   "messageIssueTime": "2026-10-22T20:28Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux is above 1000 pfu starting at 2026-10-22T20:20Z. \n\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-10-22T20:20:00-RBE-001."
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261022-AL-002",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49207/1",
+   "messageIssueTime": "2026-10-22T20:40Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux is above 1000 pfu starting at 2026-10-22T20:20Z. \n\nThe elevated energetic electron flux levels are likely caused by the combined arrival of the CME with ID 2026-10-16T12:38:00-CME-001, and the arrival of a coronal hole high speed stream starting on 2026-10-21 reaching maximum sustained speeds of approximately 525 km/s. The arrival of this CME was likely detected at L1 by SOLAR-1 at 2026-10-20T11:23Z. The solar wind speed observed at L1 is currently around 435 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261023-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49217/1",
+   "messageIssueTime": "2026-10-23T12:51Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by STEREO A / GOES / SOHO. \n\nStart time of the event: 2026-10-23T04:18Z.\n\nEstimated speed: ~597 km/s.\n\nEstimated opening half-angle: 26 deg.\n\nDirection (lon./lat.): 71/36 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-10-23T04:18:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact Mars (minor impact), Psyche (minor impact), STEREO A (minor impact), and Solar Orbiter (glancing blow).  The leading edge of the CME may reach Mars at 2026-10-27T12:00Z, Psyche at 2026-10-28T09:00Z, and STEREO A at "
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261024-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49225/1",
+   "messageIssueTime": "2026-10-24T20:46Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated, recently crossing the threshold of 1000 pfu at 2026-10-24T12:00Z.\n\nThe elevated energetic electron flux levels observed since 2026-10-22T20:20Z are likely caused by the arrival of the CME with ID 2026-10-16T12:38:00-CME-001, and the arrival of a coronal hole high speed stream starting on 2026-10-21 reaching maximum sustained speeds of approximately 525 km/s (see notifications 20261022-AL-001 and 20261022-AL-002). The arrival of this CME was likely detected at L1 by SOLAR-1 at 2026-10-20T11:23Z. The solar wind speed observed at L1 is curren"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261026-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49253/1",
+   "messageIssueTime": "2026-10-26T13:50Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by STEREO A / GOES / SOHO. \n\nStart time of the event: 2026-10-26T09:48Z.\n\nEstimated speed: ~681 km/s.\n\nEstimated opening half-angle: 24 deg.\n\nDirection (lon./lat.): 48/-8 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-10-26T09:48:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact Solar Orbiter, STEREO A, Juice (glancing blow), Mars (glancing blow), and Psyche (glancing blow). The leading edge of the CME will reach Solar Orbiter at 2026-10-29T02:32Z, STEREO A at 2026-10-28T23:42Z (plus minus "
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261026-AL-002",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49264/1",
+   "messageIssueTime": "2026-10-26T17:15Z",
+   "messageBody": "## Summary:\n\nUpdate on CME with ID 2026-10-26T09:48:00-CME-001 (see previous notification 20261026-AL-001), now simulated with CME with ID 2026-10-26T09:00:00-CME-001. Based on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CMEs may impact Solar Orbiter, STEREO A, Mars (minor impact), Juice (glancing blow), and Psyche (glancing blow). The leading edge of the CME will reach Solar Orbiter at 2026-10-29T01:19Z, STEREO A at 2026-10-28T23:29Z, and Mars at 2026-10-30T18:00Z (plus minus 7 hours). The flank of the CME will reach Juice at 2026-10-29T06:00Z and Psyche at 2026-10-31T"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261026-AL-003",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49275/1",
+   "messageIssueTime": "2026-10-26T20:37Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux first crossed the threshold of 1000 pfu starting at 2026-10-22T20:20Z. The most recent crossing of the 1000 pfu threshold was at 2026-10-26T19:40Z and the fluxes are currently elevated but below the threshold.\n\nThe elevated energetic electron flux levels observed since 2026-10-22T20:20Z are likely caused by the arrival of the CME with ID 2026-10-16T12:38:00-CME-001, and the arrival of a coronal hole high speed stream starting on 2026-10-21 reaching maximum sustained speeds of approximately 525 km/s (see notifications 20261022-AL-001, 20261022-AL-002, and 20"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261027-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49281/1",
+   "messageIssueTime": "2026-10-27T00:17Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by GOES / SOHO. \n\nStart time of the event: 2026-10-26T18:48Z.\n\nEstimated speed: ~616 km/s.\n\nEstimated opening half-angle: 27 deg.\n\nDirection (lon./lat.): 77/-15 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-10-26T18:48:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact Juno (glancing blow), STEREO A, Mars (minor impact), Psyche (minor impact), and Solar Orbiter (glancing blow).  The leading edge of the CME may reach STEREO A at 2026-10-29T10:43Z, Mars at 2026-10-31T11:00Z, and Psyche at 202"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261028-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49300/1",
+   "messageIssueTime": "2026-10-28T15:15Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated, recently crossing the threshold of 1000 pfu at 2026-10-28T09:15Z.\n\nThe elevated energetic electron flux levels observed since 2026-10-27T11:30Z are caused by the arrival of a coronal hole high speed stream starting on 2026-10-26, reaching maximum sustained speeds of approximately 425 km/s. The solar wind speed observed at L1 is currently around 385 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-10-27T11:30:00-RBE-001."
+  },
+  {
+   "messageType": "Report",
+   "messageID": "20261028-7D-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49307/1",
+   "messageIssueTime": "2026-10-28T20:01Z",
+   "messageBody": "## Summary:\n\nSolar activity was at low levels during this reporting period with 11 C-type CMEs (see details below).   \n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it was estimated that the following CMEs were predicted to impact the listed locations:\n\nCME Starting time  | Predicted Impacts (plus minus 7 hours)\n-----------------------------------------------------------------------------\n2026-10-21T20:36Z   Lucy at 2026-11-06T00:00Z (minor impact) (see notification 20261021-AL-001).\n2026-10-23T04:18Z   Mars at 2026-10-27T12:00Z (minor impact), Psyche at 2026-10-28T09:00Z (minor impact)"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261030-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49329/1",
+   "messageIssueTime": "2026-10-30T15:15Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated, recently crossing the threshold of 1000 pfu at 2026-10-30T13:10Z.\n\nThe elevated energetic electron flux levels observed since 2026-10-27T11:30Z are caused by the arrival of a coronal hole high speed stream starting on 2026-10-26, reaching maximum sustained speeds of approximately 425 km/s (see notification 20261028-AL-001). The solar wind speed observed at L1 is currently around 330 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-"
+  },
+  {
+   "messageType": "GST",
+   "messageID": "20261031-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49349/1",
+   "messageIssueTime": "2026-10-31T21:04Z",
+   "messageBody": "## Summary:\n\nOngoing space weather storm in the Earth's magnetosphere. Geomagnetic Kp index has reached level 6 (moderate) during the synoptic period 2026-10-31T18:00Z to 2026-10-31T21:00Z. \n\n\nNASA spacecraft at GEO, MEO, polar and other orbits passing through or in the vicinity of the Earth's ring current and auroral regions can be impacted.\n\nActivity ID: 2026-10-31T18:00:00-GST-001."
+  },
+  {
+   "messageType": "GST",
+   "messageID": "20261031-AL-002",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49350/1",
+   "messageIssueTime": "2026-10-31T21:11Z",
+   "messageBody": "## Summary:\n\nOngoing space weather storm in the Earth's magnetosphere. Geomagnetic Kp index has reached level 6 (moderate) during the synoptic period 2026-10-31T18:00Z to 2026-10-31T21:00Z. \n\nThe storm is caused by the coronal hole high speed stream starting on 2026-10-31.\n\nNASA spacecraft at GEO, MEO, polar and other orbits passing through or in the vicinity of the Earth's ring current and auroral regions can be impacted.\n\nActivity ID: 2026-10-31T18:00:00-GST-001."
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261101-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49352/1",
+   "messageIssueTime": "2026-11-01T13:28Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux is above 1000 pfu starting at 2026-11-01T12:45Z. \n\nThe elevated energetic electron flux levels are caused by the arrival of a coronal hole high speed stream which started on 2026-10-31, reaching a maximum speed of approximately 600 km/s. The solar wind speed observed at L1 is currently around 500 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-11-01T12:45:00-RBE-001."
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261101-AL-002",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49356/1",
+   "messageIssueTime": "2026-11-01T16:06Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by STEREO A / GOES / SOHO. \n\nStart time of the event: 2026-11-01T00:00Z.\n\nEstimated speed: ~894 km/s.\n\nEstimated opening half-angle: 14 deg.\n\nDirection (lon./lat.): -42/-11 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-11-01T00:00:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact BepiColombo (minor impact), OSIRIS-APEX (minor impact), Europa Clipper (glancing blow), and Parker Solar Probe (glancing blow). The leading edge of the CME will reach BepiColombo at 2026-11-01T17:00Z and OSIRIS-AP"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261103-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49369/1",
+   "messageIssueTime": "2026-11-03T13:28Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated, recently crossing the threshold of 1000 pfu at 2026-11-03T05:25Z.\n\nThe elevated energetic electron flux levels observed since 2026-11-01T12:45Z are likely caused by a coronal hole high speed stream which arrived on 2026-10-31, reaching a maximum speed of approximately 600 km/s (see notification 20261101-AL-001). The solar wind speed observed at L1 is currently around 350 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-11-01T12:45:"
+  },
+  {
+   "messageType": "Report",
+   "messageID": "20261104-7D-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49385/1",
+   "messageIssueTime": "2026-11-04T21:04Z",
+   "messageBody": "## Summary:\n\nSolar activity was at low levels during this reporting period with one C-type CME (see details below).   \n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it was estimated that the following CME was predicted to impact the listed locations:\n\nCME Starting time  | Predicted Impacts (plus minus 7 hours)\n-----------------------------------------------------------------------------\n2026-11-01T00:00Z   BepiColombo at 2026-11-01T17:00Z (minor impact), Europa Clipper at 2026-11-03T12:00Z (glancing blow), OSIRIS-APEX at 2026-11-03T12:00Z (minor impact), Parker Solar Probe at 2026-11-02"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261105-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49388/1",
+   "messageIssueTime": "2026-11-05T13:29Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated, recently crossing the threshold of 1000 pfu at 2026-11-05T13:00Z.\n\nThe elevated energetic electron flux levels observed since 2026-11-01T12:45Z are likely caused by a coronal hole high speed stream which arrived on 2026-10-31, reaching maximum speeds of approximately 600 km/s (see notifications 20261101-AL-001 and 20261103-AL-001). The solar wind speed observed at L1 is currently around 320 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity I"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261106-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49397/1",
+   "messageIssueTime": "2026-11-06T01:56Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by GOES / SOHO. \n\nStart time of the event: 2026-11-05T20:00Z.\n\nEstimated speed: ~798 km/s.\n\nEstimated opening half-angle: 13 deg.\n\nDirection (lon./lat.): -35/2 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-11-05T20:00:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact OSIRIS-APEX, BepiColombo (glancing blow), and Europa Clipper (glancing blow).  The leading edge of the CME will reach OSIRIS-APEX at 2026-11-07T20:25Z (plus minus 7 hours).  The flank of the CME may reach BepiColombo at 2026-1"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261108-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49463/1",
+   "messageIssueTime": "2026-11-08T21:18Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux is above 1000 pfu starting at 2026-11-08T21:10Z. \n\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-11-08T21:10:00-RBE-001."
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261108-AL-002",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49464/1",
+   "messageIssueTime": "2026-11-08T21:28Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux is above 1000 pfu starting at 2026-11-08T21:10Z. \n\nThe elevated energetic electron flux levels are caused by coronal hole high speed stream starting at 2026-11-06, reaching maximum sustained speeds of approximately 780 km/s. The solar wind speed observed at L1 is currently around 700 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 2026-11-08T21:10:00-RBE-001."
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261110-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49474/1",
+   "messageIssueTime": "2026-11-10T13:06Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by GOES. \n\nStart time of the event: 2026-11-09T18:15Z.\n\nEstimated speed: ~726 km/s.\n\nEstimated opening half-angle: 10 deg.\n\nDirection (lon./lat.): 65/-2 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-11-09T18:15:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact STEREO A (minor impact), Mars (glancing blow), and Psyche (glancing blow).  The leading edge of the CME may reach STEREO A at 2026-11-12T01:00Z and the flank of the CME may reach Mars at 2026-11-13T12:00Z and Psyche at 2026-11-14T06:"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261110-AL-002",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49483/1",
+   "messageIssueTime": "2026-11-10T16:29Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by GOES / STEREO A / SOHO. \n\nStart time of the event: 2026-11-10T05:30Z.\n\nEstimated speed: ~974 km/s.\n\nEstimated opening half-angle: 11 deg.\n\nDirection (lon./lat.): 93/2 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-11-10T05:30:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact STEREO A (glancing blow). The flank of the CME will reach STEREO A at 2026-11-12T14:00Z (plus minus 7 hours). \n\nLinks to the movies of the modeled event (includes CME: 2026-11-10T05:30:00-CME-001):\n\nhttps://iswa.gsfc"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261110-AL-003",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49486/1",
+   "messageIssueTime": "2026-11-10T21:31Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated, recently crossing the threshold of 1000 pfu at 2026-11-10T06:10Z.\n \nThe elevated energetic electron flux levels observed since 2026-11-08T21:10Z are caused by a coronal hole high speed stream starting on 2026-11-06, reaching maximum sustained speeds of approximately 780 km/s (see notification 20261108-AL-002). The solar wind speed observed at L1 is currently around 600 km/s.\n \nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n \nActivity ID: 2026-11-08T21:10:"
+  },
+  {
+   "messageType": "Report",
+   "messageID": "20261111-7D-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49503/1",
+   "messageIssueTime": "2026-11-11T21:02Z",
+   "messageBody": "## Summary:\n\nSolar activity was at moderate level during this reporting period, with 7 M-class flares and 7 C-type CMEs (see details below).   \n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it was estimated that the following CMEs were predicted to impact the listed locations:\n\nCME Starting time  | Predicted Impacts (plus minus 7 hours)\n----------------------------------------------------------------------------- \n2026-11-05T20:00Z   BepiColombo at 2026-11-06T10:00Z (glancing blow), Europa Clipper at 2026-11-07T12:00Z (glancing blow), OSIRIS-APEX at 2026-11-07T17:22Z (see notification 2"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261112-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49522/1",
+   "messageIssueTime": "2026-11-12T21:30Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated, recently crossing the threshold of 1000 pfu at 2026-11-12T07:35Z.\n\nThe elevated energetic electron flux levels observed since 2026-11-08T21:10Z are caused by a coronal hole high speed stream starting on 2026-11-06, reaching maximum sustained speeds of approximately 780 km/s (see notifications 20261108-AL-002, 20261110-AL-003). The solar wind speed observed at L1 is currently around 430 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity ID: 20"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261113-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49532/1",
+   "messageIssueTime": "2026-11-13T16:25Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by STEREO A / SOHO. \n\nStart time of the event: 2026-11-13T03:24Z.\n\nEstimated speed: ~525 km/s.\n\nEstimated opening half-angle: 17 deg.\n\nDirection (lon./lat.): -46/13 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-11-13T03:24:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact OSIRIS-APEX (minor impact), Europa Clipper (glancing blow), and Parker Solar Probe (glancing blow). The leading edge of the CME will reach OSIRIS-APEX at 2026-11-16T02:00Z and Europa Clipper at 2026-11-16T06:00Z. The flan"
+  },
+  {
+   "messageType": "RBE",
+   "messageID": "20261114-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49556/1",
+   "messageIssueTime": "2026-11-14T21:34Z",
+   "messageBody": "## Summary:\n\nSignificantly elevated energetic electron fluxes in the Earth's outer radiation belt. GOES \"greater than 2.0 MeV\" integral electron flux remains elevated above the threshold of 1000 pfu since 2026-11-12T07:35Z.\n\nThe elevated energetic electron flux levels observed since 2026-11-08T21:10Z are caused by a coronal hole high speed stream starting on 2026-11-06, reaching maximum sustained speeds of approximately 780 km/s (see notifications 20261108-AL-002, 20261110-AL-003, 20261112-AL-001). The solar wind speed observed at L1 is currently around 405 km/s.\n\nNASA spacecraft at GEO, MEO and other orbits passing through or in the vicinity of the Earth's outer radiation belt can be impacted.\n\nActivity"
+  },
+  {
+   "messageType": "CME",
+   "messageID": "20261115-AL-001",
+   "messageURL": "https://ccmc.gsfc.nasa.gov/DONKI/view/Alert/49561/1",
+   "messageIssueTime": "2026-11-15T01:21Z",
+   "messageBody": "## Summary:\n\nC-type CME detected by GOES / SOHO. \n\nStart time of the event: 2026-11-14T22:15Z.\n\nEstimated speed: ~624 km/s.\n\nEstimated opening half-angle: 36 deg.\n\nDirection (lon./lat.): -70/36 in Heliocentric Earth Equatorial coordinates.\n\nActivity ID: 2026-11-14T22:15:00-CME-001\n\nBased on preliminary analysis by the Moon to Mars Space Weather Analysis Office and heliospheric modeling carried out at NASA Community Coordinated Modeling Center, it is estimated that the CME may impact Parker Solar Probe, OSIRIS-APEX (minor impact), and Europa Clipper (glancing blow).  The leading edge of the CME will reach Parker Solar Probe at 2026-11-16T08:24Z and its flank will reach OSIRIS-APEX at 2026-11-17T20:00Z, an"
+  }
+ ]
+}

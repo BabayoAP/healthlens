@@ -1,6 +1,9 @@
 /**
  * Mission environments (PRD §6). One setting changes instructions, emergency guidance and comm expectations.
- * Figures are round reference values. TODO: cite sources in docs/SUBMISSION.md before the demo.
+ * Signal delays are the light travel time for the distance: the Moon is about 384,000 km away
+ * (1.3 s); Mars is about 55 to 400 million km away (3 to 22 minutes one way, up to 44 minutes for
+ * a question and its answer). Gravity: Moon 0.17 g, Mars 0.38 g. Shelter advice follows NASA's
+ * public description of the Orion storm-shelter procedure (see `sources.ts`: nasaShelter).
  */
 export type EnvironmentId = 'station' | 'spacecraft' | 'moon' | 'mars';
 
@@ -27,14 +30,14 @@ export const ENVIRONMENTS: Environment[] = [
     id: 'station', label: 'Space station (low Earth orbit)', gravity: 'Microgravity',
     commDelay: 'under 1 second', liveHelp: true,
     helpAdvice: 'Call the flight surgeon now. You can talk live.',
-    massMethod: 'A scale does not work in microgravity. Use the mass-measuring device, which works out your mass from how fast a spring moves you.',
+    massMethod: 'A scale does not work in microgravity. Use the mass-measuring device, which pushes you with a known force and works out your mass from how fast you accelerate.',
     shelter: 'Move to the most shielded module of the station.',
     focus: ['Vision changes', 'Heart and circulation', 'Bone and muscle loss'],
   },
   {
     id: 'spacecraft', label: 'Spacecraft (deep-space transit)', gravity: 'Microgravity',
-    commDelay: 'grows with distance, up to about 20 minutes', liveHelp: false,
-    helpAdvice: 'Send a report to the flight surgeon now, then keep going with the steps. A reply can take up to 40 minutes.',
+    commDelay: 'grows with distance, up to about 22 minutes', liveHelp: false,
+    helpAdvice: 'Send a report to the flight surgeon now, then keep going with the steps. A reply can take up to 44 minutes.',
     massMethod: 'A scale does not work in microgravity. Use the mass-measuring device.',
     shelter: 'Build the storm shelter: move to the most shielded area and stack stowage and water around the crew.',
     focus: ['Radiation', 'Bone and muscle loss', 'Mood and sleep'],
@@ -49,8 +52,8 @@ export const ENVIRONMENTS: Environment[] = [
   },
   {
     id: 'mars', label: 'Mars base', gravity: 'About 3/8 of Earth gravity',
-    commDelay: '4 to 24 minutes', liveHelp: false,
-    helpAdvice: 'Send a report to the flight surgeon now, then keep going with the steps. A reply can take up to 48 minutes, so the crew acts first.',
+    commDelay: '3 to 22 minutes', liveHelp: false,
+    helpAdvice: 'Send a report to the flight surgeon now, then keep going with the steps. A reply can take up to 44 minutes, so the crew acts first.',
     massMethod: 'An Earth scale reads about 38% of your real weight here. Divide the reading by 0.38, or use a scale set for Mars gravity.',
     shelter: 'Get inside the habitat or the nearest shielded shelter. If you are in a rover or outside, head back now.',
     focus: ['Radiation', 'Dust exposure', 'Mood and isolation', 'Injuries'],

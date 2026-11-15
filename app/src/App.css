@@ -117,3 +117,12 @@ ul.plain { list-style: none; padding: 0; }
 .detail-nav { margin-top: 16px; gap: 8px; }
 @media (prefers-reduced-motion: reduce) { .region path { transition: none; } }
 .bodymap > * { min-width: 0; }
+
+/* Sources and space weather */
+.source-list { list-style: none; padding: 0; margin: 4px 0; font-size: .85rem; }
+.source-list li { margin: 2px 0; }
+a { color: var(--accent); }
+.space-weather { margin-top: 16px; }
+.space-weather h4 { margin: 14px 0 4px; font-size: .9rem; }
+.space-weather p, .sw-list { font-size: .92rem; line-height: 1.5; max-width: 80ch; margin: 4px 0; }
+.sw-list li { margin: 6px 0; }
