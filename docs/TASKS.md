@@ -17,14 +17,16 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 - [ ] Reminders: due/overdue list on dashboard (the `due` flag per indicator already exists in `evaluateAstronaut`). PRD §5.11
 - [ ] In-app vision check (near-vision chart + Amsler grid) and reaction-time test. PRD §5.0, §5.6
 - [ ] Symptom checklist. PRD §5.4
-- [ ] Verify indicator ranges in PRD §7 against sources; cite them
-- [ ] Pick + cite NASA data actually used in the app (OSDR skin OSD-238/239/240/241/254, HRP risks, DONKI). PRD §9
 - [ ] Deploy to a public URL (Vercel) and test in a private window
 - [ ] Demo: 7-slide deck with short GIFs (≤30 s of motion in total). Plan in DEMO-PLAN.md
 - [ ] Fill the Space Apps Project page from SUBMISSION.md and click **Submit for Judging**
 
 ## In progress
 _(name · task · started)_
+
+**BabayoAP · claimed Nov 15. New files `lib/sources.ts`, `lib/spaceWeather.ts`; edits to `indicators.ts`, `guides.ts`, `environment.ts`, `emergency.ts`, Guides/Dashboard pages.**
+- [ ] Verify indicator ranges and guide text against sources; show the sources in the app. PRD §7
+- [ ] Use NASA data in the app: live DONKI space-weather feed for the radiation alert; cite HRP + OSDR skin studies. PRD §9
 
 ## Done
 - [x] Body map: clickable 2D figure (7 parts, colored and marked by status, keyboard-friendly), detail panel with latest measurements, trend, skin scans of that area, why it changes in space, what to do, when to contact the medical officer. Dashboard cards now open it. `lib/bodyRegions.ts`, `pages/BodyMap.tsx`. BabayoAP
