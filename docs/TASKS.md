@@ -18,6 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- Dawson Phan · UI pass 3: futuristic HUD theme (look only, no logic changes), dark / light toggle, draggable 3D body figure on the Body map · Sat night
 
 ## Done
 - [x] UI pass 2: all-in-one Dashboard. Crew strip (pick a crew member), vitals tiles with 14-day sparklines, large body figure with callouts on flagged parts (click opens that part on the Body map), checks ring, radiation card, filterable **trend explorer** (any measure or skin spot, 1W / 2W / 6W / All, baseline and limits on/off, latest / low / high / change), needs-attention card, sleep and wellbeing meters, crew checks and space weather. Brighter light-only palette. Explorer also leads the Trends screen. Shared pieces: `components/BodyFigure.tsx`, `TrendExplorer.tsx`, `Sparkline.tsx`, `lib/bodyView.ts`, `lib/trends.ts`. BabayoAP
