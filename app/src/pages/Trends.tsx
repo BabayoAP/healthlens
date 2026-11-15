@@ -1,43 +1,15 @@
 import { useState } from 'react';
-import { formatValue, type IndicatorDef } from '../lib/indicators';
-import { evaluateAstronaut, type IndicatorEval } from '../lib/status';
+import { formatValue } from '../lib/indicators';
+import { evaluateAstronaut } from '../lib/status';
 import { readingsFor, useData } from '../lib/store';
-import type { Lesion, SkinScan, Status } from '../lib/types';
+import { referenceLines, spotHistories, watchSize } from '../lib/trends';
 import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
-import { TrendChart, type TrendLine, type TrendPoint } from '../components/TrendChart';
+import { TrendChart, type TrendPoint } from '../components/TrendChart';
+import { TrendExplorer } from '../components/TrendExplorer';
 
 const DAY = 86_400_000;
 const RANGES = [{ days: 14, label: '2 weeks' }, { days: 42, label: '6 weeks' }];
-
-function referenceLines(def: IndicatorDef, ev: IndicatorEval): TrendLine[] {
-  const lines: TrendLine[] = [];
-  if (ev.baseline !== undefined) lines.push({ value: ev.baseline, label: 'your baseline', kind: 'baseline' });
-  const l = def.limits;
-  if (l?.watchAbove !== undefined) lines.push({ value: l.watchAbove, label: `watch from ${l.watchAbove}`, kind: 'watch' });
-  if (l?.actAbove !== undefined) lines.push({ value: l.actAbove, label: `act from ${l.actAbove}`, kind: 'act' });
-  if (l?.watchBelow !== undefined) lines.push({ value: l.watchBelow, label: `watch below ${l.watchBelow}`, kind: 'watch' });
-  if (l?.actBelow !== undefined) lines.push({ value: l.actBelow, label: `act below ${l.actBelow}`, kind: 'act' });
-  return lines;
-}
-
-/** Every scan of one spot, oldest first, matched by lesion id. */
-function spotHistories(scans: SkinScan[]) {
-  const byId = new Map<string, { region: string; latest: Lesion; points: TrendPoint[] }>();
-  for (const scan of [...scans].sort((a, b) => a.takenAt.localeCompare(b.takenAt))) {
-    for (const l of scan.lesions) {
-      const h = byId.get(l.id) ?? { region: scan.region, latest: l, points: [] };
-      h.latest = l;
-      h.points.push({ t: Date.parse(scan.takenAt), value: l.diameterMm, source: scan.source });
-      byId.set(l.id, h);
-    }
-  }
-  const rank: Record<Status, number> = { act: 0, watch: 1, ok: 2 };
-  return [...byId.entries()]
-    .map(([id, h]) => ({ id, ...h }))
-    .filter((h) => h.points.length > 1)
-    .sort((a, b) => rank[a.latest.risk] - rank[b.latest.risk]);
-}
 
 export function Trends({ astronautId }: { astronautId: string }) {
   const data = useData();
@@ -50,6 +22,9 @@ export function Trends({ astronautId }: { astronautId: string }) {
   return (
     <section>
       <h2>Trends</h2>
+      <TrendExplorer key={astronautId} astronautId={astronautId} title="Explore a measure" />
+
+      <h3>All measurements</h3>
       <div className="row range" role="group" aria-label="Time range">
         {RANGES.map((r) => (
           <button key={r.days} type="button" aria-pressed={days === r.days} className={days === r.days ? 'active' : ''} onClick={() => setDays(r.days)}>
@@ -94,9 +69,6 @@ export function Trends({ astronautId }: { astronautId: string }) {
             .map((r) => ({ t: Date.parse(r.takenAt), value: r.value, source: r.source }))
             .filter((p) => p.t >= from);
           const format = (v: number) => formatValue(i.def, v);
-          // Scale the axis to the size of change that would matter for this indicator
-          const b = i.def.baseline;
-          const watchSize = b ? (b.pct ? ((i.baseline ?? i.latest!.value) * b.watch) / 100 : b.watch) : 0;
           return (
             <div className="panel" key={i.def.id}>
               <div className="panel-head">
@@ -109,7 +81,7 @@ export function Trends({ astronautId }: { astronautId: string }) {
               </p>
               <TrendChart
                 label={`${i.def.label}, last ${rangeLabel}`}
-                points={points} format={format} lines={referenceLines(i.def, i)} from={from} to={data.now} minSpan={watchSize * 2.5}
+                points={points} format={format} lines={referenceLines(i.def, i)} from={from} to={data.now} minSpan={watchSize(i) * 2.5}
               />
               {i.reasons.map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}
               <details className="chart-table">

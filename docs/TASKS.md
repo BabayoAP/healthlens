@@ -18,9 +18,9 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
-- BabayoAP · UI pass 2: all-in-one dashboard (vitals tiles, body figure with callouts, checks ring, filterable trend explorer), brighter light palette. Touches Dashboard, App.tsx, CSS, BodyMap (figure moved to a shared component), Trends · Nov 14
 
 ## Done
+- [x] UI pass 2: all-in-one Dashboard. Crew strip (pick a crew member), vitals tiles with 14-day sparklines, large body figure with callouts on flagged parts (click opens that part on the Body map), checks ring, radiation card, filterable **trend explorer** (any measure or skin spot, 1W / 2W / 6W / All, baseline and limits on/off, latest / low / high / change), needs-attention card, sleep and wellbeing meters, crew checks and space weather. Brighter light-only palette. Explorer also leads the Trends screen. Shared pieces: `components/BodyFigure.tsx`, `TrendExplorer.tsx`, `Sparkline.tsx`, `lib/bodyView.ts`, `lib/trends.ts`. BabayoAP
 - [x] UI redesign (pass 1): sidebar app shell (grouped screens, crew list with status dots, location / demo mode / Emergency at the bottom; becomes a top bar on phones), astronaut header on per-person screens, design tokens with real dark mode, Geist type, crew overview with a one-line status headline and crew cards, smoother body figure, NASA event list folded away. Restyle only on other screens: no logic changed. BabayoAP
 - [x] Tests screen: vision check (tumbling-E near-vision chart, 8 rows, then Amsler grid per eye) and reaction-time test (5 tries, middle value). New indicators `reactionTime`, `nearVision`, `amsler`, saved as measured-in-app, with guides, sources, reminders, trends and body map (head). Seeded for the demo crew; Nakamura's reaction time slows with the sleep loss. `pages/Tests.tsx`. BabayoAP
 - [x] Symptom checklist on the Check-in screen: 16 symptoms in 4 groups; any = Watch, 3 days in a row or an urgent one = Act, "No symptoms today" clears it. Feeds status, insights, body map and the report. `lib/symptoms.ts`, `components/SymptomChecklist.tsx`. Not seeded for the demo crew. BabayoAP

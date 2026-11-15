@@ -32,6 +32,8 @@ interface Props {
    */
   minSpan?: number;
   height?: number;
+  /** Shade the area under the line (used by the larger trend explorer) */
+  area?: boolean;
 }
 
 const M = { top: 10, right: 12, bottom: 20, left: 40 };
@@ -49,7 +51,7 @@ function niceStep(span: number, target: number): number {
  * One measure over time, one axis. Single series, so no legend: the card title names it.
  * Hover, touch or arrow keys show the value under the crosshair.
  */
-export function TrendChart({ label, points, format, lines = [], from, to, minSpan = 0, height = 150 }: Props) {
+export function TrendChart({ label, points, format, lines = [], from, to, minSpan = 0, height = 150, area = false }: Props) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(320);
   const [active, setActive] = useState<number>();
@@ -131,6 +133,7 @@ export function TrendChart({ label, points, format, lines = [], from, to, minSpa
           <line key={l.label} className={`chart-ref chart-ref-${l.kind}`} x1={M.left} x2={width - M.right} y1={y(l.value)} y2={y(l.value)} />
         ))}
 
+        {area && <path className="chart-area" d={`${path}L${x(last.t).toFixed(1)},${M.top + h}L${x(points[0].t).toFixed(1)},${M.top + h}Z`} />}
         <path className="chart-line" d={path} />
         {/* Labels go on top of the line so their outline keeps them readable */}
         {shown.map((l) => (

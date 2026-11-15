@@ -1,5 +1,6 @@
 import { useState, type ComponentType } from 'react';
 import { Activity, BookOpen, ClipboardCheck, Eye, LayoutGrid, LineChart, ScanFace, Siren, Sparkles, PersonStanding } from 'lucide-react';
+import type { FigureRegionId } from './lib/bodyRegions';
 import { crew } from './lib/mockData';
 import { ENVIRONMENTS, type EnvironmentId } from './lib/environment';
 import { evaluateAstronaut } from './lib/status';
@@ -23,7 +24,7 @@ type Icon = ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?:
 
 /** Sidebar groups: what you look at, what you record, what you look up. */
 const NAV: { group?: string; items: { id: Tab; label: string; icon: Icon }[] }[] = [
-  { items: [{ id: 'dashboard', label: 'Crew overview', icon: LayoutGrid }] },
+  { items: [{ id: 'dashboard', label: 'Dashboard', icon: LayoutGrid }] },
   { group: 'Astronaut', items: [
     { id: 'body', label: 'Body map', icon: PersonStanding },
     { id: 'insights', label: 'Insights', icon: Sparkles },
@@ -46,9 +47,10 @@ export default function App() {
   const [emergencyGuide, setEmergencyGuide] = useState<string>();
   const perAstronaut = tab !== 'dashboard' && tab !== 'emergency';
 
+  const [bodyRegion, setBodyRegion] = useState<FigureRegionId>();
   const pickAstronaut = (id: string) => {
     setAstronautId(id);
-    if (!perAstronaut) setTab('body');
+    if (tab === 'emergency') setTab('dashboard');
   };
 
   return (
@@ -67,7 +69,7 @@ export default function App() {
             <div className="nav-group" key={g.group ?? i}>
               {g.group && <div className="nav-label">{g.group}</div>}
               {g.items.map(({ id, label, icon: I }) => (
-                <button key={id} type="button" className={`nav-item${tab === id ? ' active' : ''}`} aria-current={tab === id ? 'page' : undefined} onClick={() => setTab(id)}>
+                <button key={id} type="button" className={`nav-item${tab === id ? ' active' : ''}`} aria-current={tab === id ? 'page' : undefined} onClick={() => { setBodyRegion(undefined); setTab(id); }}>
                   <I size={16} strokeWidth={1.75} aria-hidden />
                   <span>{label}</span>
                 </button>
@@ -80,7 +82,7 @@ export default function App() {
           <div className="nav-label">Crew</div>
           {crew.map((a) => {
             const ev = evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs);
-            const selected = perAstronaut && a.id === astronautId;
+            const selected = tab !== 'emergency' && a.id === astronautId;
             return (
               <button key={a.id} type="button" className={`crew-item${selected ? ' active' : ''}`} aria-pressed={selected} onClick={() => pickAstronaut(a.id)}>
                 <span className="avatar" aria-hidden="true">{a.name.split(' ').pop()![0]}</span>
@@ -134,8 +136,16 @@ export default function App() {
         )}
 
         <main>
-          {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} onOpenCheck={(id, t) => { setAstronautId(id); setTab(t); }} onOpenStormGuide={() => { setEmergencyGuide('solar-storm'); setTab('emergency'); }} />}
-          {tab === 'body' && <BodyMap key={astronautId} astronautId={astronautId} onNavigate={setTab} />}
+          {tab === 'dashboard' && (
+            <Dashboard
+              astronautId={astronautId} onSelect={setAstronautId}
+              onOpenBody={(region) => { setBodyRegion(region); setTab('body'); }}
+              onOpenInsights={() => setTab('insights')}
+              onOpenCheck={(id, t) => { setAstronautId(id); setTab(t); }}
+              onOpenStormGuide={() => { setEmergencyGuide('solar-storm'); setTab('emergency'); }}
+            />
+          )}
+          {tab === 'body' && <BodyMap key={`${astronautId}-${bodyRegion}`} astronautId={astronautId} initialRegion={bodyRegion} onNavigate={setTab} />}
           {tab === 'insights' && <Insights astronautId={astronautId} onNavigate={setTab} />}
           {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
           {tab === 'tests' && <Tests key={astronautId} astronautId={astronautId} />}

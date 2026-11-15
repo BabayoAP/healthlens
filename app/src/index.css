@@ -1,34 +1,26 @@
 @import '@fontsource-variable/geist';
 
-/* Design tokens. Status colors (ok / watch / act) are reserved for status only. */
+/* Design tokens: one bright, light theme. Status colors (ok / watch / act) are reserved for status only. */
 :root {
-  --bg: #f7f7f8; --sidebar: #efeff2; --surface: #ffffff; --surface-2: #f4f4f6;
-  --text: #17181c; --muted: #676b76; --faint: #9a9ea8;
-  --border: #e3e4e8; --border-strong: #cfd1d7;
-  --accent: #2f5bea; --accent-soft: #e9eefd; --series: #3a72f0;
-  --ink-btn: #17181c; --ink-btn-text: #ffffff;
-  --ok: #1d8a4e; --watch: #b06a00; --act: #d1291b; --act-strong: #d1291b;
-  --ok-soft: #e6f4ec; --watch-soft: #fbf0dd; --act-soft: #fdeae7;
-  --shadow: 0 1px 2px rgb(16 18 24 / .04), 0 1px 1px rgb(16 18 24 / .03);
-  --r-lg: 14px; --r-md: 10px; --r-sm: 7px;
+  --bg: #f3f6fb; --sidebar: #ffffff; --surface: #ffffff; --surface-2: #f2f5fa;
+  --text: #121826; --muted: #5d6676; --faint: #97a0ae;
+  --border: #e4e9f1; --border-strong: #ccd4e0;
+  --accent: #2563eb; --accent-soft: #e8f0fe; --series: #3b82f6;
+  --ink-btn: #121826; --ink-btn-text: #ffffff;
+  --ok: #15803d; --watch: #c26a00; --act: #dc2626; --act-strong: #dc2626;
+  --ok-soft: #e3f6e9; --watch-soft: #fff1d6; --act-soft: #fde8e8;
+  /* Category tints, for icons only (never status) */
+  --rose: #e11d74; --rose-soft: #fde7f1; --violet: #7c3aed; --violet-soft: #efe9fe;
+  --sky: #0284c7; --sky-soft: #e0f2fe; --teal: #0d9488; --teal-soft: #d9f5f1;
+  --amber: #b45309; --amber-soft: #fdf0dc;
+  --shadow: 0 1px 2px rgb(18 24 38 / .04), 0 4px 16px -6px rgb(18 24 38 / .08);
+  --r-lg: 16px; --r-md: 11px; --r-sm: 8px;
   color-scheme: light;
   font-family: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 15px; line-height: 1.5; color: var(--text); background: var(--bg);
   font-feature-settings: 'tnum' 1; -webkit-font-smoothing: antialiased;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #18181b; --sidebar: #1f1f23; --surface: #232327; --surface-2: #2a2a2f;
-    --text: #f1f1f3; --muted: #a2a4ad; --faint: #73757e;
-    --border: #323238; --border-strong: #45454d;
-    --accent: #7d97ff; --accent-soft: #283152; --series: #6f92ff;
-    --ink-btn: #f1f1f3; --ink-btn-text: #17181c;
-    --ok: #46c27f; --watch: #e8a53b; --act: #ff6b5c; --act-strong: #d93a2b;
-    --ok-soft: #1d3428; --watch-soft: #3a2e17; --act-soft: #42221f;
-    --shadow: none;
-    color-scheme: dark;
-  }
-}
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); }
 h1, h2, h3, h4 { letter-spacing: -0.01em; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
