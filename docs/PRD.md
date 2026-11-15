@@ -247,12 +247,12 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 1. Dashboard with crew + personal status, color coding — *crew view built*
 2. Skin scan → lesion table → new/changed/stable — *built with mock AI; needs real model call*
 3. Vitals + mood check-in entry, saved locally — *built*
-4. Measurement guide cards for 5 indicators (skin, HR, BP, SpO₂, mood)
+4. Measurement guide cards for 5 indicators (skin, HR, BP, SpO₂, mood) — *built*
 5. Insights list with "what / why / do / escalate"
 6. Trend chart for one vital + skin timeline for one lesion
 7. Reminders list (due / overdue)
-8. Emergency mode with 2 guides (low SpO₂, solar particle event)
-9. Environment switch (station vs Moon base) changing at least the guides and the body-mass method
+8. Emergency mode with 2 guides (low SpO₂, solar particle event) — *built*
+9. Environment switch (station vs Moon base) changing at least the guides and the body-mass method — *built*
 10. Seeded demo astronaut with the worked example — *data built; screens pending*
 11. Source layer with visible "simulated" tags + demo-mode toggle (§5.0) — *built*
 12. Seeded history generator with one planned problem per astronaut (§5.10) — *built*

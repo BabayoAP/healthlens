@@ -1,20 +1,23 @@
 import { useState } from 'react';
 import { crew } from './lib/mockData';
-import { setDemoMode, useData } from './lib/store';
+import { ENVIRONMENTS, type EnvironmentId } from './lib/environment';
+import { setDemoMode, setEnvironment, useData } from './lib/store';
 import { SourceTag } from './components/SourceTag';
 import { CheckIn } from './pages/CheckIn';
 import { Dashboard } from './pages/Dashboard';
+import { Emergency } from './pages/Emergency';
+import { Guides } from './pages/Guides';
 import { Skin } from './pages/Skin';
 import { Vitals } from './pages/Vitals';
 import './App.css';
 
-type Tab = 'dashboard' | 'check-in' | 'skin' | 'vitals';
-const TABS: Record<Tab, string> = { dashboard: 'Dashboard', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals' };
+type Tab = 'dashboard' | 'check-in' | 'skin' | 'vitals' | 'guides';
+const TABS: Record<Tab, string> = { dashboard: 'Dashboard', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', guides: 'Guides' };
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>('dashboard');
+  const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
   const [astronautId, setAstronautId] = useState(crew[0].id);
-  const { demoMode } = useData();
+  const { demoMode, environment } = useData();
 
   return (
     <div className="app">
@@ -27,11 +30,15 @@ export default function App() {
             </button>
           ))}
         </nav>
-        {tab !== 'dashboard' && (
-          <select value={astronautId} onChange={(e) => setAstronautId(e.target.value)}>
+        {tab !== 'dashboard' && tab !== 'emergency' && (
+          <select aria-label="Astronaut" value={astronautId} onChange={(e) => setAstronautId(e.target.value)}>
             {crew.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
           </select>
         )}
+        <select aria-label="Environment" value={environment} onChange={(e) => setEnvironment(e.target.value as EnvironmentId)}>
+          {ENVIRONMENTS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
+        </select>
+        <button type="button" className="emergency-btn" onClick={() => setTab('emergency')}>Emergency</button>
         <label className="demo-toggle" title="Loads a seeded demo crew with 6 weeks of simulated history. Your own entries are kept either way.">
           <input type="checkbox" checked={demoMode} onChange={(e) => setDemoMode(e.target.checked)} /> Demo mode
         </label>
@@ -48,6 +55,8 @@ export default function App() {
         {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
         {tab === 'skin' && <Skin astronautId={astronautId} />}
         {tab === 'vitals' && <Vitals astronautId={astronautId} />}
+        {tab === 'guides' && <Guides astronautId={astronautId} />}
+        {tab === 'emergency' && <Emergency />}
       </main>
 
       <footer className="muted">Not a medical device. HealthLens flags changes for review; it does not diagnose.</footer>

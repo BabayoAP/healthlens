@@ -28,12 +28,10 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 ## In progress
 _(name · task · started)_
 
-**BabayoAP · claimed Nov 14 night. New files `lib/guides.ts`, `lib/environment.ts`, `lib/emergency.ts`, `pages/Guides.tsx`, `pages/Emergency.tsx`; small edits to `store.ts`, `App.tsx`, `CheckIn.tsx`.**
-- [ ] Measurement guide cards (How / Why / If abnormal). PRD §5.12
-- [ ] Emergency mode with 2 guides (low SpO₂, solar particle event). PRD §5.13
-- [ ] Environment switch (station / spacecraft / Moon / Mars). PRD §6
-
 ## Done
+- [x] Measurement guides (8 cards: how / why in space / normal / if it looks wrong / when to get help), flagged ones open automatically, and shown after a flagged check-in. `lib/guides.ts`, `pages/Guides.tsx`. BabayoAP
+- [x] Emergency mode: low oxygen + solar particle event, one step per screen, advice changes with comm delay. `lib/emergency.ts`, `pages/Emergency.tsx`. BabayoAP
+- [x] Environment switch: station / spacecraft / Moon / Mars (`data.environment`, details in `lib/environment.ts`). Changes body-mass method, shelter step, comm advice. BabayoAP
 - [x] **Real skin analysis** (Dawson Phan): Claude vision call (`claude-opus-5-5`) returns spots as structured JSON; matching to the previous scan (new/changed/stable, same ID over time) is in code; API key entered on the Skin screen, stored in the browser only; simulated fallback when offline/no key. Live call not yet tested with a real key. PRD §5.1 · `d11874a`
 - [x] Check-in screen (`pages/CheckIn.tsx`): vitals, body mass, sleep, mood/stress/fatigue; "Simulate reading" button; typo checks; shows what each saved value means. BabayoAP
 - [x] **Foundation is in: build on it** (see "How to build on the data layer" in CLAUDE.md). BabayoAP:

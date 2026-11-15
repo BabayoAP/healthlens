@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import type { EnvironmentId } from './environment';
 import { generateSeed } from './mockData';
 import type { IndicatorId, Reading, SkinScan } from './types';
 
@@ -16,12 +17,15 @@ const KEY = 'healthlens.v1';
 
 interface Saved {
   demoMode: boolean;
+  environment: EnvironmentId;
   readings: Reading[];
   skinScans: SkinScan[];
 }
 
 export interface Data {
   demoMode: boolean;
+  /** Where the crew is (PRD §6). Look details up with `environmentById[data.environment]`. */
+  environment: EnvironmentId;
   /** Seeded + entered, when demo mode is on */
   readings: Reading[];
   skinScans: SkinScan[];
@@ -32,9 +36,9 @@ export interface Data {
 function load(): Saved {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return { demoMode: true, readings: [], skinScans: [], ...JSON.parse(raw) };
+    if (raw) return { demoMode: true, environment: 'station', readings: [], skinScans: [], ...JSON.parse(raw) };
   } catch { /* storage blocked or corrupt: start fresh */ }
-  return { demoMode: true, readings: [], skinScans: [] };
+  return { demoMode: true, environment: 'station', readings: [], skinScans: [] };
 }
 
 let saved = load();
@@ -46,6 +50,7 @@ function build(): Data {
   const seed = saved.demoMode ? generateSeed(now) : { readings: [], skinScans: [] };
   return {
     demoMode: saved.demoMode,
+    environment: saved.environment,
     readings: [...seed.readings, ...saved.readings],
     skinScans: [...seed.skinScans, ...saved.skinScans],
     now,
@@ -77,6 +82,10 @@ export function addSkinScan(s: Omit<SkinScan, 'id'>) {
 
 export function setDemoMode(on: boolean) {
   update({ ...saved, demoMode: on });
+}
+
+export function setEnvironment(environment: EnvironmentId) {
+  update({ ...saved, environment });
 }
 
 /** Deletes everything entered on this device. Seeded demo data is not affected. */

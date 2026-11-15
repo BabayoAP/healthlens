@@ -1,7 +1,8 @@
 .app { max-width: 1000px; margin: 0 auto; padding: 16px; }
 header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 16px; }
 header h1 { margin: 0 auto 0 0; font-size: 1.4rem; }
-nav { display: flex; gap: 4px; }
+nav { display: flex; gap: 4px; flex-wrap: wrap; }
+header select { max-width: 100%; min-width: 0; }
 nav button, select, .upload { font: inherit; padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); cursor: pointer; }
 nav button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .grid { display: grid; align-items: start; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
@@ -44,3 +45,22 @@ button.ghost { font: inherit; font-size: .85rem; padding: 4px 10px; border: 1px 
 .form-error { color: var(--act); font-size: .9rem; }
 .result { margin-top: 16px; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Guides, emergency, environment */
+.guide { margin-bottom: 8px; }
+.guide summary { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; cursor: pointer; }
+.guide-title { font-weight: 600; margin-right: auto; }
+.hazard { font-size: .75rem; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; }
+.guide h4, .todo h4 { margin: 14px 0 4px; font-size: .9rem; }
+.guide p, .guide ol, .todo ol, .todo p { margin: 4px 0; font-size: .92rem; line-height: 1.5; max-width: 70ch; }
+.guide ol, .todo ol { padding-left: 20px; }
+.todo { border-top: 1px solid var(--border); margin-top: 10px; }
+.emergency-btn { font: inherit; font-weight: 700; padding: 6px 14px; border: 0; border-radius: 8px; background: var(--act); color: #fff; cursor: pointer; }
+.comm { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: .95rem; }
+.comm-delayed { border-color: var(--watch); border-width: 2px; }
+.emergency-pick { border-color: var(--act); }
+.step h3 { font-size: 1.5rem; margin: 4px 0 8px; }
+.step-detail { font-size: 1.15rem; line-height: 1.5; max-width: 60ch; }
+.step-log { margin-top: 12px; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--bg); }
+.step-nav { margin-top: 12px; justify-content: space-between; }
+.step-nav button { padding: 10px 20px; font-size: 1rem; }

@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { environmentById } from '../lib/environment';
+import { GUIDES } from '../lib/guides';
 import { formatValue, indicatorById } from '../lib/indicators';
 import { evaluateAstronaut, nextStep } from '../lib/status';
 import { addReadings, readingsFor, useData } from '../lib/store';
@@ -13,7 +15,7 @@ const NUMBER_FIELDS: { id: IndicatorId; min: number; max: number; step: number; 
   { id: 'diastolic', min: 30, max: 160, step: 1, typical: 74 },
   { id: 'spo2', min: 50, max: 100, step: 1, typical: 98 },
   { id: 'temperature', min: 30, max: 44, step: 0.1, typical: 36.6 },
-  { id: 'bodyMass', min: 30, max: 200, step: 0.1, typical: 75, hint: 'Weekly. In microgravity use the mass-measuring device, not a scale' },
+  { id: 'bodyMass', min: 30, max: 200, step: 0.1, typical: 75, },
   { id: 'sleepHours', min: 0, max: 24, step: 0.1, typical: 7.4, hint: 'Hours slept last night' },
 ];
 const VITALS: IndicatorId[] = ['heartRate', 'systolic', 'diastolic', 'spo2', 'temperature', 'bodyMass'];
@@ -36,6 +38,9 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
 
   const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now);
   const evalOf = (id: IndicatorId) => ev.indicators.find((i) => i.def.id === id)!;
+  const env = environmentById[data.environment];
+  /** Guides for anything in the last save that was flagged */
+  const flaggedGuides = GUIDES.filter((g) => g.indicators.some((id) => saved.includes(id) && evalOf(id).status !== 'ok'));
 
   function set(id: IndicatorId, value: string) {
     setDraft((d) => ({ ...d, [id]: value }));
@@ -130,6 +135,7 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
           {numberInput('spo2')}
           {numberInput('temperature')}
           {numberInput('bodyMass')}
+          <p className="muted">Weekly. {env.massMethod}</p>
           <p className="muted">Device connects here: readings from a cuff, oximeter or wearable will fill these in automatically.</p>
         </div>
 
@@ -180,6 +186,13 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
               })}
             </tbody>
           </table>
+          {flaggedGuides.map((g) => (
+            <div className="todo" key={g.id}>
+              <h4>What to do: {g.title}</h4>
+              <ol>{g.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
+              <p><strong>When to get help:</strong> {g.escalate}</p>
+            </div>
+          ))}
           <p className="next">{nextStep[ev.status]}</p>
         </div>
       )}

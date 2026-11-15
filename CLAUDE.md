@@ -31,6 +31,8 @@ Challenge: "Create Health Monitoring Software for Astronauts on Space Missions".
 - **Save data:** `addReading({ astronautId, indicator, value, takenAt, source })` or `addReadings([...])` (blood pressure = one `systolic` + one `diastolic` reading with the same `takenAt`); `addSkinScan(...)`. Never write to localStorage directly.
 - **Every value has a `source`** (`manual`, `device`, `self-report`, `measured-in-app`, `simulated`, `estimated`). Forms use `indicatorById[id].entrySource`; a "simulate reading" button must save `simulated`. Show `<SourceTag source={...} />` next to any value on screen.
 - **Status:** `evaluateAstronaut(id, data.readings, data.skinScans, data.now)` → `status`, `headlines` (one line per indicator, for summaries), `reasons` (all), `indicators` (per-indicator latest / baseline / due). Don't re-implement thresholds in a component.
+- **Environment:** `environmentById[data.environment]` from `lib/environment.ts` gives gravity, comm delay, body-mass method, shelter. Use it for anything that differs between station / spacecraft / Moon / Mars.
+- **Guidance text:** measurement guides live in `lib/guides.ts` (`guideFor(indicatorId)`), emergency steps in `lib/emergency.ts`. Reuse them instead of writing new advice in a component. A new indicator should get a guide entry.
 - **New indicator:** add its id to `IndicatorId` in `types.ts` and one entry in `INDICATORS` in `indicators.ts`. Rules, due/overdue, and the Vitals table pick it up automatically. Add a seed series in `mockData.ts` if the demo crew should have history for it.
 - **Don't change the seeded demo story** (`mockData.ts` header comment) without updating `status.test.ts`; those tests lock in which astronaut shows which problem.
 

@@ -33,7 +33,10 @@ app/                 Vite + React + TypeScript web app
   src/lib/mockData.ts    seeded crew + history for the demo
   src/lib/analysis.ts    skin-scan analysis (mock for now, real model later)
   src/lib/status.ts      OK / Watch / Act rules
-  src/pages/             Dashboard, Skin, Vitals
+  src/lib/guides.ts      measurement guides (how / why / what to do)
+  src/lib/emergency.ts   emergency step-by-step guides
+  src/lib/environment.ts station / spacecraft / Moon / Mars settings
+  src/pages/             Dashboard, Check-in, Skin, Vitals, Guides, Emergency
 docs/PRD.md          product requirements (features, indicators, MVP cut)
 docs/TASKS.md        who's doing what
 docs/SUBMISSION.md   Space Apps rules + submission draft (kept current)

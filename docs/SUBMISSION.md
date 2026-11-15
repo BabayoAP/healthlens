@@ -116,6 +116,9 @@ Fields in order, as they appear on the form. For each: **what the form asks**, *
 > - **Slow-drift detection:** flags a steady change over two weeks even while every value is still in the normal range (demo: resting heart rate 63 → 70 bpm). _(status: built)_
 > - **False-alarm handling:** one odd reading asks for a re-measure; it only escalates when a second reading agrees or a hard safety limit is crossed. _(status: built)_
 > - **Missed-check detection:** an overdue measurement becomes a warning ("no temperature reading in 5 days"). _(status: built)_
+> - **Measurement guides for non-doctors:** for every measurement, how to take it, why it matters in space (tied to NASA's five spaceflight hazards), what is normal, what to do if it looks wrong, and when to get help. Guides for anything flagged open on their own, and the steps appear right after a flagged check-in. _(status: built; medical text needs source check)_
+> - **Emergency mode:** a red button on every screen opens step-by-step guides (low oxygen, solar radiation storm), one step per screen, with what to write down. _(status: built, 2 guides)_
+> - **Adapts to where the crew is:** space station, deep-space spacecraft, Moon base or Mars base. This changes how body mass is measured (a scale does not work in microgravity), where to shelter from radiation, and the emergency advice: near Earth "call the flight surgeon now"; on Mars, with up to 24 minutes of signal delay each way, "send a report and keep going, the crew acts first". _(status: built)_
 > - **Honest data labels:** every value shows where it came from (entered, device, self-report, measured in app, simulated, estimated). Demo mode loads a simulated crew; judges can add their own readings on top. _(status: built)_
 > - _(add each feature as it lands: guides, emergency mode, reminders, trends, environments, body figure)_
 >
@@ -134,6 +137,7 @@ Not shown to judges, but required and must be honest. Winner pattern: list each 
 | Tool | Used for | Where |
 | --- | --- | --- |
 | Claude Code (Anthropic) | Project scaffolding, code generation and review, research summaries, document drafting | Whole repo |
+| Claude Code (Anthropic) | Drafted the measurement-guide and emergency-step text from general first-aid practice and NASA hazard descriptions; team to check against sources | `app/src/lib/guides.ts`, `emergency.ts` |
 | Claude Code (Anthropic) | Wrote the data layer, status rules, seeded demo data and tests, from the team's PRD | `app/src/lib/` |
 | Claude Opus 5.5 (`claude-opus-5-5`, Anthropic API) | Runs inside the app: finds skin spots in a photo and returns position, size, color and A/B/C checks as structured JSON. The new/changed/stable matching and risk rules are our own code | `app/src/lib/analysis.ts` |
 | Claude Code (Anthropic) | Wrote the skin-analysis integration, lesion matching and Skin screen changes, from the team's design | `app/src/lib/analysis.ts`, `app/src/pages/Skin.tsx` |
@@ -178,10 +182,10 @@ Every bullet the challenge names, and where we answer it. Fill the "Where" colum
 | Challenge asks for | HealthLens | Where |
 | --- | --- | --- |
 | Astronauts assess their own health | Self check-ins + status | Check-in, Dashboard and Vitals screens (built) |
-| Guidance in an emergency | Emergency mode | |
-| Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator | |
+| Guidance in an emergency | Emergency mode | Emergency button on every screen (built, 2 guides) |
+| Explain how to measure, why it matters, what to do if abnormal | Guide cards per indicator | Guides screen + after each flagged check-in (built) |
 | Remind the crew | Reminders + streaks | |
-| Adapt to spacecraft / station / Moon base | Environment modes | |
+| Adapt to spacecraft / station / Moon base | Environment modes | Environment selector in the header: station, spacecraft, Moon, Mars (built) |
 | Use NASA HRP + OSDR | Hazard mapping + skin datasets | |
 | Any input incl. camera images | Skin photo scans | Skin page: camera/upload → AI spot map → comparison table |
 | Clickable human figure (suggested) | Body figure | |
