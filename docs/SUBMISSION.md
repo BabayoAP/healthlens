@@ -15,8 +15,8 @@ From the official [Project Submission Guide](https://www.spaceappschallenge.org/
   | Criterion | What a 5 looks like (official wording, shortened) | How we hit it |
   | --- | --- | --- |
   | **Impact** | Significant problem, broad reach, "could change the world" | Astronaut safety on Moon/Mars + Earth spin-off for remote communities |
-  | **Creativity** | Novel concept or meaningful improvement on existing ideas | AI skin profile that tracks every spot over time; comm-delay-aware emergency guides |
-  | **Validity** | Scientifically sound, technically feasible, usable | Cited ranges, own-baseline logic, false-alarm handling, working app |
+  | **Creativity** | Novel concept or meaningful improvement on existing ideas | AI skin profile that tracks every spot over time; flags slow drifts from *your own* baseline before any fixed threshold fires; comm-delay-aware emergency guides |
+  | **Validity** | Scientifically sound, technically feasible, usable | Cited ranges, own-baseline logic, false-alarm handling, every value tagged measured / self-reported / simulated / estimated, working app |
   | **Relevance** | Fully addresses the challenge; **NASA data integral, not superficial** | Hit every challenge bullet (§ coverage table below); NASA data drives features |
   | **Presentation** | Clear, engaging story; judges use the demo **and** the full page | Strong hook, worked example, clean visuals |
 
@@ -154,6 +154,8 @@ Needs **specific names** ("GLDS-288 RNA-Seq: Mouse Spleen in Spaceflight"), not 
 | NASA OSDR: mouse skin RNA-seq, MHU-2 | OSD-238, OSD-239 | Evidence spaceflight alters skin barrier/collagen | planned (verify IDs) |
 | NASA OSDR: mouse skin RNA-seq, RR-5 | OSD-240, OSD-241 | same | planned (verify IDs) |
 | NASA OSDR: mouse skin RNA-seq, RR-7 | OSD-254 | same | planned (verify IDs) |
+| NASA Human System Risks + Human Research Roadmap | nasa.gov/hhp/human-system-risks · humanresearchroadmap.nasa.gov/Risks | Per-system "why it matters in space" text in guide cards and body-map panels | planned |
+| NASA-STD-3001 Vol. 1 (Crew Health) + NASA Medical Operations | nasa.gov/reference/nasa-std-3001v1 | Grounding for monitoring cadence and escalation wording | planned |
 | NASA Twins Study (results) | _TBD_ | Realistic trend scenarios for vitals/vision/cognition | idea |
 | NASA DONKI space-weather API | _TBD_ | Live solar-event alert → shelter guide | idea |
 

@@ -13,6 +13,9 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 | | Demo video/slides + pitch |
 
 ## To do (MVP, in priority order)
+- [ ] **Do first, other tasks build on it:** input source layer: `source` field on every reading (`manual` / `device` / `self-report` / `measured-in-app` / `simulated` / `estimated`) + visible "simulated" tag component. PRD §5.0
+- [ ] Seeded history generator (weeks per astronaut, baseline + noise + one planned problem) + demo-mode toggle. PRD §5.0, §5.10
+- [ ] Sustained-trend + missing-measurement rules in `status.ts`. PRD §8
 - [ ] Real skin-analysis call in `app/src/lib/analysis.ts` (keep mock as offline fallback). PRD §5.1
 - [ ] Vitals + mood check-in entry forms, saved locally (IndexedDB/localStorage). PRD §5.2, §5.4
 - [ ] Measurement guide cards (How / Why / If abnormal) for skin, HR, BP, SpO₂, mood. PRD §5.12
@@ -22,7 +25,9 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 - [ ] Emergency mode with 2 guides (low SpO₂, solar particle event). PRD §5.13
 - [ ] Environment switch (station vs Moon base). PRD §6
 - [ ] Seeded worked example: one astronaut, two scans, escalation to Act. PRD §12
-- [ ] Clickable body figure. PRD §5.8
+- [ ] Clickable 2D SVG body figure + per-system detail panel. PRD §5.8
+- [ ] In-app vision check (near-vision chart + Amsler grid) and reaction-time test. PRD §5.0, §5.6
+- [ ] Symptom checklist. PRD §5.4
 - [ ] Verify indicator ranges in PRD §7 against sources; cite them
 - [ ] Pick + cite NASA data actually used in the app (OSDR skin OSD-238/239/240/241/254, HRP risks, DONKI). PRD §9
 - [ ] Deploy to a public URL (Vercel) and test in a private window
