@@ -34,6 +34,7 @@ Challenge: "Create Health Monitoring Software for Astronauts on Space Missions".
 - **Environment:** `environmentById[data.environment]` from `lib/environment.ts` gives gravity, comm delay, body-mass method, shelter. Use it for anything that differs between station / spacecraft / Moon / Mars.
 - **Guidance text:** measurement guides live in `lib/guides.ts` (`guideFor(indicatorId)`), emergency steps in `lib/emergency.ts`. Reuse them instead of writing new advice in a component. A new indicator should get a guide entry.
 - **Charts:** use `<TrendChart>` from `components/TrendChart.tsx` (see `pages/Trends.tsx` for usage). One measure per chart, never two y-axes. Status colors (green / amber / red) are reserved for status; chart lines use `var(--series)`.
+- **Body map:** regions and their body systems are in `lib/bodyRegions.ts`. An indicator shows up on the body map automatically through its `system` in the registry.
 - **New indicator:** add its id to `IndicatorId` in `types.ts` and one entry in `INDICATORS` in `indicators.ts`. Rules, due/overdue, and the Vitals table pick it up automatically. Add a seed series in `mockData.ts` if the demo crew should have history for it.
 - **Don't change the seeded demo story** (`mockData.ts` header comment) without updating `status.test.ts`; those tests lock in which astronaut shows which problem.
 

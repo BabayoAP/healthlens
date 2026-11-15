@@ -3,6 +3,7 @@ import { crew } from './lib/mockData';
 import { ENVIRONMENTS, type EnvironmentId } from './lib/environment';
 import { setDemoMode, setEnvironment, useData } from './lib/store';
 import { SourceTag } from './components/SourceTag';
+import { BodyMap } from './pages/BodyMap';
 import { CheckIn } from './pages/CheckIn';
 import { Dashboard } from './pages/Dashboard';
 import { Emergency } from './pages/Emergency';
@@ -12,8 +13,8 @@ import { Trends } from './pages/Trends';
 import { Vitals } from './pages/Vitals';
 import './App.css';
 
-type Tab = 'dashboard' | 'check-in' | 'skin' | 'vitals' | 'trends' | 'guides';
-const TABS: Record<Tab, string> = { dashboard: 'Dashboard', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
+type Tab = 'dashboard' | 'body' | 'check-in' | 'skin' | 'vitals' | 'trends' | 'guides';
+const TABS: Record<Tab, string> = { dashboard: 'Dashboard', body: 'Body map', 'check-in': 'Check-in', skin: 'Skin', vitals: 'Vitals', trends: 'Trends', guides: 'Guides' };
 
 export default function App() {
   const [tab, setTab] = useState<Tab | 'emergency'>('dashboard');
@@ -52,7 +53,8 @@ export default function App() {
       )}
 
       <main>
-        {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('skin'); }} />}
+        {tab === 'dashboard' && <Dashboard onOpen={(id) => { setAstronautId(id); setTab('body'); }} />}
+        {tab === 'body' && <BodyMap key={astronautId} astronautId={astronautId} onNavigate={setTab} />}
         {tab === 'check-in' && <CheckIn key={astronautId} astronautId={astronautId} />}
         {tab === 'skin' && <Skin astronautId={astronautId} />}
         {tab === 'vitals' && <Vitals astronautId={astronautId} />}

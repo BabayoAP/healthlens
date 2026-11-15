@@ -244,7 +244,7 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 
 ## 11. Hackathon MVP cut (by Sunday)
 
-1. Dashboard with crew + personal status, color coding — *crew view built*
+1. Dashboard with crew + personal status, color coding — *built (crew view + body map)*
 2. Skin scan → lesion table → new/changed/stable — *built with mock AI; needs real model call*
 3. Vitals + mood check-in entry, saved locally — *built*
 4. Measurement guide cards for 5 indicators (skin, HR, BP, SpO₂, mood) — *built*

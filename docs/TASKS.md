@@ -26,10 +26,8 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 ## In progress
 _(name · task · started)_
 
-**BabayoAP · claimed Nov 14 night. New files `lib/bodyRegions.ts`, `pages/BodyMap.tsx`; one tab added in `App.tsx`.**
-- [ ] Clickable 2D SVG body figure + per-system detail panel. PRD §5.8
-
 ## Done
+- [x] Body map: clickable 2D figure (7 parts, colored and marked by status, keyboard-friendly), detail panel with latest measurements, trend, skin scans of that area, why it changes in space, what to do, when to contact the medical officer. Dashboard cards now open it. `lib/bodyRegions.ts`, `pages/BodyMap.tsx`. BabayoAP
 - [x] Trends screen: a chart per indicator with personal baseline and safety-limit lines, 2-week / 6-week range, hover / touch / arrow-key values, table view; size-over-time chart for each tracked skin spot. Reusable `components/TrendChart.tsx` (plain SVG, no chart library). BabayoAP
 - [x] Measurement guides (8 cards: how / why in space / normal / if it looks wrong / when to get help), flagged ones open automatically, and shown after a flagged check-in. `lib/guides.ts`, `pages/Guides.tsx`. BabayoAP
 - [x] Emergency mode: low oxygen + solar particle event, one step per screen, advice changes with comm delay. `lib/emergency.ts`, `pages/Emergency.tsx`. BabayoAP

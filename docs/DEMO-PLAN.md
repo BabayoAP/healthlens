@@ -19,7 +19,7 @@ Decision (Nov 14): **7-slide deck**, showing the working app through short GIFs/
 | --- | --- | --- | --- | --- |
 | 1 | **Title** | HealthLens + tagline "A health check-up that never forgets." Team Hydrogen Temp, member names, challenge name | none | to do |
 | 2 | **Problem** | "No dermatologist on Mars." Up to ~20 min comm delay each way; astronauts aren't doctors; one cited stat on radiation/skin risk | none | needs stat |
-| 3 | **Meet HealthLens** | Crew dashboard: green / amber / red at a glance, reason in plain words | GIF: dashboard loads, open one astronaut (≤5 s) | can record now |
+| 3 | **Meet HealthLens** | Crew dashboard: green / amber / red at a glance, reason in plain words | GIF: dashboard → click Vega's card → body map opens with the left arm red → detail panel (≤5 s) | can record now |
 | 4 | **Skin check that never forgets** | Same spot, Day 97 vs Day 142: 4 mm → 6.5 mm → **Act** | GIF: upload photo → spots marked → comparison table (≤8 s) | real skin analysis is in; record once tested with an API key + ISIC images |
 | 5 | **Catches what a fitness tracker misses** | Slow drift flagged while every value is still "normal" (heart rate 63 → 70); live entry turns status amber | GIF: on Check-in, pick Lindqvist (healthy), enter BP 150/95, save → status turns red with the reason (≤6 s). Still image option: Nakamura's Trends screen, heart rate creeping up past the baseline line while still "normal" | can record now |
 | 6 | **Tells you what to do** | Guide card (how / why / if abnormal) + emergency mode with Moon vs Mars comm delay | GIF: press Emergency → solar storm → switch Moon to Mars, comm advice changes (≤6 s). Still image: a guide card | can record now |
