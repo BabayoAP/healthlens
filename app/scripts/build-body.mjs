@@ -13,8 +13,8 @@
 //   4. node --max-old-space-size=8192 build-body.mjs <bodyparts3d folder> <female .glb> <repo>/app/public/models
 // Frame of both outputs: meters, y up, feet at 0, +x = the person's left, +z = front.
 // Each mesh node carries extras { layer, region } (region only for organs; skin and bones are split by position in the app).
-// Nerves: BodyParts3D and the HuBMAP female body model no peripheral nerves, so the nerves layer is the brain and spinal cord
-// (plus the nerves of the eye on the female body).
+// Both skins are smoothed into a generic mannequin: a shape-keeping (Taubin) pass over the whole skin, then the chest
+// and groin are flattened further (the demo audience includes minors).
 // The skin is smoothed to a mannequin shape at the groin (the demo audience includes minors).
 import fs from 'node:fs';
 import path from 'node:path';
@@ -155,6 +155,30 @@ function weldPositions(mesh) {
   return { pos, idx };
 }
 
+/** Taubin smoothing: alternating shrink / inflate steps that smooth detail without shrinking the shape */
+function taubin(mesh, rounds, lambda = 0.5, mu = -0.53) {
+  const { pos, idx } = mesh;
+  const n = pos.length / 3;
+  const nb = Array.from({ length: n }, () => new Set());
+  for (let t = 0; t < idx.length; t += 3) {
+    const a = idx[t], b = idx[t + 1], c = idx[t + 2];
+    nb[a].add(b); nb[a].add(c); nb[b].add(a); nb[b].add(c); nb[c].add(a); nb[c].add(b);
+  }
+  const lists = nb.map((s) => [...s]);
+  const step = (f) => {
+    const d = new Float32Array(pos.length);
+    for (let v = 0; v < n; v++) {
+      const L = lists[v];
+      if (!L.length) continue;
+      let x = 0, y = 0, z = 0;
+      for (const u of L) { x += pos[u * 3]; y += pos[u * 3 + 1]; z += pos[u * 3 + 2]; }
+      d[v * 3] = (x / L.length - pos[v * 3]) * f; d[v * 3 + 1] = (y / L.length - pos[v * 3 + 1]) * f; d[v * 3 + 2] = (z / L.length - pos[v * 3 + 2]) * f;
+    }
+    for (let i = 0; i < pos.length; i++) pos[i] += d[i];
+  };
+  for (let r = 0; r < rounds; r++) { step(lambda); step(mu); }
+}
+
 // ---------- Write one model ----------
 async function writeModel(out, groups, copyright) {
   const doc = new Document();
@@ -212,20 +236,25 @@ const male = {
   lungs: loadBp(files(['FMA7309', 'FMA7310', 'FMA7394'])),
   digestive: loadBp(files(['FMA7131', 'FMA7148', 'FMA7197', 'FMA7198', 'FMA7202', 'FMA7200', 'FMA7201'])),
   urinary: loadBp(files(['FMA7204', 'FMA7205', 'FMA15900'])),
-  nerves: loadBp([...new Set(rows.filter(([, name]) => /(nerve|spinal cord|plexus|cauda equina)/i.test(name) && !/(artery|vein|nerves of eye)/i.test(name)).map(([, , f]) => f))].filter((f) => !brainFiles.has(f) && !eyeFiles.has(f))),
 };
 relax(male.skin.pos, male.skin.idx, neutralize(male.skin.pos, {
   yLow: 0.68, yHigh: 0.96, halfWidth: 0.08,
   knots: [[0.68, -0.03], [0.74, -0.02], [0.79, 0.02], [0.83, 0.045], [0.86, 0.05], [0.92, 0.072], [0.96, 0.088]],
 }), 120);
+taubin(male.skin, 20);
+{
+  const groin = [];
+  for (let v = 0; v < male.skin.pos.length / 3; v++) { const [x, y, z] = [male.skin.pos[v * 3], male.skin.pos[v * 3 + 1], male.skin.pos[v * 3 + 2]]; if (Math.abs(x) < 0.09 && y > 0.7 && y < 0.95 && z > -0.05) groin.push(v); }
+  relax(male.skin.pos, male.skin.idx, groin, 300);
+  taubin(male.skin, 6);
+}
 
 const organ = (id, region, mesh, tris) => ({ id, layer: 'organs', region, mesh, tris });
 console.log('male');
 await writeModel(path.join(outDir, 'body-male.glb'), [
   { id: 'skin', layer: 'skin', mesh: male.skin, tris: 26000 },
   { id: 'skeleton', layer: 'skeleton', mesh: male.skeleton, tris: 80000 },
-  { id: 'nerves', layer: 'nerves', region: 'chest', mesh: male.nerves, tris: 4000 },
-  { id: 'brain', layer: 'nerves', region: 'head', mesh: male.brain, tris: 12000 },
+  organ('brain', 'head', male.brain, 12000),
   organ('eyes', 'head', male.eyes, 1200),
   organ('heart', 'chest', male.heart, 6000),
   organ('vessels', 'chest', male.vessels, 2500),
@@ -273,7 +302,6 @@ const female = {
   lungs: loadF(['VH_F_lungs', 'VH_F_larynx', 'VH_F_tracheobronchial_tree']),
   digestive: loadF(['VH_F_liver', 'VH_F_pancreas', 'VH_F_biliary_tree', 'VH_F_gallbladder_', 'VH_F_small_intestine', 'VH_F_colon']),
   urinary: loadF(['VH_F_upper_urinary_tract', 'VH_F_urinary_bladder']),
-  nerves: loadF(['VH_F_spinal_cord', 'VH_F_nerves_of_eye']),
 };
 
 // Borrowed male bones, grouped by name
@@ -341,13 +369,27 @@ const fb = bounds(female.skin.pos);
 console.log('female height', fHeight.toFixed(3), 'scale for borrowed bones', s.toFixed(3), 'skin x', fb.min[0].toFixed(3), fb.max[0].toFixed(3));
 // The source skin has some inward-facing patches (at the groin, where that anatomy is modeled separately and not used
 // here); the app draws skin double-sided so they show as skin.
+// Generic mannequin: weld (the source repeats vertices per triangle), smooth the whole skin, then flatten the chest
+// (breasts become a soft, even curve with no detail) and the groin.
+female.skin = weldPositions(female.skin);
+taubin(female.skin, 40);
+const patch = (test) => { const out = []; for (let v = 0; v < female.skin.pos.length / 3; v++) if (test(female.skin.pos[v * 3], female.skin.pos[v * 3 + 1], female.skin.pos[v * 3 + 2])) out.push(v); return out; };
+{
+  // Flatten the chest, then bring back 35% of the (already smoothed) shape: a soft curve, no detail, no hard edge
+  const chest = patch((x, y, z) => Math.abs(x) < 0.2 && y > 1.08 && y < 1.37 && z > 0);
+  const before = chest.map((v) => [female.skin.pos[v * 3], female.skin.pos[v * 3 + 1], female.skin.pos[v * 3 + 2]]);
+  relax(female.skin.pos, female.skin.idx, chest, 700);
+  chest.forEach((v, i) => { for (let k = 0; k < 3; k++) female.skin.pos[v * 3 + k] += 0.35 * (before[i][k] - female.skin.pos[v * 3 + k]); });
+  relax(female.skin.pos, female.skin.idx, chest, 80); // removes any small detail the blend brought back
+}
+relax(female.skin.pos, female.skin.idx, patch((x, y, z) => Math.abs(x) < 0.1 && y > 0.64 && y < 0.88 && z > -0.06), 400);
+taubin(female.skin, 16);
 
 console.log('female');
 await writeModel(path.join(outDir, 'body-female.glb'), [
   { id: 'skin', layer: 'skin', mesh: female.skin, tris: 26000 },
   { id: 'skeleton', layer: 'skeleton', mesh: female.skeleton, tris: 80000 },
-  { id: 'nerves', layer: 'nerves', region: 'chest', mesh: female.nerves, tris: 6000 },
-  { id: 'brain', layer: 'nerves', region: 'head', mesh: female.brain, tris: 12000 },
+  organ('brain', 'head', female.brain, 12000),
   organ('eyes', 'head', female.eyes, 1200),
   organ('heart', 'chest', female.heart, 6000),
   organ('vessels', 'chest', female.vessels, 8000),

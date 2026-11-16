@@ -14,7 +14,7 @@ import { StatusBadge } from './StatusBadge';
  * Draggable 3D anatomy figure (Body map and Dashboard). Two bodies, simplified into
  * `public/models/body-<type>.glb` by `scripts/build-body.mjs`: male from BodyParts3D (CC BY 4.0,
  * © The Database Center for Life Science) and female from the HuBMAP Human Reference Atlas (CC BY 4.0,
- * Visible Human Female). Four layers (skin, organs, nerves, skeleton) can be shown or hidden, like an
+ * Visible Human Female). Three layers (skin, organs, skeleton) can be shown or hidden, like an
  * anatomy atlas: with skin on top of anything else, the skin turns see-through. Each organ takes the status color of the body
  * part it sits in; skin and bones are split into parts by position (`lib/anatomy.ts`).
  * Drag to turn, scroll or pinch to zoom, click a part to open it.
@@ -33,18 +33,17 @@ interface Props {
   onUnavailable?: () => void;
 }
 
-export type Layer = 'skin' | 'organs' | 'nerves' | 'skeleton';
+export type Layer = 'skin' | 'organs' | 'skeleton';
 const LAYERS: { id: Layer; label: string }[] = [
   { id: 'skin', label: 'Skin' },
   { id: 'organs', label: 'Organs' },
-  { id: 'nerves', label: 'Nerves' },
   { id: 'skeleton', label: 'Skeleton' },
 ];
 
 /** Natural colors, so the figure reads as anatomy; status color is blended on top */
 const NATURAL: Record<string, string> = {
   skin: '#e8cdb8', skeleton: '#ebe3cf', brain: '#e3b2b0', eyes: '#f4f1ea', heart: '#b8443f',
-  vessels: '#c2504a', lungs: '#e09a9a', digestive: '#d7a07a', urinary: '#a5524a', nerves: '#e6cf6e',
+  vessels: '#c2504a', lungs: '#e09a9a', digestive: '#d7a07a', urinary: '#a5524a',
 };
 
 const models: Partial<Record<BodyType, Promise<THREE.Group>>> = {};
@@ -85,9 +84,10 @@ interface Part {
 export function BodyFigure3D({ views, selectedId, onPick, body: initialBody, compact = false, onUnavailable }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const parts = useRef<Part[]>([]);
+  const paintRef = useRef<() => void>(() => {});
   const [hover, setHover] = useState<FigureRegionId>();
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [layers, setLayers] = useState<Record<Layer, boolean>>({ skin: true, organs: !compact, nerves: false, skeleton: false });
+  const [layers, setLayers] = useState<Record<Layer, boolean>>({ skin: true, organs: !compact, skeleton: false });
   const [body, setBody] = useState<BodyType>(initialBody);
   useEffect(() => setBody(initialBody), [initialBody]);
   const theme = useTheme();
@@ -137,13 +137,19 @@ export function BodyFigure3D({ views, selectedId, onPick, body: initialBody, com
     loadModel(body).then((model) => {
       if (!alive) return;
       const root = model.clone(true);
+      // World matrices first: the file is quantized, so raw positions are not in meters until
+      // the node transform is applied. Body parts below are found from world positions.
+      root.updateMatrixWorld(true);
       const list: Part[] = [];
       root.traverse((o) => {
         if (!(o instanceof THREE.Mesh)) return;
         const extras = (o.userData ?? {}) as { layer?: Layer; region?: FigureRegionId | null };
         const id = o.name;
-        const layer = extras.layer ?? 'organs';
-        const geo = o.geometry as THREE.BufferGeometry;
+        // Older models had a nerves layer: show it with the organs
+        const layer: Layer = extras.layer === 'skin' || extras.layer === 'skeleton' ? extras.layer : 'organs';
+        // Own copy per viewer, so colors written here never leak into another viewer
+        const geo = (o.geometry as THREE.BufferGeometry).clone();
+        o.geometry = geo;
         geo.computeVertexNormals();
         // Skin is double-sided: the female source has a few inward-facing patches
         const material = new THREE.MeshStandardMaterial({ roughness: layer === 'skin' ? 0.6 : 0.45, metalness: 0, side: layer === 'skin' ? THREE.DoubleSide : THREE.FrontSide });
@@ -157,15 +163,19 @@ export function BodyFigure3D({ views, selectedId, onPick, body: initialBody, com
             v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld);
             return regionAt(v.x, v.y, body);
           });
-          geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(p.count * 3), 3));
+          // Start on the natural color (never black), status colors are painted right after
+          const base = new THREE.Color(NATURAL[id] ?? '#cccccc');
+          const cols = new Float32Array(p.count * 3);
+          for (let i = 0; i < p.count; i++) { cols[i * 3] = base.r; cols[i * 3 + 1] = base.g; cols[i * 3 + 2] = base.b; }
+          geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
           material.vertexColors = true;
         }
         if (layer === 'skin') o.renderOrder = 2;
         list.push(part);
       });
-      root.updateMatrixWorld(true);
       world.add(root);
       parts.current = list;
+      paintRef.current(); // colors and layers before the first frame with the model
       setState('ready');
     }).catch(() => { if (alive) setState('error'); });
 
@@ -250,7 +260,7 @@ export function BodyFigure3D({ views, selectedId, onPick, body: initialBody, com
   // Colors, visibility and see-through skin. Flagged parts take their status color;
   // the selected or hovered part is lifted a little toward white.
   useEffect(() => {
-    if (state !== 'ready') return;
+    const run = () => {
     const status = { ok: [cssColor('--ok'), 0], watch: [cssColor('--watch'), 0.65], act: [cssColor('--act'), 0.7] } as const;
     const white = new THREE.Color('#ffffff');
     const colorFor = (base: THREE.Color, region?: FigureRegionId) => {
@@ -259,7 +269,7 @@ export function BodyFigure3D({ views, selectedId, onPick, body: initialBody, com
       const col = base.clone().lerp(c, amount);
       return col.lerp(white, region === selectedId ? 0.25 : region === hover ? 0.14 : 0);
     };
-    const xray = layers.skin && (layers.organs || layers.nerves || layers.skeleton);
+    const xray = layers.skin && (layers.organs || layers.skeleton);
     for (const p of parts.current) {
       p.mesh.visible = layers[p.layer];
       const base = new THREE.Color(NATURAL[p.id] ?? '#cccccc');
@@ -286,6 +296,9 @@ export function BodyFigure3D({ views, selectedId, onPick, body: initialBody, com
         p.material.color.copy(colorFor(base, p.region));
       }
     }
+    };
+    paintRef.current = run;
+    run();
   }, [views, selectedId, hover, theme, layers, state]);
 
   const shown = views.find((v) => v.region.id === (hover ?? selectedId));
