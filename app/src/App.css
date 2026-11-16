@@ -45,6 +45,18 @@ main { min-width: 0; }
 footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--border); font-size: .8rem; color: var(--faint); }
 
 .context-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+/* ---------- Mission location bar (top of every screen) ---------- */
+.location-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-bottom: 16px; padding: 10px 14px; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--surface); font-size: .86rem; }
+.location-delayed { border-color: color-mix(in srgb, var(--watch) 45%, var(--border)); background: color-mix(in srgb, var(--watch-soft) 60%, var(--surface)); }
+.location-pick { display: flex; align-items: center; gap: 6px; }
+.location-pick select { font: inherit; font-weight: 650; font-size: .95rem; padding: 4px 8px; border-radius: var(--r-sm); }
+.location-fact { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
+.location-help { margin-left: auto; font-weight: 650; }
+.location-delayed .location-help { color: var(--watch); }
+.where-card ul { margin: 6px 0 10px; padding-left: 18px; }
+.where-card p { margin: 6px 0; }
+.key-tag { display: inline-block; margin-left: 6px; padding: 1px 7px; border-radius: 999px; font-size: .7rem; font-weight: 650; background: var(--accent-soft); color: var(--accent); vertical-align: middle; }
+.here-note { margin: 8px 0; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--surface-2); border-radius: 0 var(--r-sm) var(--r-sm) 0; font-size: .9rem; }
 .context-who { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
 .context-who select { align-self: flex-start; font-weight: 600; font-size: 1rem; padding: 2px 26px 2px 6px; margin-left: -6px; border-color: transparent; background-color: transparent; }
 .context-who select:hover { border-color: var(--border); background-color: var(--surface); }
@@ -593,15 +605,23 @@ button.ghost:hover, .upload:hover { border-color: color-mix(in srgb, var(--accen
 .holo:active { cursor: grabbing; }
 .holo.holo-hover { cursor: pointer; }
 .holo canvas { display: block; width: 100%; height: 100%; }
-.holo-hint { position: absolute; left: 0; right: 0; bottom: 24px; margin: 0; text-align: center; font-size: .76rem; color: var(--muted); pointer-events: none; }
+.holo-hint { position: absolute; left: 0; right: 0; bottom: 40px; margin: 0; text-align: center; font-size: .76rem; color: var(--muted); pointer-events: none; }
 .holo-label {
   position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 8px; margin: 0;
   font-size: .9rem; font-weight: 600; pointer-events: none;
 }
-.holo-layers { position: absolute; top: 10px; right: 10px; display: flex; gap: 2px; padding: 2px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); z-index: 1; }
+.holo-bar { position: absolute; top: 10px; right: 10px; left: 10px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; z-index: 1; pointer-events: none; }
+.holo-layers { display: flex; gap: 2px; padding: 2px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); pointer-events: auto; }
+.holo-compact { height: 100%; min-height: 380px; border-radius: 0; background: transparent; }
+.holo-compact .holo-layers button { padding: 3px 8px; font-size: .72rem; }
+.holo-compact .holo-label { top: 46px; }
+.holo-compact .holo-hint { bottom: 24px; }
+.holo-wait { display: grid; place-items: center; }
+.viewfinder:has(.holo) { padding: 0; align-items: stretch; overflow: hidden; }
+.viewfinder .holo { flex: 1; }
 .holo-layers button { border: 0; background: none; padding: 4px 10px; border-radius: 999px; font: inherit; font-size: .78rem; color: var(--muted); cursor: pointer; }
 .holo-layers button.on { background: var(--accent-soft); color: var(--text); font-weight: 600; }
-.holo-label { top: 52px; }
+.holo-label { top: 86px; }
 .holo-credit { position: absolute; left: 0; right: 0; text-align: center; bottom: 6px; margin: 0; font-size: .64rem; color: var(--faint); pointer-events: none; }
 .holo { height: 560px; }
 @media (max-width: 860px) { .holo { height: 380px; } }

@@ -36,7 +36,7 @@ app/                 Vite + React + TypeScript web app
   src/lib/guides.ts      measurement guides (how / why / what to do)
   src/lib/emergency.ts   15 emergency guides by priority, suggested from crew data
   src/lib/devices.ts     simulated device import (modeled on CSA / NASA crew hardware)
-  src/lib/environment.ts station / spacecraft / Moon / rover / Mars settings
+  src/lib/environment.ts station / spacecraft / Moon / rover / Mars: what changes with location
   src/pages/             Dashboard, Body map, Check-in, Skin, Vitals, Trends, Guides, Emergency
 docs/PRD.md          product requirements (features, indicators, MVP cut)
 docs/TASKS.md        who's doing what

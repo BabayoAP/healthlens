@@ -16,4 +16,12 @@ describe('3D anatomy regions', () => {
     expect(regionAt(0.17, 1.4)).toBe('left-arm');
     expect(regionAt(0.15, 1.0)).toBe('abdomen'); // hip, not hand
   });
+
+  it('follows the female body: arms angled out, wider hips, shorter', () => {
+    expect(regionAt(0.38, 0.75, 'female')).toBe('left-arm'); // hand, far out
+    expect(regionAt(0.2, 0.8, 'female')).toBe('abdomen'); // hip
+    expect(regionAt(-0.2, 1.05, 'female')).toBe('right-arm');
+    expect(regionAt(0, 1.5, 'female')).toBe('head');
+    expect(regionAt(0.1, 0.5, 'female')).toBe('left-leg');
+  });
 });

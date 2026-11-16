@@ -6,14 +6,16 @@ import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.j
 import type { FigureRegionId } from '../lib/bodyRegions';
 import { regionAt } from '../lib/anatomy';
 import type { RegionView } from '../lib/bodyView';
+import type { BodyType } from '../lib/types';
 import { useTheme } from '../lib/theme';
 import { StatusBadge } from './StatusBadge';
 
 /**
- * Draggable 3D anatomy figure (Body map), built from BodyParts3D (CC BY 4.0, © The Database Center
- * for Life Science): skin, skeleton and the main organs, simplified into `public/models/body.glb`
- * (see `scripts/build-body.mjs`). Three layers can be shown or hidden, like an anatomy atlas: with
- * skin on top of organs, the skin turns see-through. Each organ takes the status color of the body
+ * Draggable 3D anatomy figure (Body map and Dashboard). Two bodies, simplified into
+ * `public/models/body-<type>.glb` by `scripts/build-body.mjs`: male from BodyParts3D (CC BY 4.0,
+ * © The Database Center for Life Science) and female from the HuBMAP Human Reference Atlas (CC BY 4.0,
+ * Visible Human Female). Four layers (skin, organs, nerves, skeleton) can be shown or hidden, like an
+ * anatomy atlas: with skin on top of anything else, the skin turns see-through. Each organ takes the status color of the body
  * part it sits in; skin and bones are split into parts by position (`lib/anatomy.ts`).
  * Drag to turn, scroll or pinch to zoom, click a part to open it.
  * The region list next to it stays the keyboard and screen-reader way in.
@@ -23,28 +25,33 @@ interface Props {
   views: RegionView[];
   selectedId?: FigureRegionId;
   onPick: (id: FigureRegionId) => void;
-  /** Called when the browser can't draw 3D, so the page can fall back to 2D */
+  /** The crew member's body type; the viewer can switch to the other one */
+  body: BodyType;
+  /** Smaller, for the Dashboard: no body switch, starts on the skin layer */
+  compact?: boolean;
+  /** Called when the browser can't draw 3D, so the page can show the part list instead */
   onUnavailable?: () => void;
 }
 
-export type Layer = 'skin' | 'organs' | 'skeleton';
+export type Layer = 'skin' | 'organs' | 'nerves' | 'skeleton';
 const LAYERS: { id: Layer; label: string }[] = [
   { id: 'skin', label: 'Skin' },
   { id: 'organs', label: 'Organs' },
+  { id: 'nerves', label: 'Nerves' },
   { id: 'skeleton', label: 'Skeleton' },
 ];
 
 /** Natural colors, so the figure reads as anatomy; status color is blended on top */
 const NATURAL: Record<string, string> = {
   skin: '#e8cdb8', skeleton: '#ebe3cf', brain: '#e3b2b0', eyes: '#f4f1ea', heart: '#b8443f',
-  aorta: '#c2504a', lungs: '#e09a9a', digestive: '#d7a07a', urinary: '#a5524a',
+  vessels: '#c2504a', lungs: '#e09a9a', digestive: '#d7a07a', urinary: '#a5524a', nerves: '#e6cf6e',
 };
 
-const MODEL_URL = `${import.meta.env.BASE_URL}models/body.glb`;
-let modelPromise: Promise<THREE.Group> | undefined;
-function loadModel(): Promise<THREE.Group> {
-  modelPromise ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(MODEL_URL).then((g) => g.scene);
-  return modelPromise;
+const models: Partial<Record<BodyType, Promise<THREE.Group>>> = {};
+function loadModel(body: BodyType): Promise<THREE.Group> {
+  models[body] ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
+    .loadAsync(`${import.meta.env.BASE_URL}models/body-${body}.glb`).then((g) => g.scene);
+  return models[body]!;
 }
 
 /** Soft contact shadow under the feet */
@@ -75,19 +82,22 @@ interface Part {
   vertexRegions?: FigureRegionId[];
 }
 
-export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props) {
+export function BodyFigure3D({ views, selectedId, onPick, body: initialBody, compact = false, onUnavailable }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const parts = useRef<Part[]>([]);
   const [hover, setHover] = useState<FigureRegionId>();
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [layers, setLayers] = useState<Record<Layer, boolean>>({ skin: true, organs: true, skeleton: false });
+  const [layers, setLayers] = useState<Record<Layer, boolean>>({ skin: true, organs: !compact, nerves: false, skeleton: false });
+  const [body, setBody] = useState<BodyType>(initialBody);
+  useEffect(() => setBody(initialBody), [initialBody]);
   const theme = useTheme();
   const pickRef = useRef(onPick);
   const failRef = useRef(onUnavailable);
   useEffect(() => { pickRef.current = onPick; failRef.current = onUnavailable; });
 
-  // Build the scene once
+  // Build the scene (again when the body type changes)
   useEffect(() => {
+    setState('loading');
     const el = host.current!;
     let renderer: THREE.WebGLRenderer;
     try {
@@ -124,7 +134,7 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
     controls.addEventListener('start', () => { controls.autoRotate = false; });
 
     let alive = true;
-    loadModel().then((model) => {
+    loadModel(body).then((model) => {
       if (!alive) return;
       const root = model.clone(true);
       const list: Part[] = [];
@@ -135,7 +145,8 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
         const layer = extras.layer ?? 'organs';
         const geo = o.geometry as THREE.BufferGeometry;
         geo.computeVertexNormals();
-        const material = new THREE.MeshStandardMaterial({ roughness: layer === 'skin' ? 0.6 : 0.45, metalness: 0, side: THREE.FrontSide });
+        // Skin is double-sided: the female source has a few inward-facing patches
+        const material = new THREE.MeshStandardMaterial({ roughness: layer === 'skin' ? 0.6 : 0.45, metalness: 0, side: layer === 'skin' ? THREE.DoubleSide : THREE.FrontSide });
         o.material = material;
         const part: Part = { id, layer, mesh: o, material, region: extras.region ?? undefined };
         if (!part.region) {
@@ -144,7 +155,7 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
           const v = new THREE.Vector3();
           part.vertexRegions = Array.from({ length: p.count }, (_, i) => {
             v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld);
-            return regionAt(v.x, v.y);
+            return regionAt(v.x, v.y, body);
           });
           geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(p.count * 3), 3));
           material.vertexColors = true;
@@ -187,7 +198,7 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
         const h = ray.intersectObjects(group.map((p) => p.mesh), false)[0];
         if (!h) continue;
         const part = group.find((p) => p.mesh === h.object)!;
-        return part.region ?? regionAt(h.point.x, h.point.y);
+        return part.region ?? regionAt(h.point.x, h.point.y, body);
       }
       return undefined;
     };
@@ -232,7 +243,7 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
       c.remove();
       parts.current = [];
     };
-  }, []);
+  }, [body]);
 
   useEffect(() => { if (state === 'error') failRef.current?.(); }, [state]);
 
@@ -248,7 +259,7 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
       const col = base.clone().lerp(c, amount);
       return col.lerp(white, region === selectedId ? 0.25 : region === hover ? 0.14 : 0);
     };
-    const xray = layers.skin && (layers.organs || layers.skeleton);
+    const xray = layers.skin && (layers.organs || layers.nerves || layers.skeleton);
     for (const p of parts.current) {
       p.mesh.visible = layers[p.layer];
       const base = new THREE.Color(NATURAL[p.id] ?? '#cccccc');
@@ -284,11 +295,20 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
   });
 
   return (
-    <div ref={host} className={`holo${hover ? ' holo-hover' : ''}`}>
-      <div className="holo-layers" role="group" aria-label="Layers to show">
-        {LAYERS.map((l) => (
-          <button key={l.id} type="button" aria-pressed={layers[l.id]} className={layers[l.id] ? 'on' : ''} onClick={() => toggle(l.id)}>{l.label}</button>
-        ))}
+    <div ref={host} className={`holo${hover ? ' holo-hover' : ''}${compact ? ' holo-compact' : ''}`}>
+      <div className="holo-bar">
+        {!compact && (
+          <div className="holo-layers" role="group" aria-label="Body type">
+            {(['female', 'male'] as BodyType[]).map((b) => (
+              <button key={b} type="button" aria-pressed={body === b} className={body === b ? 'on' : ''} onClick={() => setBody(b)}>{b === 'female' ? 'Female' : 'Male'}</button>
+            ))}
+          </div>
+        )}
+        <div className="holo-layers" role="group" aria-label="Layers to show">
+          {LAYERS.map((l) => (
+            <button key={l.id} type="button" aria-pressed={layers[l.id]} className={layers[l.id] ? 'on' : ''} onClick={() => toggle(l.id)}>{l.label}</button>
+          ))}
+        </div>
       </div>
       {shown && (
         <p className="holo-label" aria-hidden="true">
@@ -299,7 +319,11 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
       <p className="holo-hint" aria-hidden="true">
         {state === 'ready' ? 'Drag to turn · scroll to zoom · click a part' : state === 'error' ? 'The 3D model could not load.' : 'Loading the anatomy model…'}
       </p>
-      <p className="holo-credit">Anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
+      <p className="holo-credit">
+        {body === 'female'
+          ? compact ? 'Anatomy: HuBMAP HRA, BodyParts3D (DBCLS), CC BY 4.0' : 'Anatomy: Human Reference Atlas (HuBMAP), Visible Human Female, CC BY 4.0; skull, rib, arm and foot bones from BodyParts3D, © DBCLS, CC BY 4.0'
+          : 'Anatomy: BodyParts3D, © DBCLS, CC BY 4.0'}
+      </p>
     </div>
   );
 }

@@ -28,7 +28,7 @@ export function CheckSchedule({ astronautId, reminders, onDo }: { astronautId: s
           return (
             <article className={`sched panel${late ? ' sched-late' : ''}`} key={r.id}>
               <div className="sched-head">
-                <strong>{r.label}</strong>
+                <strong>{r.label}{r.key && <span className="key-tag" title="Matters most where the crew is now">key here</span>}</strong>
                 <span className={`sched-when${r.state === 'overdue' ? ' sched-overdue' : ''}`}>{cadenceText(r.cadenceDays)} · {dueText(r)}</span>
               </div>
               <div className="sched-cal" role="img" aria-label={`${r.label}: done on ${done.size} days in the last ${PAST_WEEKS} weeks, ${dueText(r)}`}>

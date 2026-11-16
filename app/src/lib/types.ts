@@ -1,5 +1,8 @@
 export type Status = 'ok' | 'watch' | 'act';
 
+/** 3D anatomy model: `public/models/body-<type>.glb` */
+export type BodyType = 'female' | 'male';
+
 /** Where a value came from (PRD §5.0). `simulated` and `estimated` must always be visibly tagged in the UI. */
 export type Source = 'manual' | 'device' | 'self-report' | 'measured-in-app' | 'simulated' | 'estimated';
 
@@ -71,4 +74,6 @@ export interface Astronaut {
   role: string;
   missionDay: number;
   radiationMSv: number; // cumulative dose (estimate)
+  /** Which 3D anatomy model to show (Body map, Dashboard) */
+  body: BodyType;
 }

@@ -1,5 +1,6 @@
 import { GUIDES, type CheckTab } from './guides';
 import type { AstronautEval } from './status';
+import type { Environment } from './environment';
 import { INDICATORS } from './indicators';
 import type { Reading, SkinScan } from './types';
 
@@ -23,6 +24,8 @@ export interface Reminder {
   state: 'overdue' | 'due' | 'upcoming';
   /** Screen where the check is done */
   tab: CheckTab;
+  /** Matters most where the crew is (environment `keyChecks`) */
+  key?: boolean;
 }
 
 function make(id: string, label: string, cadenceDays: number, daysSince: number | undefined, tab: Reminder['tab']): Reminder {
@@ -31,9 +34,10 @@ function make(id: string, label: string, cadenceDays: number, daysSince: number 
 }
 
 /** All checks for one astronaut, most overdue first. `scans` can be the whole crew's. */
-export function buildReminders(astronautId: string, ev: AstronautEval, scans: SkinScan[], now: number): Reminder[] {
+export function buildReminders(astronautId: string, ev: AstronautEval, scans: SkinScan[], now: number, env?: Environment): Reminder[] {
   const out: Reminder[] = [];
-  for (const g of GUIDES) {
+  // Checks that need equipment this location doesn't have are left out
+  for (const g of GUIDES.filter((x) => !env?.skipChecks?.includes(x.id))) {
     if (g.id === 'skin') {
       const times = scans.filter((s) => s.astronautId === astronautId).map((s) => Date.parse(s.takenAt));
       const daysSince = times.length ? Math.floor((now - Math.max(...times)) / DAY) : undefined;
@@ -47,7 +51,9 @@ export function buildReminders(astronautId: string, ev: AstronautEval, scans: Sk
     const daysSince = never ? undefined : Math.max(...mine.map((i) => i.daysSince!));
     out.push(make(g.id, g.title, Math.min(...mine.map((i) => i.def.cadenceDays)), daysSince, g.tab ?? 'check-in'));
   }
-  return out.sort((a, b) => a.dueInDays - b.dueInDays);
+  for (const r of out) r.key = env?.keyChecks.includes(r.id) ?? false;
+  // Most overdue first; at equal urgency, what matters most here comes first
+  return out.sort((a, b) => a.dueInDays - b.dueInDays || Number(b.key) - Number(a.key));
 }
 
 export const needsDoing = (r: Reminder) => r.state !== 'upcoming';

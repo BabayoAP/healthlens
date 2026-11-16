@@ -1,16 +1,17 @@
 import { lazy, Suspense, useState } from 'react';
 import { SYSTEM_INFO, type FigureRegionId } from '../lib/bodyRegions';
 import { buildRegionViews } from '../lib/bodyView';
+import { environmentById } from '../lib/environment';
 import { GUIDES } from '../lib/guides';
 import { evaluateAstronaut } from '../lib/status';
 import type { Status } from '../lib/types';
+import { crew } from '../lib/mockData';
 import { useData } from '../lib/store';
-import { BodyFigure } from '../components/BodyFigure';
 import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
 import { IndicatorList } from '../components/IndicatorList';
 
-// three.js is only downloaded when someone opens the 3D view
+// three.js is only downloaded when a body figure is shown
 const BodyFigure3D = lazy(() => import('../components/BodyFigure3D'));
 const canWebGL = (() => {
   try { return !!document.createElement('canvas').getContext('webgl2'); } catch { return false; }
@@ -27,9 +28,11 @@ export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautI
   const firstFlagged = [...views].sort((a, b) => rank(a.status) - rank(b.status))[0].region.id;
   const [picked, setPicked] = useState<FigureRegionId | undefined>(initialRegion);
   const selectedId = picked ?? firstFlagged;
-  const [view, setView] = useState<'3d' | '2d'>(canWebGL ? '3d' : '2d');
+  const [has3d, setHas3d] = useState(canWebGL);
+  const body = crew.find((c) => c.id === astronautId)?.body ?? 'male';
   const selected = views.find((v) => v.region.id === selectedId)!;
   const info = SYSTEM_INFO[selected.region.system]!;
+  const env = environmentById[data.environment];
 
   const flagged = selected.indicators.filter((i) => i.status !== 'ok');
   const flaggedSpots = selected.scans.flatMap((s) => s.lesions.filter((l) => l.risk !== 'ok').map((l) => ({ scan: s, lesion: l })));
@@ -78,18 +81,12 @@ export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautI
 
       <div className="bodymap">
         <div className="figure-wrap">
-          {canWebGL && (
-            <div className="range view-toggle" role="group" aria-label="Figure view">
-              <button type="button" className={view === '3d' ? 'active' : ''} aria-pressed={view === '3d'} onClick={() => setView('3d')}>3D</button>
-              <button type="button" className={view === '2d' ? 'active' : ''} aria-pressed={view === '2d'} onClick={() => setView('2d')}>2D</button>
-            </div>
-          )}
-          {view === '3d' ? (
-            <Suspense fallback={<BodyFigure views={views} selectedId={selectedId} onPick={setPicked} />}>
-              <BodyFigure3D views={views} selectedId={selectedId} onPick={setPicked} onUnavailable={() => setView('2d')} />
+          {has3d ? (
+            <Suspense fallback={<div className="holo holo-wait"><p className="holo-hint">Loading the anatomy model…</p></div>}>
+              <BodyFigure3D views={views} selectedId={selectedId} onPick={setPicked} body={body} onUnavailable={() => setHas3d(false)} />
             </Suspense>
           ) : (
-            <BodyFigure views={views} selectedId={selectedId} onPick={setPicked} />
+            <p className="muted">This device can't draw the 3D body. Pick a part from the list.</p>
           )}
           <ul className="region-list">
             {views.map(({ region, status }) => (
@@ -109,6 +106,9 @@ export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautI
             {selected.status && <StatusBadge status={selected.status} />}
           </div>
           <p>{info.does}</p>
+          {[selected.region.system, ...(selected.region.also ?? [])].map((sys) => env.systemNotes[sys]).filter(Boolean).map((note) => (
+            <p className="here-note" key={note}><strong>{env.short}.</strong> {note!.replace(/^Here: (.)/, (_, c: string) => c.toUpperCase())}</p>
+          ))}
 
           {skinFirst ? <>{skinBlock}{measurementsBlock}</> : <>{measurementsBlock}{skinBlock}</>}
 

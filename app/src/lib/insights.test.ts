@@ -10,6 +10,7 @@ const seed = generateSeed(NOW);
 const ev = (id: string) => evaluateAstronaut(id, seed.readings, seed.skinScans, NOW);
 const station = environmentById.station;
 const mars = environmentById.mars;
+const station_ = environmentById.station;
 
 describe('insights for the seeded crew', () => {
   it('a1: one skin insight at Act, with how to reach the flight surgeon', () => {
@@ -87,5 +88,16 @@ describe('daily streak', () => {
     expect(s('a1')).toEqual({ days: 42, doneToday: true });
     // Nakamura skipped temperature for the last 5 days, so the streak is broken
     expect(s('a4')).toEqual({ days: 0, doneToday: false });
+  });
+});
+
+describe('reminders follow the location', () => {
+  it('leaves out checks the location has no equipment for, and tags what matters most there', () => {
+    const rover = buildReminders('a2', ev('a2'), seed.skinScans, NOW, environmentById.rover);
+    expect(rover.map((r) => r.id)).not.toContain('bodyMass');
+    expect(rover.find((r) => r.id === 'reactionTime')?.key).toBe(true);
+    const station = buildReminders('a2', ev('a2'), seed.skinScans, NOW, station_);
+    expect(station.map((r) => r.id)).toContain('bodyMass');
+    expect(station.find((r) => r.id === 'vision')?.key).toBe(true);
   });
 });

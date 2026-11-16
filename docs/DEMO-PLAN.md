@@ -43,6 +43,8 @@ On Mars there is no doctor → HealthLens lets the crew check themselves → it 
 
 ## Idea parking lot
 _(add anything here: lines, visuals, clip ideas. Promote to the table when agreed.)_
+- **Open with the challenge video's own scenario** (slide 2 or 6): "Halfway to Mars, a crewmate feels sharp chest pain and collapses." The app starts on the spacecraft to Mars: mission bar shows ~5 min signal delay and "the crew acts first"; tick Chest pain → Emergency suggests the chest-pain guide → if they collapse, the CPR-in-weightlessness guide. That answers the video word for word.
+- Slide 3: GIF of the 3D anatomy turning with the Skin layer on, then Organs (see-through skin), with Vega's left arm in red (≤4 s).
 - Slide 3 or 5: GIF of **"Sync all"** on Check-in (5 devices modeled on CSA's Bio-Monitor, NASA's Actiwatch and SLAMMD, CSA's Bio-Analyzer) filling the check-in with no typing (≤4 s). Line: "Real space hardware, simulated here, no typing."
 - Slide 7: name the partner agency: Canadian Space Agency hardware (Bio-Monitor, Bio-Analyzer) and study (Hughson 2016) behind device import and blood sugar.
 -

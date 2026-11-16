@@ -1,15 +1,16 @@
-import type { ComponentType } from 'react';
+import { lazy, Suspense, useState, type ComponentType } from 'react';
 import { Droplets, Gauge, HeartPulse, Radiation, Thermometer } from 'lucide-react';
 import type { FigureRegionId } from '../lib/bodyRegions';
 import { buildRegionViews } from '../lib/bodyView';
 import type { CheckTab } from '../lib/guides';
+import { environmentById } from '../lib/environment';
+import { EMERGENCY_GUIDES } from '../lib/emergency';
 import { formatValue, indicatorById } from '../lib/indicators';
 import { crew } from '../lib/mockData';
 import { buildReminders, dueText, needsDoing } from '../lib/reminders';
 import { evaluateAstronaut, nextStep, type AstronautEval } from '../lib/status';
 import { readingsFor, useData } from '../lib/store';
 import type { IndicatorId, Status } from '../lib/types';
-import { BodyFigure } from '../components/BodyFigure';
 import { RemindersPanel } from '../components/RemindersPanel';
 import { SourceTag } from '../components/SourceTag';
 import { SpaceWeatherPanel } from '../components/SpaceWeatherPanel';
@@ -18,6 +19,8 @@ import { StatusBadge } from '../components/StatusBadge';
 import { TrendExplorer } from '../components/TrendExplorer';
 
 const DAY = 86_400_000;
+// three.js loads with the body figure, after the rest of the dashboard
+const BodyFigure3D = lazy(() => import('../components/BodyFigure3D'));
 type Icon = ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>;
 const VITALS: { id: IndicatorId; pair?: IndicatorId; label: string; icon: Icon; tint: string }[] = [
   { id: 'heartRate', label: 'Heart rate', icon: HeartPulse, tint: 'rose' },
@@ -50,9 +53,11 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
 
   const { a, ev } = rows.find((r) => r.a.id === astronautId) ?? rows[0];
   const views = buildRegionViews(a.id, ev, data.skinScans);
-  const reminders = buildReminders(a.id, ev, data.skinScans, data.now);
+  const env = environmentById[data.environment];
+  const reminders = buildReminders(a.id, ev, data.skinScans, data.now, env);
   const todo = reminders.filter(needsDoing);
   const done = reminders.length - todo.length;
+  const [has3d, setHas3d] = useState(true);
 
   return (
     <section className="dashboard">
@@ -96,7 +101,13 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
             <button type="button" className="ghost" onClick={() => onOpenBody()}>Open body map</button>
           </div>
           <div className="viewfinder">
-            <BodyFigure views={views} onPick={(id) => onOpenBody(id)} callouts />
+            {has3d ? (
+              <Suspense fallback={<div className="holo holo-compact holo-wait"><p className="holo-hint">Loading the anatomy model…</p></div>}>
+                <BodyFigure3D key={a.id} views={views} body={a.body} compact onPick={(id) => onOpenBody(id)} onUnavailable={() => setHas3d(false)} />
+              </Suspense>
+            ) : (
+              <p className="muted">This device can't draw the 3D body. Open the body map for the part list.</p>
+            )}
           </div>
           <ul className="legend" aria-label="Body parts by status">
             {(['act', 'watch', 'ok'] as Status[]).map((st) => {
@@ -113,6 +124,14 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
         <div className="area-rail">
           <Attention ev={ev} onOpenInsights={onOpenInsights} />
 
+          <div className={`panel where-card${env.liveHelp ? '' : ' location-delayed'}`}>
+            <div className="panel-head"><h3>Where you are: {env.short}</h3></div>
+            <p className="muted">{env.where}</p>
+            <p><strong>Matters most here:</strong> {env.focus.join(', ')}.</p>
+            <p><strong>If something goes wrong:</strong> {env.helpAdvice}</p>
+            <p className="muted">Most likely emergencies here: {env.likelyEmergencies.map((id) => EMERGENCY_GUIDES.find((g) => g.id === id)?.title.toLowerCase()).filter(Boolean).join('; ')}.</p>
+          </div>
+
           <div className="panel checks-card">
             <div className="panel-head"><h3>Today's checks</h3></div>
             <div className="ring-row">
@@ -127,7 +146,7 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
                 {todo.map((r) => (
                   <li key={r.id}>
                     <button type="button" className={`todo-item todo-${r.state}`} onClick={() => onOpenCheck(a.id, r.tab)}>
-                      <span>{r.label}</span><span className="todo-when">{dueText(r)}</span>
+                      <span>{r.label}{r.key && <span className="key-tag">key here</span>}</span><span className="todo-when">{dueText(r)}</span>
                     </button>
                   </li>
                 ))}

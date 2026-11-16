@@ -2,11 +2,11 @@ import { useState, type ComponentType } from 'react';
 import { Activity, BookOpen, ClipboardCheck, Eye, LayoutGrid, LineChart, Moon, ScanFace, Siren, Sparkles, PersonStanding, Sun } from 'lucide-react';
 import type { FigureRegionId } from './lib/bodyRegions';
 import { crew } from './lib/mockData';
-import { ENVIRONMENTS, type EnvironmentId } from './lib/environment';
 import { evaluateAstronaut } from './lib/status';
-import { setDemoMode, setEnvironment, useData } from './lib/store';
+import { setDemoMode, useData } from './lib/store';
 import { setTheme, useTheme } from './lib/theme';
 import { StatusBadge } from './components/StatusBadge';
+import { LocationBar } from './components/LocationBar';
 import { BodyMap } from './pages/BodyMap';
 import { CheckIn } from './pages/CheckIn';
 import { Dashboard } from './pages/Dashboard';
@@ -44,7 +44,7 @@ export default function App() {
   const [astronautId, setAstronautId] = useState(crew[0].id);
   const data = useData();
   const theme = useTheme();
-  const { demoMode, environment } = data;
+  const { demoMode } = data;
   const [emergencyGuide, setEmergencyGuide] = useState<string>();
   const perAstronaut = tab !== 'dashboard' && tab !== 'emergency';
 
@@ -95,12 +95,6 @@ export default function App() {
         </div>
 
         <div className="sidebar-foot">
-          <label className="field-compact">
-            <span>Location</span>
-            <select aria-label="Environment" value={environment} onChange={(e) => setEnvironment(e.target.value as EnvironmentId)}>
-              {ENVIRONMENTS.map((e) => <option key={e.id} value={e.id}>{e.label}</option>)}
-            </select>
-          </label>
           <label className="switch" title="Loads a seeded demo crew with 6 weeks of simulated history. Your own entries are kept either way.">
             <input type="checkbox" role="switch" checked={demoMode} onChange={(e) => setDemoMode(e.target.checked)} />
             <span className="switch-track" aria-hidden="true" />
@@ -117,6 +111,7 @@ export default function App() {
       </aside>
 
       <div className="content">
+        <LocationBar />
         {perAstronaut && (() => {
           const a = crew.find((c) => c.id === astronautId)!;
           const ev = evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs);

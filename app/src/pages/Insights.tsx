@@ -21,7 +21,7 @@ export function Insights({ astronautId, onNavigate }: { astronautId: string; onN
   const astronaut = crew.find((a) => a.id === astronautId)!;
   const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
   const insights = buildInsights(ev, env);
-  const reminders = buildReminders(astronautId, ev, data.skinScans, data.now);
+  const reminders = buildReminders(astronautId, ev, data.skinScans, data.now, environmentById[data.environment]);
   const report = buildReport(astronaut, ev, insights, env, data.now);
   const [copied, setCopied] = useState(false);
 

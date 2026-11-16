@@ -1,4 +1,5 @@
 import type { CheckTab } from '../lib/guides';
+import { environmentById } from '../lib/environment';
 import { crew } from '../lib/mockData';
 import { buildReminders, dailyStreak, dueText, needsDoing } from '../lib/reminders';
 import { evaluateAstronaut } from '../lib/status';
@@ -10,7 +11,7 @@ export function RemindersPanel({ onOpen }: { onOpen: (astronautId: string, tab: 
   const rows = crew
     .map((a) => ({
       a,
-      todo: buildReminders(a.id, evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs), data.skinScans, data.now).filter(needsDoing),
+      todo: buildReminders(a.id, evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs), data.skinScans, data.now, environmentById[data.environment]).filter(needsDoing),
     }))
     .filter((r) => r.todo.length > 0);
   const total = rows.reduce((n, r) => n + r.todo.length, 0);

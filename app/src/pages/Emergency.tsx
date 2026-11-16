@@ -59,7 +59,10 @@ export function Emergency({ initialGuide }: { initialGuide?: string }) {
   if (!guide) {
     const q = query.trim().toLowerCase();
     const shown = byPriority(EMERGENCY_GUIDES.filter((g) => !q || [g.title, g.when, ...g.signs].join(' ').toLowerCase().includes(q)));
-    const groups = ([1, 2, 3] as Priority[]).map((p) => ({ p, guides: shown.filter((g) => g.priority === p) })).filter((g) => g.guides.length);
+    const likely = (id: string) => env.likelyEmergencies.includes(id);
+    const groups = ([1, 2, 3] as Priority[])
+      .map((p) => ({ p, guides: shown.filter((g) => g.priority === p).sort((a, b) => Number(likely(b.id)) - Number(likely(a.id))) }))
+      .filter((g) => g.guides.length);
     const name = (id: string) => crew.find((c) => c.id === id)?.name ?? id;
 
     return (
@@ -96,7 +99,7 @@ export function Emergency({ initialGuide }: { initialGuide?: string }) {
             <div className="em-grid">
               {guides.map((g) => (
                 <button key={g.id} type="button" className="card emergency-pick" onClick={() => open(g.id)}>
-                  <strong>{g.title}</strong>
+                  <strong>{g.title}{likely(g.id) && <span className="key-tag">likely here</span>}</strong>
                   <p className="muted">{g.when}</p>
                 </button>
               ))}

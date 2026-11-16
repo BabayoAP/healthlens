@@ -16,10 +16,10 @@ import type { Astronaut, IndicatorId, Reading, SkinScan } from './types';
  */
 
 export const crew: Astronaut[] = [
-  { id: 'a1', name: 'Cmdr. R. Vega', role: 'Commander', missionDay: 142, radiationMSv: 71 },
-  { id: 'a2', name: 'Dr. K. Osei', role: 'Flight Engineer', missionDay: 142, radiationMSv: 68 },
-  { id: 'a3', name: 'M. Lindqvist', role: 'Mission Specialist', missionDay: 142, radiationMSv: 70 },
-  { id: 'a4', name: 'T. Nakamura', role: 'Pilot', missionDay: 142, radiationMSv: 69 },
+  { id: 'a1', name: 'Cmdr. R. Vega', role: 'Commander', missionDay: 142, radiationMSv: 71, body: 'female' },
+  { id: 'a2', name: 'Dr. K. Osei', role: 'Flight Engineer', missionDay: 142, radiationMSv: 68, body: 'male' },
+  { id: 'a3', name: 'M. Lindqvist', role: 'Mission Specialist', missionDay: 142, radiationMSv: 70, body: 'female' },
+  { id: 'a4', name: 'T. Nakamura', role: 'Pilot', missionDay: 142, radiationMSv: 69, body: 'male' },
 ];
 
 const DAY = 86_400_000;

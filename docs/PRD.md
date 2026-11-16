@@ -118,7 +118,7 @@ Log dosimeter reading or estimate by mission/environment. Shows cumulative dose 
 - **Goal: the astronaut understands their status within 5 seconds of opening the app.**
 - Crew view: each astronaut with an **OK / Watch / Act** status (green / amber / red) and the reason.
 - Personal view, grouped into **body systems**, each with its own status: **Cardiovascular** (HR, BP, SpO₂), **Musculoskeletal** (exercise, strength, body mass), **Behavioral & neurological** (sleep, mood, stress, fatigue, reaction time, dizziness), **Immune** (temperature, symptoms), **Skin** (lesions, rashes), **Radiation** (dose, events), **Vision** (chart, Amsler). Each indicator shows its status color, last value, trend arrow, source tag, and what's due.
-- **Clickable body figure** [added — the challenge suggests it]: build a **2D SVG silhouette first**; 3D is a later upgrade, not a hackathon-day task. **Built (Nov 15):** 3D anatomy from BodyParts3D (CC BY 4.0) with Skin / Organs / Skeleton layers, Innerbody-style. Regions map to systems: head → behavioral/neuro + vision; chest → cardiovascular; arms → musculoskeletal; torso → immune; legs → bone/muscle; skin regions overlay the whole figure. Clicking a region opens a **detail panel** with: current status, latest measurements, trend chart, why spaceflight affects this system, what the astronaut can do, when to contact the medical officer, and a link to the matching check-in.
+- **Clickable body figure** [added — the challenge suggests it]: build a **2D SVG silhouette first**; 3D is a later upgrade, not a hackathon-day task. **Built (Nov 15):** 3D anatomy, female (HuBMAP HRA, Visible Human Female) and male (BodyParts3D), with Skin / Organs / Nerves / Skeleton layers, Innerbody-style, on the Body map and the Dashboard; the 2D figure was removed. Regions map to systems: head → behavioral/neuro + vision; chest → cardiovascular; arms → musculoskeletal; torso → immune; legs → bone/muscle; skin regions overlay the whole figure. Clicking a region opens a **detail panel** with: current status, latest measurements, trend chart, why spaceflight affects this system, what the astronaut can do, when to contact the medical officer, and a link to the matching check-in.
 - Functionality first; visual polish after the core works.
 
 ### 5.9 Actionable insights & recommendations — P0
@@ -173,7 +173,7 @@ The challenge asks to adapt to spacecraft, station, rover and surface bases. One
 | Emphasis | Radiation, bone/muscle, psych | Vision (SANS), CV, bone | Fatigue, injury, suit time | Dust exposure (skin/eyes/lungs), radiation, injury |
 | Emergency guides | Limited supplies | Full medical kit | Get back to base first | Shelter procedures |
 
-**Built (Nov 15):** station, spacecraft, Moon base, **pressurized lunar rover** and Mars base (`lib/environment.ts`).
+**Built (Nov 15):** station, spacecraft to Mars (default, after the challenge video's "halfway to Mars" scenario), Moon base, **pressurized lunar rover** and Mars base (`lib/environment.ts`). Location is now a mission bar on every screen, and it drives: key checks (tagged and listed first), checks left out (rover: body mass), likely emergencies, a "Where you are" Dashboard card and per-system notes on the Body map.
 
 ## 7. Health indicators (reference table)
 
@@ -232,7 +232,7 @@ Rule: **every number in the demo either comes from a cited source or is labeled 
 - **Skin AI:** one function (`app/src/lib/analysis.ts`). MVP = a vision-model API call returning structured JSON; fallback = mock for offline demo. Roadmap: on-device model trained on ISIC (no internet needed in space).
 - **Rules engine:** `app/src/lib/status.ts`; thresholds in one config table matching §7.
 - **Charts:** our own small SVG component (`TrendChart`), no chart library. **Icons:** lucide-react if needed.
-- **Body figure:** 2D SVG with clickable regions (3D later, if ever).
+- **Body figure:** 3D anatomy (three.js + meshopt-compressed glTF built by `app/scripts/build-body.mjs`); the 2D SVG figure was removed Nov 15.
 - **No backend.** Everything runs in the browser, because deep-space missions can't count on a connection to Earth.
 - **Deploy:** Vercel, public URL early.
 

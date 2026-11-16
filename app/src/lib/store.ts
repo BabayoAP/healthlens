@@ -39,9 +39,9 @@ export interface Data {
 function load(): Saved {
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return { demoMode: true, environment: 'station', readings: [], skinScans: [], symptomLogs: [], ...JSON.parse(raw) };
+    if (raw) return { demoMode: true, environment: 'spacecraft', readings: [], skinScans: [], symptomLogs: [], ...JSON.parse(raw) };
   } catch { /* storage blocked or corrupt: start fresh */ }
-  return { demoMode: true, environment: 'station', readings: [], skinScans: [], symptomLogs: [] };
+  return { demoMode: true, environment: 'spacecraft', readings: [], skinScans: [], symptomLogs: [] };
 }
 
 let saved = load();
