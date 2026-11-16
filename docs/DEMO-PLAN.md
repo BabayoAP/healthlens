@@ -22,7 +22,7 @@ Decision (Nov 14): **7-slide deck**, showing the working app through short GIFs/
 | 3 | **Meet HealthLens** | Crew dashboard: green / amber / red at a glance, reason in plain words | GIF: dashboard → click Vega's card → body map opens with the left arm red → detail panel (≤5 s) | can record now |
 | 4 | **Skin check that never forgets** | Same spot, Day 97 vs Day 142: 4 mm → 6.5 mm → **Act** | GIF: upload photo → spots marked → comparison table (≤8 s) | real skin analysis is in; record once tested with an API key + ISIC images |
 | 5 | **Catches what a fitness tracker misses** | Slow drift flagged while every value is still "normal" (heart rate 63 → 70); live entry turns status amber | GIF: on Check-in, pick Lindqvist (healthy), enter BP 150/95, save → status turns red with the reason (≤6 s). Still image option: Nakamura's Trends screen, heart rate creeping up past the baseline line while still "normal" | can record now |
-| 6 | **Tells you what to do** | Insight card (what we saw / why / what to do / when to get help) + "Copy report" for the flight surgeon + emergency mode with Moon vs Mars comm delay | GIF: press Emergency → solar storm → switch Moon to Mars, comm advice changes (≤6 s). Still image: Vega's insight card on the Insights screen (or Nakamura's three cards) | can record now |
+| 6 | **Tells you what to do** | Insight card (what we saw / why / what to do / when to get help) + "Copy report" for the flight surgeon + emergency mode: 15 guides by priority, suggested from the crew's own data, CPR adapted for weightlessness, comm delay | GIF: tick "Chest pain" on Check-in → press Emergency → suggested guide on top → open it, step timer running (≤6 s). Still image: the priority list, or Vega's insight card | can record now |
 | 7 | **Built on NASA data · next** | Exact datasets (HRP risks, OSDR skin studies OSD-238…254), "simulated" labels = honest data, Earth spin-off for remote clinics, live NASA DONKI space-weather panel (screenshot of "Radiation watch"), live link + QR | none | data is in the app; needs deploy link |
 
 **Motion total: 25 s of 30 s.** If a clip grows, cut another.
@@ -43,4 +43,6 @@ On Mars there is no doctor → HealthLens lets the crew check themselves → it 
 
 ## Idea parking lot
 _(add anything here: lines, visuals, clip ideas. Promote to the table when agreed.)_
+- Slide 3 or 5: GIF of **"Sync all"** on Check-in (5 devices modeled on CSA's Bio-Monitor, NASA's Actiwatch and SLAMMD, CSA's Bio-Analyzer) filling the check-in with no typing (≤4 s). Line: "Real space hardware, simulated here, no typing."
+- Slide 7: name the partner agency: Canadian Space Agency hardware (Bio-Monitor, Bio-Analyzer) and study (Hughson 2016) behind device import and blood sugar.
 -

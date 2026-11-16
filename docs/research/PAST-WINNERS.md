@@ -66,16 +66,47 @@ Compiled from past winning project pages, to steer HealthLens. Add new batches u
 
 ## Applied to HealthLens — checklist
 
-- [ ] Pick 1–2 NASA datasets and **use** them (e.g. OSDR radiation/skin studies, Twins Study cardiovascular data for vitals baselines); list them with IDs
-- [ ] Write the one-line hook + opening stat (skin cancer risk / radiation dose per mission)
-- [ ] Name and define our score (e.g. "LensScore") with stated weights
-- [ ] Build the worked example: one astronaut, two scans, escalation to **Act**
-- [ ] Explain the false-alarm handling (own baseline, re-scan before escalating)
-- [ ] Exportable flight-surgeon report (PDF)
-- [ ] Deploy to a public URL early (Vercel)
-- [ ] Draft the "Use of AI" section as we go (tools + purpose + review statement)
-- [ ] Short roadmap: wearable sensor (KiCad/Onshape), Earth spin-off for remote screening
+_Updated Nov 15._
+
+- [x] Pick 1–2 NASA datasets and **use** them: live DONKI space weather in the app; OSDR skin studies OSD-238/239/240/241/254, HRP hazards, SANS, IMM and Sleep-Long cited where they are used
+- [x] Write the one-line hook + opening stat ("No dermatologist on Mars", 0.66 Sv Mars round trip)
+- [ ] Name and define our score (e.g. "LensScore") with stated weights. The rules are stated in SUBMISSION.md, but the score has no name yet
+- [x] Build the worked example: one astronaut, two scans, escalation to **Act** (Vega, 4 → 6.5 mm). Screenshots still to paste
+- [x] Explain the false-alarm handling (own baseline, re-measure before escalating)
+- [x] Exportable flight-surgeon report (plain text copy / download; not PDF). Emergency guides also export a timed event log
+- [x] Deploy to a public URL early: https://healthlens-one.vercel.app
+- [x] Draft the "Use of AI" section as we go (log in SUBMISSION.md §3.6; final text still to write)
+- [ ] Short roadmap: wearable sensor (KiCad/Onshape), Earth spin-off for remote screening (not written yet)
+
+## Batch 2 — the same challenge in 2026, and where we stand (Nov 15)
+
+The 2026 winners are not announced yet, and no past global winner did astronaut self-assessment (the closest: a 2014 *local* People's Choice "Astronaut Health Monitoring System" in Doha, and 2022 Global Nominee *Skylab*, AI diagnosis from spaceflight data). So the best guide is (a) the 2025 winner patterns above and (b) the other 2026 teams on our challenge, found on GitHub on Nov 15:
+
+| Team project | What it does | NASA data | Live link | Takeaway for us |
+| --- | --- | --- | --- | --- |
+| **AURORA** | Offline, personal-baseline vitals, radiation dose vs NASA's 600 mSv career limit, 3-min vigilance test, procedures assistant that only answers from verified text, signed audit trail, model card | **NASA OSDR RadLab** dose data from the May 2024 solar storms; NOAA GOES protons | yes (vercel) | Strongest rival. Similar baseline idea, and their radiation uses real measured data. Our edge: skin tracking, body map, environment modes, emergency guides, device import, in-app vision test |
+| **COSMOCare** | ML risk scores, anomaly detection, alerts, Gemini chatbot | none named; "illustrative" thresholds | no | Generic dashboard + chatbot. Shows why named sources and a live link matter |
+| **ASTROCARE**, **Crew Health Monitor**, **ASTRA**, others | Vitals dashboards, AI risk prediction | mostly simulated | some | Most entries are "vitals dashboard + AI". Our story must not sound like that |
+
+**What makes us different (say it in this order):**
+1. **Skin check that never forgets a spot**: nobody else on the challenge tracks lesions over time.
+2. **Built for where the crew is**: station, spacecraft, Moon base, lunar rover, Mars. Measuring method, shelter and emergency advice change with gravity and comm delay.
+3. **Emergencies, not just alerts**: 15 guides by priority, picked from NASA's Integrated Medical Model, suggested from the crew's own data, with a timed log for the ground.
+4. **Honest data**: every value says where it came from. Device import is modeled on real CSA and NASA hardware and labeled simulated.
+
+**Scored against the five judging criteria:**
+
+| Criterion | Where we stand | Gap to close tonight |
+| --- | --- | --- |
+| Impact | Crew safety on Moon / Mars; Earth spin-off named but not written | Write the Earth remote-care paragraph (challenge asks for it) |
+| Creativity | Skin tracking, slow-drift rule, comm-delay-aware emergencies, environment modes, 3D body map | Name the skin score |
+| Validity | Cited limits, own baseline, re-measure rule, source tags, 64 tests | Team to read the emergency and guide text once (AI-drafted, sourced) |
+| Relevance | Every challenge bullet covered (SUBMISSION Part 4), incl. blood sugar in mg/dL, rover, gamification, emergencies. NASA data: live DONKI + cited OSDR / HRP / IMM / SANS | Radiation dose is still "estimated" from a fixed number; AURORA uses real OSDR RadLab data. Cheapest fix: cite NASA's career dose limit next to the dose |
+| Presentation | Live site works; UI clean | **Biggest risk**: deck, screenshots and diagram are not done, and the Project page is not submitted. Do these before any new feature |
+
+**Before 11:59 p.m. PT, in order:** (1) demo deck with GIFs, (2) fill the Project page from SUBMISSION.md with screenshots, (3) decide repo public or not (it is private), (4) Earth spin-off + roadmap paragraph, (5) **Submit for Judging**.
 
 ## Sources
 
 - **Batch 1** — `past winners.docx` (2026-11-14): 8 project pages from the 2025 NASA Space Apps Challenge (SpaceGenes+, Resonant Exoplanets, SkySense, PureFlow, Astro Sweepers, AakashNet, Gaia-LEO, Queñaris). The pages don't say which award each won.
+- **Batch 2** — web search, 2026-11-15: other 2026 teams' public repos (github.com/fabriciojunio/aurora-astronaut-health, github.com/omkargurav0216-code/COSMOCare, github.com/sachuabhijith3485-cpu/ASTROCARE, github.com/AdityaK0804/Crew-Health-Monitor, astranasahackathon.vercel.app); 2014 awards page (2014.spaceappschallenge.org/awards); 2022 Skylab team page. No 2026 results yet.

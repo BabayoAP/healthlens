@@ -56,14 +56,14 @@ Every reading goes through one small source layer and records **where it came fr
 | Source tag | Meaning | Example |
 | --- | --- | --- |
 | `manual` | Typed by the astronaut from an instrument | BP from a cuff |
-| `device` | Pulled from a connected device (future) | Wearable HR |
+| `device` | Pulled from a connected device (future; today's device import saves `simulated` + a device id) | Wearable HR |
 | `self-report` | The astronaut's own rating or symptom | Mood slider, "dizzy today" |
 | `measured-in-app` | Measured by the app itself | Reaction-time test, vision chart |
 | `simulated` | Generated demo data | Seeded history, "simulate reading" button |
 | `estimated` | Derived or modeled, not measured | Radiation dose per environment |
 
 - Every `simulated` or `estimated` value shows a **visible tag** in the UI. This is how we keep the "cited or labeled simulated" rule (§9).
-- The app runs on simulated data today. Real devices plug in later by adding a `device` source, with no rewrite.
+- The app runs on simulated data today. **Device import (built, simulated, Nov 15):** Check-in has "Import from devices" with five devices modeled on real space hardware (CSA Bio-Monitor smart shirt, NASA Sleep-Long Actiwatch, SLAMMD / gravity-corrected scale, CSA Bio-Analyzer, ear thermometer), in `lib/devices.ts`. A sync saves readings tagged `simulated` with the device id; real devices plug into the same path with source `device`.
 - Where hardware is needed (scale, cuff, oximeter), the UI says "**device connects here**" and points to the sensor roadmap (§5.16).
 
 **How each input works for the demo:**
@@ -73,7 +73,8 @@ Every reading goes through one small source layer and records **where it came fr
 | Body mass | Number field + "simulate device" button; instructions change by environment (station: mass-measuring device; Moon: scale reading × ~6) | manual / simulated |
 | Vision | Drawn on screen: near-vision chart + Amsler grid, answered with taps | measured-in-app |
 | Reaction time | "Tap when the circle turns green" | measured-in-app |
-| HR / BP / SpO₂ / temperature | Number fields + "simulate reading" button. Stretch: phone-camera fingertip HR (skip unless spare time) | manual / simulated |
+| HR / BP / SpO₂ / breathing rate / temperature | Device sync (smart shirt, ear thermometer) or number fields | simulated (device) / manual |
+| Blood sugar (mg/dL) | Device sync (blood analyzer) or number field, weekly, fasting | simulated (device) / manual |
 | Skin photos | Controlled set of public dermoscopy images (ISIC / HAM10000). **Not teammates' skin**: the Space Apps under-18 media rule applies | simulated input, real analysis |
 | Mood / sleep / stress / fatigue | Sliders | self-report |
 | Symptoms | Checklist (§5.4) | self-report |
@@ -144,7 +145,7 @@ For **every** indicator, a card with:
 - **If abnormal:** what to do now, what to monitor, when to call the flight surgeon
 
 ### 5.13 Emergency mode — P0 [added; the challenge asks for emergency guidance]
-Big red button → step-by-step guides for: chest pain, trouble breathing / low SpO₂, fainting, severe allergic reaction, burns, eye injury, head injury, solar particle event (shelter). Each guide shows:
+Big red button → step-by-step guides. **Built (Nov 15): 15 guides in 3 priority groups** (1 life-threatening: not responding / CPR, low oxygen, chest pain, anaphylaxis, smoke / fire / toxic air, severe bleeding; 2 urgent: decompression sickness, head injury, low blood sugar, fainting, solar particle event, eye injury, severe distress; 3 serious: burns, kidney stone), picked from conditions in NASA's Integrated Medical Model. Guides suggested by the crew's own data (urgent symptom or Act reading in the last 24 h) show first; search; signs and "do not" per guide; step timer, checklist and a timed event log copied for the ground. Each guide shows:
 - immediate steps, one per screen
 - what to measure and log while doing it
 - **escalation adjusted for comm delay:** "Moon: call now. Mars: ~20 min delay — start step 3 before waiting for a reply."
@@ -152,7 +153,7 @@ Big red button → step-by-step guides for: chest pain, trouble breathing / low 
 Guides must be sourced from standard first-aid protocols and labeled as reference only.
 
 ### 5.14 Gamification — P1
-Streaks for on-time check-ins, crew completion bar ("crew 5/6 done today"), badges for full-week streaks. Keep it light: health first, no ranking that shames anyone.
+Streaks for on-time check-ins, crew completion bar ("crew 5/6 done today"), badges for full-week streaks. **Built:** daily streak (every daily check done) per person and a "crew done today" bar on the checks-due panel; badges not built. Keep it light: health first, no ranking that shames anyone.
 
 ### 5.15 Flight-surgeon report — P1 [added; two past winners shipped PDF reports]
 One-click PDF/printout: status summary, flagged items, trends, lesion photos. Queued to "send at next comm window".
@@ -172,6 +173,8 @@ The challenge asks to adapt to spacecraft, station, rover and surface bases. One
 | Emphasis | Radiation, bone/muscle, psych | Vision (SANS), CV, bone | Fatigue, injury, suit time | Dust exposure (skin/eyes/lungs), radiation, injury |
 | Emergency guides | Limited supplies | Full medical kit | Get back to base first | Shelter procedures |
 
+**Built (Nov 15):** station, spacecraft, Moon base, **pressurized lunar rover** and Mars base (`lib/environment.ts`).
+
 ## 7. Health indicators (reference table)
 
 Ranges are **placeholders for adults on Earth**. Personal baseline beats population range. Confirm each against a source before the demo.
@@ -190,6 +193,8 @@ Ranges are **placeholders for adults on Earth**. Personal baseline beats populat
 | Vision | Chart + Amsler | Weekly | Unchanged | Blur at usual distance | Wavy lines / new blind spot | Gravity (SANS) |
 | Radiation dose | Dosimeter | Daily | Within mission plan | Above plan | Solar event / near limit | Radiation |
 | Hydration | Urine color chart | Daily | Pale | Dark | Dark + pain (kidney stone risk) | Gravity (bone → calcium) |
+| Breathing rate [built] | Smart shirt / count | Daily | 12–18 / min (MedlinePlus) | ≤10 or ≥21, or ±4 vs baseline | <8 or ≥25 | Environment (cabin CO₂), immune |
+| Blood sugar, fasting [built] | Blood analyzer / meter | Weekly | ≤99 mg/dL (CDC) | 100–125, <70, or ±15 vs baseline | ≥126 or <54 | Gravity (insulin resistance rose in flight, Hughson 2016) |
 
 ## 8. Status & scoring logic
 
@@ -216,6 +221,8 @@ Past winners named exact datasets and used them in the product. Our plan:
 | **ISIC Archive / HAM10000** (public dermoscopy datasets) [added] | Test (or fine-tune) the lesion classifier; source for demo lesion images |
 | **NASA DONKI** (space-weather API) [added] | Live solar-event alert → triggers the radiation shelter guide (PureFlow did this and won) |
 | ESA / JAXA astronaut health resources | Second-agency data for the "Space Agency Partner" section |
+| **CSA Bio-Monitor and Bio-Analyzer**, **CSA Vascular study (Hughson 2016)** [added] | Models for simulated device import; blood-sugar rationale (Space Agency Partner section) |
+| **NASA Integrated Medical Model** (100 modeled conditions) [added] | Which emergency guides to build |
 
 Rule: **every number in the demo either comes from a cited source or is labeled "simulated"**.
 
