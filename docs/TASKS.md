@@ -18,6 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- BabayoAP · 3D body on the Dashboard, 2D figure removed, female body + nerves layer, location made central (per the official challenge video) · Nov 15
 
 ## Done
 - [x] 3D body map is real anatomy (Nov 15): BodyParts3D (CC BY 4.0) skin, 266-bone skeleton and organs in `app/public/models/body.glb` (680 KB, built by `app/scripts/build-body.mjs`); Skin / Organs / Skeleton layer switches, see-through skin over organs, organs colored by their part's status, click any layer to open a part (`lib/anatomy.ts` maps a point to a part); groin smoothed to a mannequin. Replaces the distance-field mannequin (`lib/bodyMesh.ts` and its worker removed; the 2D figure still uses `lib/bodyShape.ts`). BabayoAP
