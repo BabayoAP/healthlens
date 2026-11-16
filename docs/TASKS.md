@@ -18,6 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- BabayoAP · 3D body map: real anatomy (BodyParts3D, CC BY 4.0) with skin / organs / skeleton layers, Innerbody-style · Nov 15
 
 ## Done
 - [x] Data input, emergencies, alignment (Nov 15): **device import** on Check-in (simulated; smart shirt after CSA Bio-Monitor, sleep wristband after NASA's Actiwatch, body mass device after SLAMMD, blood analyzer after CSA Bio-Analyzer, ear thermometer; `lib/devices.ts`, `components/DeviceSync.tsx`) replaces the simulate button; new indicators **breathing rate** and **fasting blood sugar**; **rover** environment; **15 emergency guides** in 3 priority groups with suggestions from crew data, search, signs / do-not, timer, checklist and copyable event log (`lib/emergency.ts`, `pages/Emergency.tsx`); **streaks** + crew-done-today; check schedule labels all weekdays; 64 tests. Same-challenge competitor scan + alignment notes in `research/PAST-WINNERS.md`. `5b0f0bd` BabayoAP
