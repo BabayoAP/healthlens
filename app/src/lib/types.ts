@@ -4,13 +4,14 @@ export type Status = 'ok' | 'watch' | 'act';
 export type Source = 'manual' | 'device' | 'self-report' | 'measured-in-app' | 'simulated' | 'estimated';
 
 export type BodySystem =
-  | 'cardiovascular' | 'musculoskeletal' | 'behavioral' | 'immune' | 'skin' | 'radiation' | 'vision';
+  | 'cardiovascular' | 'musculoskeletal' | 'behavioral' | 'immune' | 'skin' | 'radiation' | 'vision' | 'metabolic';
 
 /** To add an indicator: add its id here and one entry in `indicators.ts`. Nothing else needs to change. */
 export type IndicatorId =
   | 'heartRate' | 'systolic' | 'diastolic' | 'spo2' | 'temperature'
   | 'bodyMass' | 'sleepHours' | 'mood' | 'stress' | 'fatigue'
-  | 'reactionTime' | 'nearVision' | 'amsler';
+  | 'reactionTime' | 'nearVision' | 'amsler'
+  | 'respRate' | 'glucose';
 
 /** One measured value. Blood pressure is stored as two readings (systolic + diastolic) with the same time. */
 export interface Reading {
@@ -20,6 +21,8 @@ export interface Reading {
   takenAt: string; // ISO date-time
   value: number;
   source: Source;
+  /** Device it was imported from (see `devices.ts`), if any */
+  device?: string;
 }
 
 /** One filled-in symptom checklist (PRD §5.4). An empty list means "no symptoms today". Ids are in `symptoms.ts`. */

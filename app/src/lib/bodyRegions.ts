@@ -19,7 +19,7 @@ export interface FigureRegion {
 export const FIGURE_REGIONS: FigureRegion[] = [
   { id: 'head', label: 'Head', system: 'behavioral', also: ['vision'], skin: ['face', 'neck'] },
   { id: 'chest', label: 'Chest', system: 'cardiovascular', skin: ['chest', 'upper-back'] },
-  { id: 'abdomen', label: 'Abdomen', system: 'immune', skin: ['abdomen', 'lower-back'] },
+  { id: 'abdomen', label: 'Abdomen', system: 'immune', also: ['metabolic'], skin: ['abdomen', 'lower-back'] },
   { id: 'right-arm', label: 'Right arm', system: 'musculoskeletal', skin: ['right-arm'] },
   { id: 'left-arm', label: 'Left arm', system: 'musculoskeletal', skin: ['left-arm'] },
   { id: 'right-leg', label: 'Right leg', system: 'musculoskeletal', skin: ['right-leg'] },
@@ -51,6 +51,11 @@ export const SYSTEM_INFO: Partial<Record<BodySystem, { title: string; does: stri
     title: 'Immune system',
     does: 'Fights infections. A raised temperature is often the first sign that it is busy.',
     inSpace: 'Spaceflight changes how the immune system works, and dormant viruses can become active again. In a sealed habitat an infection spreads easily to the rest of the crew.',
+  },
+  metabolic: {
+    title: 'Metabolism',
+    does: 'Turns food into energy. Blood sugar shows how well the body handles it.',
+    inSpace: 'Muscles that carry less load use sugar less well, and a measure of insulin resistance rose in flight in a Canadian Space Agency study. Planned meals and daily exercise help keep it steady.',
   },
   musculoskeletal: {
     title: 'Muscles and bones',

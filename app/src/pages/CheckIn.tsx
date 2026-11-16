@@ -2,12 +2,12 @@ import { useState, type ReactNode } from 'react';
 import { environmentById } from '../lib/environment';
 import { formatValue, indicatorById } from '../lib/indicators';
 import { evaluateAstronaut, nextStep } from '../lib/status';
-import { addReadings, readingsFor, useData } from '../lib/store';
+import { addReadings, useData } from '../lib/store';
 import type { IndicatorId, Reading } from '../lib/types';
-import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
 import { SymptomChecklist } from '../components/SymptomChecklist';
 import { IndicatorList } from '../components/IndicatorList';
+import { DeviceSync } from '../components/DeviceSync';
 
 /** Number fields. min/max only catch typos (a heart rate of 700); they are not medical ranges. */
 const NUMBER_FIELDS: { id: IndicatorId; min: number; max: number; step: number; typical: number; hint?: string }[] = [
@@ -15,11 +15,12 @@ const NUMBER_FIELDS: { id: IndicatorId; min: number; max: number; step: number; 
   { id: 'systolic', min: 50, max: 260, step: 1, typical: 118 },
   { id: 'diastolic', min: 30, max: 160, step: 1, typical: 74 },
   { id: 'spo2', min: 50, max: 100, step: 1, typical: 98 },
+  { id: 'respRate', min: 2, max: 60, step: 1, typical: 14, hint: 'Breaths in 30 s, doubled' },
+  { id: 'glucose', min: 20, max: 600, step: 1, typical: 88, hint: 'Weekly, before breakfast' },
   { id: 'temperature', min: 30, max: 44, step: 0.1, typical: 36.6 },
   { id: 'bodyMass', min: 30, max: 200, step: 0.1, typical: 75, },
   { id: 'sleepHours', min: 0, max: 24, step: 0.1, typical: 7.4, hint: 'Hours slept last night' },
 ];
-const VITALS: IndicatorId[] = ['heartRate', 'systolic', 'diastolic', 'spo2', 'temperature', 'bodyMass'];
 
 const SCALES: { id: IndicatorId; low: string; high: string }[] = [
   { id: 'mood', low: 'very low', high: 'great' },
@@ -32,8 +33,6 @@ type Draft = Partial<Record<IndicatorId, string>>;
 export function CheckIn({ astronautId }: { astronautId: string }) {
   const data = useData();
   const [draft, setDraft] = useState<Draft>({});
-  /** Fields filled by "Simulate reading". Typing in a field clears its flag. */
-  const [simulated, setSimulated] = useState<Partial<Record<IndicatorId, boolean>>>({});
   const [error, setError] = useState<string>();
   const [saved, setSaved] = useState<IndicatorId[]>([]);
 
@@ -43,23 +42,6 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
 
   function set(id: IndicatorId, value: string) {
     setDraft((d) => ({ ...d, [id]: value }));
-    setSimulated((s) => ({ ...s, [id]: false }));
-    setError(undefined);
-  }
-
-  /** Fills the vitals with a plausible reading near this astronaut's recent values. Saved with the `simulated` tag. */
-  function simulate() {
-    const next: Draft = { ...draft };
-    const flags = { ...simulated };
-    for (const f of NUMBER_FIELDS.filter((x) => VITALS.includes(x.id))) {
-      const history = readingsFor(data, astronautId, f.id);
-      const around = history.length ? history[history.length - 1].value : f.typical;
-      const wobble = (Math.random() * 2 - 1) * f.step * 2;
-      next[f.id] = (around + wobble).toFixed(indicatorById[f.id].decimals);
-      flags[f.id] = true;
-    }
-    setDraft(next);
-    setSimulated(flags);
     setError(undefined);
   }
 
@@ -79,7 +61,7 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
       if (!Number.isFinite(value) || value < min || value > max) {
         return setError(`${def.label}: ${text} doesn't look right. Expected a number between ${min} and ${max}.`);
       }
-      readings.push({ astronautId, indicator: id, value, takenAt, source: simulated[id] ? 'simulated' : def.entrySource });
+      readings.push({ astronautId, indicator: id, value, takenAt, source: def.entrySource });
     }
     if (has('systolic') && Number(draft.diastolic) >= Number(draft.systolic)) {
       return setError('The first blood pressure number (systolic) should be the larger one.');
@@ -87,7 +69,6 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
     addReadings(readings);
     setSaved(filled.map(([id]) => id));
     setDraft({});
-    setSimulated({});
     setError(undefined);
   }
 
@@ -113,7 +94,7 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
     const def = indicatorById[id];
     return (
       <div className="tile-input" key={id}>
-        <span className="field-label">{def.label} {simulated[id] && <SourceTag source="simulated" />}</span>
+        <span className="field-label">{def.label}</span>
         <span className="tile-row">{input(id, def.label)}{def.unit && <span className="tile-unit">{def.unit}</span>}</span>
         <span className="tile-hint">{hintFor(id)}</span>
         {extra}
@@ -124,20 +105,19 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
   return (
     <section>
       <h2>Check-in {ev.hasData && <StatusBadge status={ev.status} />}</h2>
-      <p className="muted">Fill in what you measured. Blank fields are skipped.</p>
+      <p className="muted">Sync your devices, or fill in what you measured by hand. Blank fields are skipped.</p>
+
+      <DeviceSync astronautId={astronautId} onImported={(ids) => { setSaved([...new Set(ids)]); setError(undefined); }} />
 
       <div className="checkin">
         <div className="panel">
           <div className="panel-head">
-            <h3>Vitals</h3>
-            <button type="button" className="ghost" onClick={simulate} title="No device connected yet. Fills in a made-up reading, saved with a 'simulated' tag.">
-              Simulate reading
-            </button>
+            <h3>Vitals by hand</h3>
           </div>
           <div className="tile-grid">
             {tile('heartRate')}
             <div className="tile-input">
-              <span className="field-label">Blood pressure {(simulated.systolic || simulated.diastolic) && <SourceTag source="simulated" />}</span>
+              <span className="field-label">Blood pressure</span>
               <span className="tile-row tile-bp">
                 {input('systolic', 'Blood pressure, top number (systolic)')}<span className="tile-sep">/</span>{input('diastolic', 'Blood pressure, bottom number (diastolic)')}
                 <span className="tile-unit">mmHg</span>
@@ -145,7 +125,9 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
               <span className="tile-hint">{evalOf('systolic').latest && evalOf('diastolic').latest ? `last ${evalOf('systolic').latest!.value}/${evalOf('diastolic').latest!.value}` : 'top / bottom number'}</span>
             </div>
             {tile('spo2')}
+            {tile('respRate')}
             {tile('temperature')}
+            {tile('glucose')}
             {tile('bodyMass', <details className="fold"><summary>How to weigh here</summary><p>Weekly. {env.massMethod}</p></details>)}
           </div>
         </div>

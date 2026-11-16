@@ -5,7 +5,7 @@
  * a question and its answer). Gravity: Moon 0.17 g, Mars 0.38 g. Shelter advice follows NASA's
  * public description of the Orion storm-shelter procedure (see `sources.ts`: nasaShelter).
  */
-export type EnvironmentId = 'station' | 'spacecraft' | 'moon' | 'mars';
+export type EnvironmentId = 'station' | 'spacecraft' | 'moon' | 'rover' | 'mars';
 
 export interface Environment {
   id: EnvironmentId;
@@ -49,6 +49,14 @@ export const ENVIRONMENTS: Environment[] = [
     massMethod: 'An Earth scale reads about one sixth of your real weight here. Enter the reading multiplied by 6, or use a scale set for lunar gravity.',
     shelter: 'Get inside the habitat or the nearest shielded shelter. If you are in a rover or on a moonwalk, head back now.',
     focus: ['Radiation', 'Lunar dust on skin, eyes and lungs', 'Injuries'],
+  },
+  {
+    id: 'rover', label: 'Pressurized rover (Moon)', gravity: '1/6 of Earth gravity',
+    commDelay: 'about 1.3 seconds, with dropouts behind hills and craters', liveHelp: true,
+    helpAdvice: 'Call the flight surgeon now through the base relay. If the link drops, keep going with the steps and send a report when it is back.',
+    massMethod: 'There is no mass-measuring device in the rover. Skip body mass on a rover trip and weigh yourself at the base.',
+    shelter: 'Head back to the habitat now. If you cannot get there in time, park, stay in the cabin and put the crew in the middle, with water and stowage packed around you.',
+    focus: ['Radiation far from shelter', 'Dust', 'Injuries', 'Fatigue on long drives'],
   },
   {
     id: 'mars', label: 'Mars base', gravity: 'About 3/8 of Earth gravity',

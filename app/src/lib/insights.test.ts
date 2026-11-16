@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { environmentById } from './environment';
 import { buildInsights, buildReport } from './insights';
 import { crew, generateSeed } from './mockData';
-import { buildReminders, dueText, needsDoing } from './reminders';
+import { buildReminders, dailyStreak, dueText, needsDoing } from './reminders';
 import { evaluateAstronaut } from './status';
 
 const NOW = Date.parse('2026-11-15T12:00:00Z');
@@ -76,6 +76,16 @@ describe('reminders for the seeded crew', () => {
   it('groups blood pressure into one check', () => {
     expect(rem('a2').map((r) => r.id)).toEqual(expect.arrayContaining(['bloodPressure', 'mood']));
     expect(rem('a2').map((r) => r.id)).toEqual(expect.arrayContaining(['vision', 'reactionTime']));
-    expect(rem('a2')).toHaveLength(10);
+    expect(rem('a2').map((r) => r.id)).toEqual(expect.arrayContaining(['respRate', 'glucose']));
+    expect(rem('a2')).toHaveLength(12);
+  });
+});
+
+describe('daily streak', () => {
+  it('counts full days of daily checks for the seeded crew', () => {
+    const s = (id: string) => dailyStreak(id, seed.readings, NOW);
+    expect(s('a1')).toEqual({ days: 42, doneToday: true });
+    // Nakamura skipped temperature for the last 5 days, so the streak is broken
+    expect(s('a4')).toEqual({ days: 0, doneToday: false });
   });
 });

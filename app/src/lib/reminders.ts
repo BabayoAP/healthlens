@@ -1,6 +1,7 @@
 import { GUIDES, type CheckTab } from './guides';
 import type { AstronautEval } from './status';
-import type { SkinScan } from './types';
+import { INDICATORS } from './indicators';
+import type { Reading, SkinScan } from './types';
 
 /**
  * Reminders (PRD §5.11): which checks are due or overdue for one astronaut.
@@ -81,4 +82,27 @@ export function checkHistory(
     out.set(d, (out.get(d) ?? 0) + 1);
   }
   return out;
+}
+
+/** Indicators that are checked every day; a streak day needs all of them */
+const DAILY = INDICATORS.filter((d) => d.cadenceDays === 1).map((d) => d.id);
+
+/**
+ * Streak (PRD §5.14): consecutive days on which every daily check was done.
+ * If today is not finished yet, the streak counts up to yesterday, so it is not lost before the day is over.
+ */
+export function dailyStreak(astronautId: string, readings: Reading[], now: number): { days: number; doneToday: boolean } {
+  const today = new Date(now).setHours(0, 0, 0, 0);
+  const byDay = new Map<number, Set<string>>();
+  for (const r of readings) {
+    if (r.astronautId !== astronautId) continue;
+    const d = Math.round((today - new Date(r.takenAt).setHours(0, 0, 0, 0)) / DAY);
+    if (!byDay.has(d)) byDay.set(d, new Set());
+    byDay.get(d)!.add(r.indicator);
+  }
+  const complete = (d: number) => DAILY.every((id) => byDay.get(d)?.has(id));
+  const doneToday = complete(0);
+  let days = 0;
+  for (let d = doneToday ? 0 : 1; complete(d); d++) days++;
+  return { days, doneToday };
 }

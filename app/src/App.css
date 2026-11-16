@@ -387,8 +387,47 @@ button.link:hover { color: var(--text); }
 
 .comm { padding: 12px 14px; border-radius: var(--r-md); border: 1px solid var(--border); background: var(--surface); font-size: .92rem; }
 .comm-delayed { border-color: color-mix(in srgb, var(--watch) 50%, var(--border)); background: var(--watch-soft); }
-.emergency-pick { border-color: color-mix(in srgb, var(--act) 40%, var(--border)); }
-.emergency-pick:hover { border-color: var(--act); }
+.emergency-pick { border-color: var(--border); border-left: 3px solid var(--em, var(--act)); text-align: left; }
+.emergency-pick:hover { border-color: var(--em, var(--act)); }
+.emergency-pick p { margin: 4px 0 0; font-size: .86rem; }
+/* Priority colors: 1 red, 2 amber, 3 neutral */
+.em-p1 { --em: var(--act); --em-soft: var(--act-soft); }
+.em-p2 { --em: var(--watch); --em-soft: var(--watch-soft); }
+.em-p3 { --em: var(--muted); --em-soft: var(--surface-2); }
+.em-p1 .emergency-pick, .em-p2 .emergency-pick, .em-p3 .emergency-pick { border-left-color: var(--em); }
+.em-group { margin-top: 18px; }
+.em-group-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 1rem; font-weight: 650; margin: 0 0 8px; }
+.em-group-head .muted { font-weight: 450; font-size: .88rem; }
+.em-chip { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--em); color: var(--bg); font-size: .78rem; font-weight: 700; }
+.em-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.em-search { margin-top: 14px; }
+.em-search input { width: 100%; max-width: 520px; padding: 10px 12px; font-size: 1rem; }
+.em-suggest { margin-top: 14px; border-color: color-mix(in srgb, var(--act) 45%, var(--border)); }
+.em-suggest h3 { margin: 0 0 8px; font-size: 1rem; }
+.em-suggest ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+.em-suggest-btn { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: var(--r-md); border: 1px solid var(--border); border-left: 3px solid var(--em); background: var(--em-soft); color: var(--text); cursor: pointer; }
+.em-suggest-btn span { font-size: .84rem; color: var(--muted); }
+.em-tag { display: inline-block; vertical-align: middle; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px; background: var(--em-soft); color: var(--em); margin-right: 6px; }
+.em-run { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; margin-top: 14px; align-items: start; }
+.em-run .step .panel-head p { margin: 0; }
+.em-timer { font-variant-numeric: tabular-nums; font-weight: 650; font-size: 1.05rem; }
+.em-progress { height: 4px; border-radius: 2px; background: var(--surface-2); overflow: hidden; margin-bottom: 6px; }
+.em-progress span { display: block; height: 100%; background: var(--accent); }
+.step-log { display: flex; flex-direction: column; gap: 8px; }
+.step-log input { padding: 8px 10px; font-size: .95rem; }
+.em-side { display: flex; flex-direction: column; gap: 12px; }
+.em-side h4 { margin: 0 0 6px; font-size: .9rem; }
+.em-side h4:not(:first-child) { margin-top: 12px; }
+.em-list { margin: 0; padding-left: 18px; font-size: .88rem; display: flex; flex-direction: column; gap: 3px; }
+.em-donot li::marker { color: var(--act); }
+.em-steps { margin: 0; padding-left: 20px; font-size: .88rem; display: flex; flex-direction: column; gap: 2px; }
+.em-steps button { background: none; border: 0; padding: 2px 0; color: var(--muted); cursor: pointer; text-align: left; font: inherit; }
+.em-steps li.done button { text-decoration: line-through; }
+.em-steps li.now button { color: var(--text); font-weight: 650; }
+.em-log { list-style: none; margin: 0; padding: 0; font-size: .82rem; display: flex; flex-direction: column; gap: 3px; }
+.em-sources { font-size: .76rem; margin: 12px 0 0; }
+.em-report { white-space: pre-wrap; font-size: .86rem; margin: 0; padding: 12px; background: var(--surface-2); border-radius: var(--r-sm); }
+@media (max-width: 900px) { .em-run { grid-template-columns: 1fr; } }
 .step { padding: 28px 32px; }
 .step h3 { font-size: 1.6rem; font-weight: 650; letter-spacing: -0.02em; margin: 6px 0 10px; }
 .step-detail { font-size: 1.12rem; line-height: 1.55; max-width: 60ch; }
@@ -603,6 +642,27 @@ button.ghost:hover, .upload:hover { border-color: color-mix(in srgb, var(--accen
 .crew-strip { margin-bottom: 0; }
 
 /* ---------- Record screens: check-in tiles, 1–5 scales, symptom chips ---------- */
+/* ---------- Streaks (Crew checks due) ---------- */
+.streaks { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.streak-bar { display: flex; align-items: center; gap: 10px; font-size: .84rem; }
+.streak-track { flex: 1; height: 6px; border-radius: 3px; background: var(--surface-2); overflow: hidden; }
+.streak-track span { display: block; height: 100%; background: var(--ok); }
+.streak-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .82rem; }
+.streak-list strong { font-variant-numeric: tabular-nums; }
+/* ---------- Device import (Check-in) ---------- */
+.devices { margin-top: 14px; }
+.devices .panel-head { align-items: flex-start; }
+.devices-note { margin: 2px 0 0; font-size: .8rem; max-width: 60ch; }
+.device-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 10px; }
+.device { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
+.device-off { opacity: .6; }
+.device-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.device-main strong { font-size: .92rem; font-weight: 600; }
+.device-measures { font-size: .8rem; }
+.device-when { font-size: .76rem; }
+.device .fold { font-size: .76rem; margin-top: 2px; }
+.device .fold p { margin: 4px 0 0; color: var(--muted); }
+.device > button { flex-shrink: 0; padding: 4px 12px; }
 .checkin { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 14px; align-items: start; margin-top: 14px; }
 .tile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .tile-input { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-md); }

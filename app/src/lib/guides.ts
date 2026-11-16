@@ -87,6 +87,39 @@ export const GUIDES: Guide[] = [
     sources: ['mlSpo2', 'hrpHazards'],
   },
   {
+    id: 'respRate', title: 'Breathing rate', indicators: ['respRate'], hazard: 'Hostile closed environment',
+    how: same([
+      'Sit or float still for 5 minutes, breathing normally. Do not try to control your breathing.',
+      'The smart shirt counts it for you. By hand: a crewmate watches your chest rise for 30 seconds and doubles the count.',
+    ]),
+    why: 'Breathing rate goes up before oxygen drops when the body is short of air, for example from carbon dioxide building up in the cabin, a lung infection or a fever. It is one of the signals the Canadian Space Agency Bio-Monitor shirt records on the space station.',
+    normal: '12 to 18 breaths per minute at rest.',
+    ifAbnormal: [
+      'Rest for 5 minutes and count again.',
+      'Measure blood oxygen and temperature at the same time.',
+      'Check the cabin carbon dioxide reading and ask whether anyone else has a headache or feels short of breath.',
+    ],
+    escalate: 'At 25 or more, or under 8, at rest, or with low oxygen, chest pain or confusion: open the Emergency guide for trouble breathing.',
+    sources: ['mlVitals', 'csaBioMonitor', 'hrpHazards'],
+  },
+  {
+    id: 'glucose', title: 'Blood sugar', indicators: ['glucose'], hazard: 'Altered gravity',
+    how: same([
+      'Measure in the morning before breakfast, at least 8 hours after your last meal.',
+      'Wash and dry your hands, prick the side of a fingertip with the lancet and put one drop on the meter strip.',
+      'Record the number in mg/dL. Capture the lancet and strip right away so nothing floats off.',
+    ]),
+    why: 'Muscles that carry less load use sugar less well. In a Canadian Space Agency study of 8 astronauts on 6-month missions, a measure of insulin resistance rose in flight. Low blood sugar is also a risk on long shifts and spacewalks, and it shows up as shakiness, sweating or confusion.',
+    normal: '99 mg/dL or below when fasting, and not below 70.',
+    ifAbnormal: [
+      'Below 70: eat or drink 15 to 20 grams of fast sugar (juice, glucose tablets), wait 15 minutes and measure again. Repeat if still low.',
+      'From 100: measure again tomorrow morning, fasting. Keep up resistance exercise and planned meals.',
+      'Log what you ate the day before and how you slept.',
+    ],
+    escalate: 'Report a fasting value of 126 or more, or anything below 54. If someone is too confused to eat or drink, treat it as an emergency.',
+    sources: ['cdcGlucose', 'niddkLow', 'hughson2016'],
+  },
+  {
     id: 'temperature', title: 'Body temperature', indicators: ['temperature'], hazard: 'Hostile closed environment',
     how: same([
       'Wait 15 minutes after eating, drinking or exercise.',

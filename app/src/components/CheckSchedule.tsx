@@ -5,7 +5,7 @@ import { useData } from '../lib/store';
 const DAY = 86_400_000;
 const PAST_WEEKS = 6;
 const FUTURE_WEEKS = 2;
-const WEEKDAYS = ['M', '', 'W', '', 'F', '', ''];
+const WEEKDAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 /**
  * One small calendar heatmap per check (styled after Bklit UI's contribution heatmap):

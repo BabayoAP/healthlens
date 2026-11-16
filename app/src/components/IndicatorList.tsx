@@ -51,7 +51,7 @@ export function IndicatorList({ astronautId, indicators }: { astronautId: string
                 </span>
                 <span className="ind-spark"><Sparkline values={spark} width={90} height={28} /></span>
                 <span className="ind-value">
-                  {i.latest ? <><strong>{formatValue(i.def, i.latest.value)}</strong> <SourceTag source={i.latest.source} /></> : <span className="muted">—</span>}
+                  {i.latest ? <><strong>{formatValue(i.def, i.latest.value)}</strong> <SourceTag source={i.latest.source} device={i.latest.device} /></> : <span className="muted">—</span>}
                   {i.delta !== undefined && i.latest && !/^0(?![.\d])/.test(formatValue(i.def, Math.abs(i.delta))) && (
                     <span className={`ind-delta${flagged ? ` ind-delta-${i.status}` : ''}`}>{i.delta > 0 ? '+' : '−'}{formatValue(i.def, Math.abs(i.delta))}</span>
                   )}

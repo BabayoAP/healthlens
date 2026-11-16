@@ -61,6 +61,8 @@ const healthy = (hr: number, sys: number, dia: number, mass: number): Series[] =
   { indicator: 'reactionTime', base: 250 + hr, wobble: 9, decimals: 0 },
   { indicator: 'nearVision', base: 7, wobble: 0.4, decimals: 0, everyDays: 7 },
   { indicator: 'amsler', base: 0, wobble: 0, decimals: 0, everyDays: 7 },
+  { indicator: 'respRate', base: 14, wobble: 1, decimals: 0 },
+  { indicator: 'glucose', base: 84 + (hr % 7), wobble: 5, decimals: 0, everyDays: 7 },
 ];
 
 const withProblem = (series: Series[], changes: Partial<Record<IndicatorId, Partial<Series>>>): Series[] =>
