@@ -100,8 +100,22 @@ Selected boxes: Data Analysis and Interpretation; Research or Information Gather
 
 ## Space Agency Partner & Other Data (Link Text → Link Url)
 
+Kept short like the 2025 winners (1 to 9 rows each: partner agencies, datasets, main tools; see `past winners.pdf`). Reference ranges and code libraries are credited in the app and under Tools in Project Details.
+
 | Link Text | Link Url |
 | --- | --- |
+| Brazilian Space Agency (AEB): official challenge video | https://www.youtube.com/watch?v=RERG3gEmdC8 |
+| Canadian Space Agency: Bio-Monitor (model for the device import) | https://www.asc-csa.gc.ca/eng/sciences/astroskin.asp |
+| Canadian Space Agency: Bio-Analyzer (model for the blood analyzer) | https://www.asc-csa.gc.ca/eng/iss/bio-analyzer.asp |
+| Canadian Space Agency Vascular study, Hughson et al. 2016 | https://doi.org/10.1152/ajpheart.00802.2015 |
+| JAXA Mouse Habitat Unit-2 skin study (via NASA OSDR) | https://osdr.nasa.gov/bio/repo/data/studies/OSD-238 |
+| HuBMAP Human Reference Atlas: female 3D body (CC BY 4.0) | https://humanatlas.io/3d-reference-library |
+| BodyParts3D, © Database Center for Life Science: male 3D body (CC BY 4.0) | https://dbarchive.biosciencedbc.jp/en/bodyparts3d/download.html |
+| CPR during spaceflight guideline (DGLRM / ESAM), Hinkelbein et al. 2020 | https://doi.org/10.1186/s13049-020-00793-y |
+| MedlinePlus (US National Library of Medicine): reference ranges and first-aid steps | https://medlineplus.gov/ |
+| OpenRouter: free vision models for skin-spot detection | https://openrouter.ai/ |
+
+--- | --- |
 | Brazilian Space Agency (AEB): official challenge video | https://www.youtube.com/watch?v=RERG3gEmdC8 |
 | Canadian Space Agency: Bio-Monitor | https://www.asc-csa.gc.ca/eng/sciences/astroskin.asp |
 | Canadian Space Agency: Bio-Analyzer | https://www.asc-csa.gc.ca/eng/iss/bio-analyzer.asp |
