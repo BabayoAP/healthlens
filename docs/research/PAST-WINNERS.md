@@ -76,7 +76,7 @@ _Updated Nov 15._
 - [x] Exportable flight-surgeon report (plain text copy / download; not PDF). Emergency guides also export a timed event log
 - [x] Deploy to a public URL early: https://healthlens-one.vercel.app
 - [x] Draft the "Use of AI" section as we go (log in SUBMISSION.md §3.6; final text still to write)
-- [ ] Short roadmap: wearable sensor (KiCad/Onshape), Earth spin-off for remote screening (not written yet)
+- [x] Short roadmap + Earth spin-off: written in SUBMISSION.md 3.5 ("Benefits and impact", "What we hope to achieve next")
 
 ## Batch 2 — the same challenge in 2026, and where we stand (Nov 15)
 
