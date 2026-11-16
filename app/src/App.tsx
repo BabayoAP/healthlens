@@ -6,7 +6,6 @@ import { ENVIRONMENTS, type EnvironmentId } from './lib/environment';
 import { evaluateAstronaut } from './lib/status';
 import { setDemoMode, setEnvironment, useData } from './lib/store';
 import { setTheme, useTheme } from './lib/theme';
-import { SourceTag } from './components/SourceTag';
 import { StatusBadge } from './components/StatusBadge';
 import { BodyMap } from './pages/BodyMap';
 import { CheckIn } from './pages/CheckIn';
@@ -137,7 +136,7 @@ export default function App() {
 
         {demoMode && (
           <p className="demo-banner">
-            Demo mode: crew history is <SourceTag source="simulated" />. Anything you enter is added on top and changes the status live.
+            Demo mode: all crew history is <strong>simulated</strong>. Anything you enter is added on top and changes the status live.
           </p>
         )}
 

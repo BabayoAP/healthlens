@@ -1,26 +1,27 @@
 @import '@fontsource-variable/geist';
 
 /*
- * Design tokens: a holographic medical HUD in two themes.
+ * Design tokens in two themes.
  * Dark is the default look; light is for bright cabins.
  * Status colors (ok / watch / act) stay green / amber / red and are reserved for status only.
  * Chart lines use --series. Category tints are for icons only.
  */
 :root {
-  /* Dark: hologram */
-  --bg: #040a14; --sidebar: #061220; --surface: #0a1a2e; --surface-2: rgb(56 225 255 / .06);
-  --surface-solid: #0a1a2e;
-  --text: #dcf4ff; --muted: #86a6bc; --faint: #56718a;
-  --border: rgb(56 225 255 / .16); --border-strong: rgb(56 225 255 / .34);
-  --accent: #38e1ff; --accent-soft: rgb(56 225 255 / .12); --series: #38e1ff;
-  --ink-btn: #38e1ff; --ink-btn-text: #02121c;
-  --ok: #2fe39b; --watch: #ffb020; --act: #ff4f62; --act-strong: #e5243b;
-  --ok-soft: rgb(47 227 155 / .13); --watch-soft: rgb(255 176 32 / .14); --act-soft: rgb(255 79 98 / .15);
-  --rose: #ff7ab6; --rose-soft: rgb(255 122 182 / .13); --violet: #b59cff; --violet-soft: rgb(181 156 255 / .14);
-  --sky: #5cc8ff; --sky-soft: rgb(92 200 255 / .13); --teal: #3ee6cf; --teal-soft: rgb(62 230 207 / .12);
-  --amber: #ffc861; --amber-soft: rgb(255 200 97 / .13);
-  --shadow: 0 1px 0 rgb(56 225 255 / .06) inset, 0 12px 32px -16px rgb(0 0 0 / .7);
-  --grid-line: rgb(56 225 255 / .045);
+  /* Dark: warm neutral grays (Claude / Notion style), one quiet blue accent */
+  --bg: #1f1e1d; --sidebar: #1a1918; --surface: #262624; --surface-2: rgb(255 255 255 / .045);
+  --surface-solid: #262624;
+  --text: #ecebe8; --muted: #a6a49e; --faint: #76746e;
+  --border: rgb(255 255 255 / .08); --border-strong: rgb(255 255 255 / .16);
+  --accent: #6aa4d8; --accent-soft: rgb(106 164 216 / .14); --series: #6aa4d8;
+  --ink-btn: #ecebe8; --ink-btn-text: #1f1e1d;
+  --ok: #5bb98b; --watch: #e5a54b; --act: #e5675f; --act-strong: #c9473f;
+  --ok-soft: rgb(91 185 139 / .14); --watch-soft: rgb(229 165 75 / .15); --act-soft: rgb(229 103 95 / .16);
+  --rose: #e08aa8; --rose-soft: rgb(224 138 168 / .13); --violet: #a99be0; --violet-soft: rgb(169 155 224 / .14);
+  --sky: #6aa4d8; --sky-soft: rgb(106 164 216 / .13); --teal: #5bb8ad; --teal-soft: rgb(91 184 173 / .13);
+  --amber: #dcb06a; --amber-soft: rgb(220 176 106 / .13);
+  --shadow: 0 1px 2px rgb(0 0 0 / .25);
+  --grid-line: transparent;
+  --sil-fill: #4a4844; --sil-line: #8f8c85;
   --r-lg: 14px; --r-md: 10px; --r-sm: 7px;
   color-scheme: dark;
   font-family: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -43,6 +44,7 @@
   --amber: #a85500; --amber-soft: #fdefd9;
   --shadow: 0 1px 2px rgb(11 30 44 / .05), 0 6px 18px -8px rgb(11 30 44 / .12);
   --grid-line: rgb(10 127 174 / .07);
+  --sil-fill: #e6e3dc; --sil-line: #9d9990;
   color-scheme: light;
 }
 

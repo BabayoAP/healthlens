@@ -61,3 +61,24 @@ export function dueText(r: Reminder): string {
 }
 
 export const cadenceText = (days: number) => (days === 1 ? 'Daily' : days === 7 ? 'Weekly' : `Every ${days} days`);
+
+/**
+ * How many times a check was done on each day, keyed by days from today (0 = today, -1 = yesterday).
+ * A check is done when any of its guide's indicators was measured, or for skin, when a scan was taken.
+ */
+export function checkHistory(
+  guideId: string, astronautId: string, readings: { astronautId: string; indicator: string; takenAt: string }[], scans: SkinScan[], now: number,
+): Map<number, number> {
+  const g = GUIDES.find((x) => x.id === guideId);
+  const today = new Date(now).setHours(0, 0, 0, 0);
+  const times = guideId === 'skin'
+    ? scans.filter((s) => s.astronautId === astronautId).map((s) => s.takenAt)
+    // One check can cover two readings (blood pressure), so count distinct times
+    : [...new Set(readings.filter((r) => r.astronautId === astronautId && (g?.indicators as string[] | undefined)?.includes(r.indicator)).map((r) => r.takenAt))];
+  const out = new Map<number, number>();
+  for (const t of times) {
+    const d = Math.floor((new Date(t).setHours(0, 0, 0, 0) - today) / DAY);
+    out.set(d, (out.get(d) ?? 0) + 1);
+  }
+  return out;
+}

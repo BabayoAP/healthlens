@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { environmentById } from '../lib/environment';
-import { GUIDES } from '../lib/guides';
 import { formatValue, indicatorById } from '../lib/indicators';
 import { evaluateAstronaut, nextStep } from '../lib/status';
 import { addReadings, readingsFor, useData } from '../lib/store';
@@ -8,6 +7,7 @@ import type { IndicatorId, Reading } from '../lib/types';
 import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
 import { SymptomChecklist } from '../components/SymptomChecklist';
+import { IndicatorList } from '../components/IndicatorList';
 
 /** Number fields. min/max only catch typos (a heart rate of 700); they are not medical ranges. */
 const NUMBER_FIELDS: { id: IndicatorId; min: number; max: number; step: number; typical: number; hint?: string }[] = [
@@ -40,8 +40,6 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
   const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
   const evalOf = (id: IndicatorId) => ev.indicators.find((i) => i.def.id === id)!;
   const env = environmentById[data.environment];
-  /** Guides for anything in the last save that was flagged */
-  const flaggedGuides = GUIDES.filter((g) => g.indicators.some((id) => saved.includes(id) && evalOf(id).status !== 'ok'));
 
   function set(id: IndicatorId, value: string) {
     setDraft((d) => ({ ...d, [id]: value }));
@@ -93,34 +91,42 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
     setError(undefined);
   }
 
-  const numberInput = (id: IndicatorId, label?: string) => {
-    const f = NUMBER_FIELDS.find((x) => x.id === id)!;
+  /** Last value as a hint under the field, plus the measuring tip if there is one */
+  const hintFor = (id: IndicatorId) => {
     const def = indicatorById[id];
     const last = evalOf(id).latest;
+    const f = NUMBER_FIELDS.find((x) => x.id === id)!;
+    return [last && `last ${formatValue(def, last.value)}`, f.hint].filter(Boolean).join(' · ');
+  };
+
+  const input = (id: IndicatorId, label: string) => {
+    const f = NUMBER_FIELDS.find((x) => x.id === id)!;
     return (
-      <label className="field" key={id}>
-        <span className="field-label">
-          {label ?? def.label} {simulated[id] && <SourceTag source="simulated" />}
-        </span>
-        <span className="field-input">
-          <input
-            type="number" inputMode="decimal" min={f.min} max={f.max} step={f.step}
-            value={draft[id] ?? ''} onChange={(e) => set(id, e.target.value)}
-            placeholder={last ? `last ${last.value.toFixed(def.decimals)}` : ''}
-          />
-          {def.unit && <span className="muted">{def.unit}</span>}
-        </span>
-        {f.hint && <span className="muted">{f.hint}</span>}
-      </label>
+      <input
+        type="number" inputMode="decimal" min={f.min} max={f.max} step={f.step} aria-label={label}
+        value={draft[id] ?? ''} onChange={(e) => set(id, e.target.value)} placeholder="—"
+      />
+    );
+  };
+
+  const tile = (id: IndicatorId, extra?: ReactNode) => {
+    const def = indicatorById[id];
+    return (
+      <div className="tile-input" key={id}>
+        <span className="field-label">{def.label} {simulated[id] && <SourceTag source="simulated" />}</span>
+        <span className="tile-row">{input(id, def.label)}{def.unit && <span className="tile-unit">{def.unit}</span>}</span>
+        <span className="tile-hint">{hintFor(id)}</span>
+        {extra}
+      </div>
     );
   };
 
   return (
     <section>
       <h2>Check-in {ev.hasData && <StatusBadge status={ev.status} />}</h2>
-      <p className="muted">Fill in what you measured. Anything left blank is skipped.</p>
+      <p className="muted">Fill in what you measured. Blank fields are skipped.</p>
 
-      <div className="form-grid">
+      <div className="checkin">
         <div className="panel">
           <div className="panel-head">
             <h3>Vitals</h3>
@@ -128,73 +134,55 @@ export function CheckIn({ astronautId }: { astronautId: string }) {
               Simulate reading
             </button>
           </div>
-          {numberInput('heartRate')}
-          <div className="field-pair">
-            {numberInput('systolic', 'Blood pressure: top number')}
-            {numberInput('diastolic', 'Bottom number')}
+          <div className="tile-grid">
+            {tile('heartRate')}
+            <div className="tile-input">
+              <span className="field-label">Blood pressure {(simulated.systolic || simulated.diastolic) && <SourceTag source="simulated" />}</span>
+              <span className="tile-row tile-bp">
+                {input('systolic', 'Blood pressure, top number (systolic)')}<span className="tile-sep">/</span>{input('diastolic', 'Blood pressure, bottom number (diastolic)')}
+                <span className="tile-unit">mmHg</span>
+              </span>
+              <span className="tile-hint">{evalOf('systolic').latest && evalOf('diastolic').latest ? `last ${evalOf('systolic').latest!.value}/${evalOf('diastolic').latest!.value}` : 'top / bottom number'}</span>
+            </div>
+            {tile('spo2')}
+            {tile('temperature')}
+            {tile('bodyMass', <details className="fold"><summary>How to weigh here</summary><p>Weekly. {env.massMethod}</p></details>)}
           </div>
-          {numberInput('spo2')}
-          {numberInput('temperature')}
-          {numberInput('bodyMass')}
-          <p className="muted">Weekly. {env.massMethod}</p>
-          <p className="muted">Device connects here: readings from a cuff, oximeter or wearable will fill these in automatically.</p>
         </div>
 
         <div className="panel">
           <div className="panel-head"><h3>How are you today?</h3></div>
-          {numberInput('sleepHours')}
+          <div className="tile-grid">{tile('sleepHours')}</div>
           {SCALES.map(({ id, low, high }) => (
-            <div className="field" key={id} role="group" aria-label={indicatorById[id].label}>
+            <div className="scale-field" key={id} role="group" aria-label={indicatorById[id].label}>
               <span className="field-label">{indicatorById[id].label.replace(' (1–5)', '')}</span>
-              <span className="scale">
-                <span className="muted">{low}</span>
+              <span className="scale5">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button
                     type="button" key={n} aria-pressed={draft[id] === String(n)}
                     className={draft[id] === String(n) ? 'active' : ''} onClick={() => set(id, String(n))}
                   >{n}</button>
                 ))}
-                <span className="muted">{high}</span>
               </span>
+              <span className="scale-ends"><span>{low}</span><span>{high}</span></span>
             </div>
           ))}
         </div>
       </div>
 
-      {error && <p className="form-error" role="alert">{error}</p>}
-      <button type="button" className="primary" onClick={save}>Save check-in</button>
+      <div className="save-bar">
+        {error && <p className="form-error" role="alert">{error}</p>}
+        <button type="button" className="primary" onClick={save}>Save check-in</button>
+      </div>
 
       {saved.length > 0 && (
         <div className="panel result" aria-live="polite">
           <div className="panel-head">
-            <h3>Saved. Here is what it means</h3>
+            <h3>Saved</h3>
             <StatusBadge status={ev.status} />
           </div>
-          <table>
-            <thead><tr><th>Indicator</th><th>You entered</th><th>Your baseline</th><th>Status</th><th>Why</th></tr></thead>
-            <tbody>
-              {saved.map((id) => {
-                const i = evalOf(id);
-                return (
-                  <tr key={id}>
-                    <td>{i.def.label}</td>
-                    <td>{i.latest && <>{formatValue(i.def, i.latest.value)} <SourceTag source={i.latest.source} /></>}</td>
-                    <td>{i.baseline !== undefined ? formatValue(i.def, i.baseline) : 'building…'}</td>
-                    <td><StatusBadge status={i.status} /></td>
-                    <td>{i.reasons.length ? i.reasons.map((r) => <div key={r.text}>{r.text}</div>) : 'Within your normal range'}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          {flaggedGuides.map((g) => (
-            <div className="todo" key={g.id}>
-              <h4>What to do: {g.title}</h4>
-              <ol>{g.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
-              <p><strong>When to get help:</strong> {g.escalate}</p>
-            </div>
-          ))}
-          <p className="next">{nextStep[ev.status]}</p>
+          <p className="muted">{nextStep[ev.status]} Open a row for its trend and what to do.</p>
+          <IndicatorList astronautId={astronautId} indicators={saved.map(evalOf)} />
         </div>
       )}
 

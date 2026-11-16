@@ -40,3 +40,31 @@ export function spotHistories(scans: SkinScan[]): SpotHistory[] {
     .filter((h) => h.points.length > 1)
     .sort((a, b) => rank[a.latest.risk] - rank[b.latest.risk]);
 }
+
+/**
+ * Smooth SVG path through points without overshooting them (monotone cubic, same curve as
+ * d3's curveMonotoneX that Bklit charts use). Points must be sorted by x.
+ */
+export function monotonePath(p: [number, number][]): string {
+  const n = p.length;
+  const f = (v: number) => v.toFixed(1);
+  if (n === 0) return '';
+  if (n === 1) return `M${f(p[0][0])},${f(p[0][1])}`;
+  const h: number[] = [], s: number[] = [];
+  for (let i = 0; i < n - 1; i++) {
+    h[i] = p[i + 1][0] - p[i][0];
+    s[i] = h[i] ? (p[i + 1][1] - p[i][1]) / h[i] : 0;
+  }
+  const m: number[] = [s[0]];
+  for (let i = 1; i < n - 1; i++) {
+    const mid = (s[i - 1] * h[i] + s[i] * h[i - 1]) / (h[i - 1] + h[i] || 1);
+    m[i] = (Math.sign(s[i - 1]) + Math.sign(s[i])) * Math.min(Math.abs(s[i - 1]), Math.abs(s[i]), 0.5 * Math.abs(mid)) || 0;
+  }
+  m[n - 1] = s[n - 2];
+  let d = `M${f(p[0][0])},${f(p[0][1])}`;
+  for (let i = 0; i < n - 1; i++) {
+    const k = h[i] / 3;
+    d += `C${f(p[i][0] + k)},${f(p[i][1] + m[i] * k)},${f(p[i + 1][0] - k)},${f(p[i + 1][1] - m[i + 1] * k)},${f(p[i + 1][0])},${f(p[i + 1][1])}`;
+  }
+  return d;
+}

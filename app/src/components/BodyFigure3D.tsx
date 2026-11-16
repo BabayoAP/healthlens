@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { FigureRegionId } from '../lib/bodyRegions';
+import { buildBodyMesh, REGION_ORDER, type BodyMesh } from '../lib/bodyMesh';
 import type { RegionView } from '../lib/bodyView';
 import { useTheme } from '../lib/theme';
 import { StatusBadge } from './StatusBadge';
 
 /**
- * Draggable 3D hologram of the body figure (Body map). Same regions, statuses and
- * click-to-select as the 2D <BodyFigure>; it only changes how the figure looks.
+ * Draggable 3D mannequin (Body map). Same regions, statuses and click-to-select as the 2D
+ * <BodyFigure>, built from the same shape (`lib/bodyShape.ts`) so both share a silhouette.
+ * It is one seamless surface (`lib/bodyMesh.ts`); flagged regions are shaded by vertex color.
  * Drag to turn, scroll or pinch to zoom, click a part to open it.
  * The region list next to it stays the keyboard and screen-reader way in.
  */
@@ -21,60 +23,49 @@ interface Props {
   onUnavailable?: () => void;
 }
 
-type Part = { geo: THREE.BufferGeometry; pos: [number, number, number]; rotZ?: number; scale?: [number, number, number] };
-
-/** Facing the viewer, like the 2D figure: the person's left side is on the viewer's right (+x). */
-function partsFor(id: FigureRegionId, coarse = false): Part[] {
-  // Smooth shells for the glow; coarse ones for the wire lattice so it reads as a scan, not a net
-  const limb = (r: number, len: number) => new THREE.CapsuleGeometry(r, len, coarse ? 2 : 5, coarse ? 8 : 18);
-  const ball = (r: number) => new THREE.SphereGeometry(r, coarse ? 10 : 24, coarse ? 7 : 16);
-  switch (id) {
-    case 'head': return [
-      { geo: ball(0.15), pos: [0, 1.69, 0], scale: [1, 1.14, 1.04] },
-      { geo: new THREE.CylinderGeometry(0.06, 0.07, 0.14, coarse ? 8 : 16), pos: [0, 1.51, 0] },
-    ];
-    case 'chest': return [{ geo: limb(0.2, 0.2), pos: [0, 1.26, 0], scale: [1.27, 1, 0.66] }];
-    case 'abdomen': return [{ geo: limb(0.17, 0.12), pos: [0, 0.92, 0], scale: [1.16, 1, 0.62] }];
-    case 'left-arm': return [{ geo: limb(0.056, 0.6), pos: [0.37, 1.1, 0], rotZ: 0.13 }];
-    case 'right-arm': return [{ geo: limb(0.056, 0.6), pos: [-0.37, 1.1, 0], rotZ: -0.13 }];
-    case 'left-leg': return [{ geo: limb(0.078, 0.7), pos: [0.11, 0.42, 0], rotZ: 0.03 }];
-    case 'right-leg': return [{ geo: limb(0.078, 0.7), pos: [-0.11, 0.42, 0], rotZ: -0.03 }];
-  }
+// One mesh for the whole session: built once in a worker, then reused every time the 3D view opens
+let meshPromise: Promise<BodyMesh> | undefined;
+function loadMesh(): Promise<BodyMesh> {
+  meshPromise ??= new Promise<BodyMesh>((resolve) => {
+    try {
+      const w = new Worker(new URL('../lib/bodyMesh.worker.ts', import.meta.url), { type: 'module' });
+      w.onmessage = (e) => { resolve(e.data); w.terminate(); };
+      w.onerror = () => resolve(buildBodyMesh());
+    } catch {
+      resolve(buildBodyMesh());
+    }
+  });
+  return meshPromise;
 }
 
-/** Glass shell that glows at its edges (fresnel rim), the hologram look. */
-const VERT = `
-varying vec3 vN; varying vec3 vV;
-void main() {
-  vec4 mv = modelViewMatrix * vec4(position, 1.0);
-  vN = normalize(normalMatrix * normal); vV = normalize(-mv.xyz);
-  gl_Position = projectionMatrix * mv;
-}`;
-const FRAG = `
-uniform vec3 uColor; uniform float uStrength;
-varying vec3 vN; varying vec3 vV;
-void main() {
-  float rim = pow(1.0 - abs(dot(normalize(vN), normalize(vV))), 2.2);
-  gl_FragColor = vec4(uColor, (0.12 + rim * 0.88) * uStrength);
-}`;
+/** Soft contact shadow under the feet */
+function shadowTexture(): THREE.Texture {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d')!;
+  const grad = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+  grad.addColorStop(0, 'rgba(0,0,0,0.45)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 128, 128);
+  return new THREE.CanvasTexture(c);
+}
 
 function cssColor(name: string): THREE.Color {
   const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  return new THREE.Color(v || '#38e1ff');
+  return new THREE.Color(v || '#888888');
 }
 
 interface Scene {
-  shells: Map<FigureRegionId, THREE.ShaderMaterial>;
-  wires: Map<FigureRegionId, THREE.MeshBasicMaterial>;
-  groups: Map<FigureRegionId, THREE.Group>;
-  rings: THREE.MeshBasicMaterial[];
-  pickables: THREE.Mesh[];
+  body: THREE.Mesh;
+  weights: Float32Array;
 }
 
 export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const scene = useRef<Scene | null>(null);
   const [hover, setHover] = useState<FigureRegionId>();
+  const [ready, setReady] = useState(false);
   const theme = useTheme();
   const pickRef = useRef(onPick);
   const failRef = useRef(onUnavailable);
@@ -95,59 +86,47 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
 
     const world = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 30);
-    camera.position.set(0, 1.15, 4.4);
+    camera.position.set(0, 0.98, 4.1);
+
+    // Studio lighting: soft sky fill, a warm key from the front right, a cool rim from behind
+    world.add(new THREE.HemisphereLight(0xffffff, 0x3a3836, 1.1));
+    const key = new THREE.DirectionalLight(0xfff4e8, 1.7);
+    key.position.set(2.5, 4, 3.5);
+    const rim = new THREE.DirectionalLight(0xdfe8ff, 1.2);
+    rim.position.set(-3, 2.5, -3);
+    world.add(key, rim);
 
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0.95, 0);
+    controls.target.set(0, 0.9, 0);
     controls.enablePan = false;
     controls.enableDamping = true;
-    controls.minDistance = 2.4;
+    controls.minDistance = 1.6;
     controls.maxDistance = 6.5;
     controls.minPolarAngle = Math.PI * 0.3;
     controls.maxPolarAngle = Math.PI * 0.58;
     controls.autoRotate = !reduced;
-    controls.autoRotateSpeed = 1.1;
+    controls.autoRotateSpeed = 0.8;
     controls.addEventListener('start', () => { controls.autoRotate = false; });
 
-    const s: Scene = { shells: new Map(), wires: new Map(), groups: new Map(), rings: [], pickables: [] };
-    const ids: FigureRegionId[] = ['head', 'chest', 'abdomen', 'left-arm', 'right-arm', 'left-leg', 'right-leg'];
-    for (const id of ids) {
-      const group = new THREE.Group();
-      const shell = new THREE.ShaderMaterial({
-        vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false, side: THREE.DoubleSide,
-        uniforms: { uColor: { value: new THREE.Color() }, uStrength: { value: 1 } },
-      });
-      const wire = new THREE.MeshBasicMaterial({ wireframe: true, transparent: true, depthWrite: false, opacity: 0.18 });
-      const coarse = partsFor(id, true);
-      partsFor(id).forEach((p, i) => {
-        const mesh = new THREE.Mesh(p.geo, shell);
-        const lattice = new THREE.Mesh(coarse[i].geo, wire);
-        for (const m of [mesh, lattice]) {
-          m.position.set(...p.pos);
-          if (p.rotZ) m.rotation.z = p.rotZ;
-          if (p.scale) m.scale.set(...p.scale);
-        }
-        mesh.userData.region = id;
-        s.pickables.push(mesh);
-        group.add(mesh, lattice);
-      });
-      world.add(group);
-      s.shells.set(id, shell);
-      s.wires.set(id, wire);
-      s.groups.set(id, group);
-    }
-
-    // Scan platform under the feet
-    for (const [r, w, o] of [[0.46, 0.012, 0.9], [0.62, 0.006, 0.5], [0.8, 0.004, 0.3]] as const) {
-      const mat = new THREE.MeshBasicMaterial({ transparent: true, opacity: o, depthWrite: false, side: THREE.DoubleSide });
-      const ring = new THREE.Mesh(new THREE.RingGeometry(r, r + w, 96), mat);
-      ring.rotation.x = -Math.PI / 2;
-      ring.position.y = 0.01;
-      world.add(ring);
-      s.rings.push(mat);
-    }
-    scene.current = s;
+    let alive = true;
+    const geo = new THREE.BufferGeometry();
+    const body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0, vertexColors: true }));
+    world.add(body);
+    loadMesh().then((m) => {
+      if (!alive) return;
+      geo.setAttribute('position', new THREE.BufferAttribute(m.positions, 3));
+      geo.setIndex(new THREE.BufferAttribute(m.indices, 1));
+      geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(m.positions.length), 3));
+      geo.computeVertexNormals();
+      geo.computeBoundingSphere();
+      scene.current = { body, weights: m.weights };
+      setReady(true);
+    });
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.42, 48), new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false }));
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.y = 0.002;
+    world.add(shadow);
 
     // Size to the container
     const resize = () => {
@@ -166,7 +145,14 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
     const hit = (e: PointerEvent): FigureRegionId | undefined => {
       const r = renderer.domElement.getBoundingClientRect();
       ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
-      return ray.intersectObjects(s.pickables, false)[0]?.object.userData.region;
+      const sc = scene.current;
+      const face = sc && ray.intersectObject(sc.body, false)[0]?.face;
+      if (!face) return undefined;
+      // The region that owns this spot of the surface
+      const R = REGION_ORDER.length;
+      let best = 0;
+      for (let r = 1; r < R; r++) if (sc.weights[face.a * R + r] > sc.weights[face.a * R + best]) best = r;
+      return REGION_ORDER[best];
     };
     let down: { x: number; y: number } | undefined;
     const onDown = (e: PointerEvent) => { down = { x: e.clientX, y: e.clientY }; };
@@ -194,6 +180,7 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
     tick();
 
     return () => {
+      alive = false;
       cancelAnimationFrame(frame);
       ro.disconnect();
       controls.dispose();
@@ -210,28 +197,34 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
     };
   }, []);
 
-  // Color each part by status (theme-aware), brighter when selected or hovered
+  // Mannequin white for OK parts; flagged regions are shaded in their status color, blending softly at the edges.
+  // The selected or hovered region is lifted a little toward white.
   useEffect(() => {
-    const s = scene.current;
-    if (!s) return;
-    const accent = cssColor('--accent');
-    const color = { ok: cssColor('--ok'), watch: cssColor('--watch'), act: cssColor('--act') };
-    const light = theme === 'light';
-    for (const { region, status } of views) {
-      const c = status ? color[status] : accent;
-      const on = region.id === selectedId || region.id === hover;
-      const shell = s.shells.get(region.id)!;
-      shell.uniforms.uColor.value.copy(c);
-      shell.uniforms.uStrength.value = (on ? 1 : status && status !== 'ok' ? 0.85 : 0.6) * (light ? 0.9 : 1);
-      shell.blending = light ? THREE.NormalBlending : THREE.AdditiveBlending;
-      shell.needsUpdate = true;
-      const wire = s.wires.get(region.id)!;
-      wire.color.copy(c);
-      wire.opacity = on ? 0.5 : light ? 0.28 : 0.16;
-      s.groups.get(region.id)!.scale.setScalar(region.id === selectedId ? 1.035 : 1);
+    const sc = scene.current;
+    if (!sc) return;
+    const base = new THREE.Color(theme === 'light' ? '#f3f1ec' : '#d8d5ce');
+    const tint = { ok: [cssColor('--ok'), 0.1], watch: [cssColor('--watch'), 1], act: [cssColor('--act'), 1] } as const;
+    const white = new THREE.Color('#ffffff');
+    const cols = REGION_ORDER.map((id) => {
+      const v = views.find((x) => x.region.id === id);
+      const [c, amount] = v?.status ? tint[v.status] : [base, 0];
+      const col = base.clone().lerp(c, amount);
+      return col.lerp(white, id === selectedId ? 0.22 : id === hover ? 0.12 : 0);
+    });
+    const R = REGION_ORDER.length;
+    const attr = sc.body.geometry.getAttribute('color') as THREE.BufferAttribute;
+    const out = attr.array as Float32Array;
+    for (let v = 0; v < out.length / 3; v++) {
+      let r = 0, g = 0, b = 0;
+      for (let k = 0; k < R; k++) {
+        const w = sc.weights[v * R + k];
+        if (w < 0.002) continue;
+        r += cols[k].r * w; g += cols[k].g * w; b += cols[k].b * w;
+      }
+      out[v * 3] = r; out[v * 3 + 1] = g; out[v * 3 + 2] = b;
     }
-    for (const r of s.rings) r.color.copy(accent);
-  }, [views, selectedId, hover, theme]);
+    attr.needsUpdate = true;
+  }, [views, selectedId, hover, theme, ready]);
 
   const shown = views.find((v) => v.region.id === (hover ?? selectedId));
 
@@ -243,7 +236,7 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
           {shown.status && <StatusBadge status={shown.status} />}
         </p>
       )}
-      <p className="holo-hint">Drag to turn · scroll to zoom · click a part</p>
+      <p className="holo-hint">{ready ? 'Drag to turn · scroll to zoom · click a part' : 'Building the figure…'}</p>
     </div>
   );
 }

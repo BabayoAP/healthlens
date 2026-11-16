@@ -1,18 +1,13 @@
-import type { KeyboardEvent } from 'react';
+import { useId, type KeyboardEvent } from 'react';
 import { SYSTEM_INFO, type FigureRegionId } from '../lib/bodyRegions';
 import { regionFinding, type RegionView } from '../lib/bodyView';
+import { DRAW_ORDER, LABEL_AT, regionPath } from '../lib/bodyShape';
 import type { Status } from '../lib/types';
 
-/** Figure shapes, drawn facing the viewer: the person's left side is on the viewer's right. */
-const SHAPES: Record<FigureRegionId, { d: string; labelAt: [number, number] }> = {
-  head: { d: 'M100 8c13 0 22 10.5 22 25c0 10-4.5 18-11 22.5V68H89V55.5C82.5 51 78 43 78 33c0-14.5 9-25 22-25Z', labelAt: [100, 34] },
-  chest: { d: 'M70 74h60c12 0 20 8 21 19l1 59H48l1-59c1-11 9-19 21-19Z', labelAt: [100, 115] },
-  abdomen: { d: 'M51 156h98l1 44c0 10-2 19-5 26H55c-3-7-5-16-5-26Z', labelAt: [100, 192] },
-  'right-arm': { d: 'M38 80c5 0 8 4 8 10l-2 72l-4 62c-.5 6-3.5 10-8 10s-7.5-4-7.5-10l1-62l3-72c.4-6 4.5-10 9.5-10Z', labelAt: [35, 165] },
-  'left-arm': { d: 'M162 80c-5 0-8 4-8 10l2 72l4 62c.5 6 3.5 10 8 10s7.5-4 7.5-10l-1-62l-3-72c-.4-6-4.5-10-9.5-10Z', labelAt: [165, 165] },
-  'right-leg': { d: 'M56 230h40l-3 84l-4 68c-.4 7-5 11-11 11s-10.6-4-11-11l-4-68l-7-84Z', labelAt: [77, 300] },
-  'left-leg': { d: 'M144 230h-40l3 84l4 68c.4 7 5 11 11 11s10.6-4 11-11l4-68l7-84Z', labelAt: [123, 300] },
-};
+/** Front outline of the shared mannequin shape (`lib/bodyShape.ts`), so it matches the 3D figure. */
+const SHAPES = Object.fromEntries(
+  (Object.keys(LABEL_AT) as FigureRegionId[]).map((id) => [id, { d: regionPath(id), labelAt: LABEL_AT[id] }]),
+) as Record<FigureRegionId, { d: string; labelAt: [number, number] }>;
 
 const STATUS_WORD: Record<Status, string> = { ok: 'OK', watch: 'Watch', act: 'Act' };
 const MARK: Record<Status, string> = { ok: '✓', watch: '!', act: '!!' };
@@ -45,9 +40,29 @@ export function BodyFigure({ views, selectedId, onPick, callouts = false }: Prop
   const maxX = sides.right.length ? 350 : 200;
   const viewBox = callouts ? `${minX} 0 ${maxX - minX} 410` : '0 0 200 410';
 
+  const uid = useId().replace(/[^a-zA-Z0-9-]/g, '');
+  const ordered = [...views].sort((a, b) => DRAW_ORDER.indexOf(a.region.id) - DRAW_ORDER.indexOf(b.region.id));
+  const shaded = ordered.filter((v) => (v.status && v.status !== 'ok') || v.region.id === selectedId);
+
   return (
     <svg viewBox={viewBox} className={`figure${callouts ? ' figure-callouts' : ''}`} role="group" aria-label="Body figure, facing you">
-      {views.map(({ region, status }) => {
+      <defs>
+        <clipPath id={`sil-${uid}`}>{ordered.map((v) => <path key={v.region.id} d={SHAPES[v.region.id].d} />)}</clipPath>
+        <filter id={`soft-${uid}`} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" /></filter>
+      </defs>
+      {/* One seamless silhouette: every part stroked thick underneath, then filled on top, so only the outer edge shows */}
+      <g className="sil-line" aria-hidden="true">{ordered.map((v) => <path key={v.region.id} d={SHAPES[v.region.id].d} />)}</g>
+      <g className="sil-fill" aria-hidden="true">{ordered.map((v) => <path key={v.region.id} d={SHAPES[v.region.id].d} />)}</g>
+      {/* Flagged and selected parts are shaded with soft edges, kept inside the silhouette */}
+      <g clipPath={`url(#sil-${uid})`} aria-hidden="true">
+        <g filter={`url(#soft-${uid})`}>
+          {shaded.map((v) => (
+            <path key={v.region.id} d={SHAPES[v.region.id].d}
+              className={`sil-tint sil-tint-${v.status && v.status !== 'ok' ? v.status : 'none'}${v.region.id === selectedId ? ' sil-tint-selected' : ''}`} />
+          ))}
+        </g>
+      </g>
+      {ordered.map(({ region, status }) => {
         const [lx, ly] = SHAPES[region.id].labelAt;
         return (
           <g

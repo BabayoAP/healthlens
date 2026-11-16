@@ -133,7 +133,7 @@ export function TrendExplorer({ astronautId, title = 'Health trends' }: { astron
       <div className="explorer-chart" ref={slot}>
       <TrendChart
         key={s.key} label={`${s.label}, ${days ? `last ${days} days` : 'all readings'}`}
-        points={points} format={s.format} lines={lines} from={from} to={data.now} minSpan={s.minSpan} height={chartHeight} area
+        points={points} format={s.format} lines={lines} from={from} to={data.now} minSpan={s.minSpan} height={chartHeight}
       />
       </div>
       {s.reasons.map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}

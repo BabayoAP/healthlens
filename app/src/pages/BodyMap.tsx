@@ -2,16 +2,13 @@ import { lazy, Suspense, useState } from 'react';
 import { SYSTEM_INFO, type FigureRegionId } from '../lib/bodyRegions';
 import { buildRegionViews } from '../lib/bodyView';
 import { GUIDES } from '../lib/guides';
-import { formatValue } from '../lib/indicators';
 import { evaluateAstronaut } from '../lib/status';
 import type { Status } from '../lib/types';
-import { readingsFor, useData } from '../lib/store';
+import { useData } from '../lib/store';
 import { BodyFigure } from '../components/BodyFigure';
 import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
-import { TrendChart } from '../components/TrendChart';
-
-const DAY = 86_400_000;
+import { IndicatorList } from '../components/IndicatorList';
 
 // three.js is only downloaded when someone opens the 3D view
 const BodyFigure3D = lazy(() => import('../components/BodyFigure3D'));
@@ -35,52 +32,19 @@ export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautI
   const info = SYSTEM_INFO[selected.region.system]!;
 
   const flagged = selected.indicators.filter((i) => i.status !== 'ok');
-  const guides = GUIDES.filter((g) => flagged.some((i) => g.indicators.includes(i.def.id)));
   const flaggedSpots = selected.scans.flatMap((s) => s.lesions.filter((l) => l.risk !== 'ok').map((l) => ({ scan: s, lesion: l })));
   const skinGuide = GUIDES.find((g) => g.id === 'skin')!;
   const symptomGuide = GUIDES.find((g) => g.id === 'symptoms')!;
-  const focus = flagged[0] ?? selected.indicators[0];
 
   // A part flagged only because of its skin leads with the skin finding
   const skinFirst = flaggedSpots.length > 0 && flagged.length === 0;
-  const focusWatch = focus?.def.baseline
-    ? (focus.def.baseline.pct ? ((focus.baseline ?? focus.latest!.value) * focus.def.baseline.watch) / 100 : focus.def.baseline.watch)
-    : 0;
 
   const measurementsBlock = (
     <>
-          {selected.indicators.length > 0 ? (
-            <table>
-              <thead><tr><th>Measurement</th><th>Latest</th><th>Your baseline</th><th>Status</th></tr></thead>
-              <tbody>
-                {selected.indicators.map((i) => (
-                  <tr key={i.def.id}>
-                    <td>{i.def.label}</td>
-                    <td>{formatValue(i.def, i.latest!.value)} <SourceTag source={i.latest!.source} /></td>
-                    <td>{i.baseline !== undefined ? formatValue(i.def, i.baseline) : '—'}</td>
-                    <td><StatusBadge status={i.status} /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : <p className="muted">No measurements for this system yet.</p>}
+          <IndicatorList astronautId={astronautId} indicators={selected.indicators} />
 
-          {[...selected.symptoms, ...flagged.flatMap((i) => i.reasons)].map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}
+          {selected.symptoms.map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}
 
-          {focus && (
-            <>
-              <h4>{focus.def.label}, last 6 weeks</h4>
-              <TrendChart
-                label={`${focus.def.label}, last 6 weeks`}
-                points={readingsFor(data, astronautId, focus.def.id)
-                  .map((r) => ({ t: Date.parse(r.takenAt), value: r.value, source: r.source }))
-                  .filter((p) => p.t >= data.now - 42 * DAY)}
-                format={(v) => formatValue(focus.def, v)}
-                lines={focus.baseline !== undefined ? [{ value: focus.baseline, label: 'your baseline', kind: 'baseline' }] : []}
-                from={data.now - 42 * DAY} to={data.now} height={130} minSpan={focusWatch * 2.5}
-              />
-            </>
-          )}
     </>
   );
 
@@ -148,30 +112,26 @@ export function BodyMap({ astronautId, initialRegion, onNavigate }: { astronautI
 
           {skinFirst ? <>{skinBlock}{measurementsBlock}</> : <>{measurementsBlock}{skinBlock}</>}
 
-          <h4>Why this changes in space</h4>
-          {skinFirst && <p>{skinGuide.why}</p>}
-          <p>{info.inSpace}</p>
-          {selected.region.also?.map((sys) => <p key={sys}>{SYSTEM_INFO[sys]!.inSpace}</p>)}
-          {flaggedSpots.length > 0 && !skinFirst && <p>{skinGuide.why}</p>}
+          <details className="fold region-fold">
+            <summary>Why this changes in space</summary>
+            {skinFirst && <p>{skinGuide.why}</p>}
+            <p>{info.inSpace}</p>
+            {selected.region.also?.map((sys) => <p key={sys}>{SYSTEM_INFO[sys]!.inSpace}</p>)}
+            {flaggedSpots.length > 0 && !skinFirst && <p>{skinGuide.why}</p>}
+          </details>
 
-          <h4>What you can do</h4>
-          {guides.length === 0 && flaggedSpots.length === 0 && selected.symptoms.length === 0 && <p>Nothing here needs attention. Keep up your regular checks.</p>}
-          {guides.map((g) => (
-            <div key={g.id}>
-              <ol>{g.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
-              <p><strong>When to contact the medical officer:</strong> {g.escalate}</p>
-            </div>
-          ))}
+          {flagged.length === 0 && flaggedSpots.length === 0 && selected.symptoms.length === 0 && <p className="muted">Nothing here needs attention. Keep up your regular checks.</p>}
+          {(flaggedSpots.length > 0 || selected.symptoms.length > 0) && <h4>What you can do</h4>}
           {selected.symptoms.length > 0 && (
             <div>
               <ol>{symptomGuide.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
-              <p><strong>When to contact the medical officer:</strong> {symptomGuide.escalate}</p>
+              <details className="fold"><summary>When to contact the medical officer</summary><p>{symptomGuide.escalate}</p></details>
             </div>
           )}
           {flaggedSpots.length > 0 && (
             <div>
               <ol>{skinGuide.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
-              <p><strong>When to contact the medical officer:</strong> {skinGuide.escalate}</p>
+              <details className="fold"><summary>When to contact the medical officer</summary><p>{skinGuide.escalate}</p></details>
             </div>
           )}
 

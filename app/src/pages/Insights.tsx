@@ -2,11 +2,15 @@ import { useState } from 'react';
 import { environmentById } from '../lib/environment';
 import { buildInsights, buildReport } from '../lib/insights';
 import { crew } from '../lib/mockData';
-import { buildReminders, cadenceText, dueText } from '../lib/reminders';
+import { buildReminders } from '../lib/reminders';
+import { CheckSchedule } from '../components/CheckSchedule';
 import { evaluateAstronaut, nextStep } from '../lib/status';
 import { useData } from '../lib/store';
 import { SourceTag } from '../components/SourceTag';
 import { StatusBadge } from '../components/StatusBadge';
+import { IndicatorTrend } from '../components/IndicatorList';
+import { TrendChart } from '../components/TrendChart';
+import { spotHistories } from '../lib/trends';
 
 type Target = 'check-in' | 'skin' | 'tests' | 'trends' | 'guides';
 
@@ -39,7 +43,7 @@ export function Insights({ astronautId, onNavigate }: { astronautId: string; onN
   return (
     <section>
       <h2>Insights for {astronaut.name}</h2>
-      <p className="muted">What the data shows, why it matters in space, what to do, and when to get help. Set for: {env.label}.</p>
+      <p className="muted">Most urgent first · {env.label}</p>
 
       {!ev.hasData ? (
         <p className="panel">No data yet. Log a check-in to start a baseline.</p>
@@ -49,55 +53,52 @@ export function Insights({ astronautId, onNavigate }: { astronautId: string; onN
           <p>All indicators are within your baseline. {nextStep.ok}</p>
         </div>
       ) : (
-        insights.map((ins) => (
-          <article className={`panel insight insight-${ins.status}`} key={ins.id}>
-            <div className="panel-head">
-              <h3>{ins.title}</h3>
-              <span className="row"><span className="hazard">{ins.hazard}</span><StatusBadge status={ins.status} /></span>
-            </div>
-
-            <h4>What we saw</h4>
-            <ul>
-              {ins.saw.map((r) => (
-                <li key={r.text}>
-                  {r.text} {(r.source === 'simulated' || r.source === 'estimated') && <SourceTag source={r.source} />}
-                </li>
-              ))}
-            </ul>
-
-            <h4>Why it matters in space</h4>
-            <p>{ins.why}</p>
-
-            <h4>{ins.onlyMissing ? 'What to do: take the measurement' : 'What to do'}</h4>
-            <ol>{ins.todo.map((s) => <li key={s}>{s}</li>)}</ol>
-
-            <h4>When to get help</h4>
-            <p>{ins.escalate}</p>
-
-            <div className="row detail-nav">
-              <button type="button" className="ghost" onClick={() => onNavigate(ins.tab)}>{ins.tab === 'skin' ? 'Scan again' : ins.id === 'symptoms' ? 'Update symptoms' : ins.tab === 'tests' ? (ins.onlyMissing ? 'Take the test' : 'Test again') : ins.onlyMissing ? 'Measure now' : 'Measure again'}</button>
-              <button type="button" className="ghost" onClick={() => onNavigate('trends')}>See the trend</button>
-              <button type="button" className="ghost" onClick={() => onNavigate('guides')}>Full guide and sources</button>
-            </div>
-          </article>
-        ))
+        <div className="insight-list">
+          {insights.map((ins) => {
+            // Chart the measurement behind the first finding; skin findings chart the spot's size
+            const ind = ev.indicators.find((i) => i.def.id === ins.saw.find((r) => r.indicator)?.indicator);
+            const spot = ins.id === 'skin' ? spotHistories(data.skinScans.filter((x) => x.astronautId === astronautId)).find((h) => h.latest.risk !== 'ok') : undefined;
+            const [first, ...more] = ins.todo;
+            return (
+              <article className={`panel insight insight-${ins.status}`} key={ins.id}>
+                <div className="insight-text">
+                  <div className="panel-head">
+                    <h3>{ins.title}</h3>
+                    <StatusBadge status={ins.status} />
+                  </div>
+                  {ins.saw.map((r) => (
+                    <p className="insight-saw" key={r.text}>
+                      {r.text} {(r.source === 'simulated' || r.source === 'estimated') && <SourceTag source={r.source} />}
+                    </p>
+                  ))}
+                  <p className="insight-do"><span>{ins.onlyMissing ? 'Measure' : 'Do'}</span>{first}</p>
+                  <div className="folds">
+                    {more.length > 0 && <details className="fold"><summary>{more.length} more {more.length > 1 ? 'steps' : 'step'}</summary><ol start={2}>{more.map((x) => <li key={x}>{x}</li>)}</ol></details>}
+                    <details className="fold"><summary>Why it matters in space</summary><p>{ins.why}</p></details>
+                    <details className="fold"><summary>When to get help</summary><p>{ins.escalate}</p></details>
+                  </div>
+                  <div className="row insight-actions">
+                    <button type="button" className="ghost" onClick={() => onNavigate(ins.tab)}>{ins.tab === 'skin' ? 'Scan again' : ins.id === 'symptoms' ? 'Update symptoms' : ins.tab === 'tests' ? (ins.onlyMissing ? 'Take the test' : 'Test again') : ins.onlyMissing ? 'Measure now' : 'Measure again'}</button>
+                    <button type="button" className="link" onClick={() => onNavigate('guides')}>Guide and sources</button>
+                  </div>
+                </div>
+                {ind?.latest && !ins.onlyMissing && (
+                  <div className="insight-chart"><IndicatorTrend astronautId={astronautId} ind={ind} days={21} height={150} /></div>
+                )}
+                {spot && (
+                  <div className="insight-chart">
+                    <TrendChart label="Spot size over time" points={spot.points} format={(v) => `${Number(v.toFixed(1))} mm`}
+                      lines={[{ value: 6, label: 'over 6 mm: get it checked', kind: 'watch' }]} minSpan={4} height={150} />
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
       )}
 
       <h3>Check schedule</h3>
-      <table>
-        <thead><tr><th>Check</th><th>How often</th><th>Last done</th><th>Next</th><th></th></tr></thead>
-        <tbody>
-          {reminders.map((r) => (
-            <tr key={r.id}>
-              <td>{r.label}</td>
-              <td>{cadenceText(r.cadenceDays)}</td>
-              <td>{r.daysSince === undefined ? 'never' : r.daysSince === 0 ? 'today' : `${r.daysSince} d ago`}</td>
-              <td className={r.state === 'upcoming' ? 'muted' : 'due-now'}>{dueText(r)}</td>
-              <td>{r.state !== 'upcoming' && <button type="button" className="ghost" onClick={() => onNavigate(r.tab)}>Do it now</button>}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <CheckSchedule astronautId={astronautId} reminders={reminders} onDo={onNavigate} />
 
       <h3>Report for the flight surgeon</h3>
       <p className="muted">A plain-text summary of the findings above and the latest readings, ready to send at the next comm window (signal delay here: {env.commDelay}).</p>

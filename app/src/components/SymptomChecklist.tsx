@@ -36,20 +36,22 @@ export function SymptomChecklist({ astronautId }: { astronautId: string }) {
         <SourceTag source="self-report" />
       </div>
       <p className="muted">
-        Tick anything you have noticed since your last check-in, even if it seems small.
-        {active && <> Last saved {active.takenAt.slice(0, 10)}: {active.symptoms.length ? active.symptoms.map((id) => symptomById[id]?.label ?? id).join(', ') : 'no symptoms'}.</>}
+        Tap anything you have noticed since your last check-in.
+        {active && <> Last saved {active.takenAt.slice(0, 10)}: {active.symptoms.length ? active.symptoms.map((id) => symptomById[id]?.label ?? id).join(', ') : 'none'}.</>}
       </p>
 
       <div className="symptom-groups">
         {SYMPTOM_GROUPS.map((g) => (
-          <fieldset key={g.title}>
-            <legend>{g.title}</legend>
-            {g.symptoms.map((s) => (
-              <label className="check" key={s.id}>
-                <input type="checkbox" checked={picked.includes(s.id)} onChange={() => toggle(s.id)} /> {s.label}
-              </label>
-            ))}
-          </fieldset>
+          <div key={g.title} role="group" aria-label={g.title}>
+            <span className="field-label">{g.title}</span>
+            <div className="chip-row">
+              {g.symptoms.map((s) => (
+                <button type="button" key={s.id} className={`chip${picked.includes(s.id) ? ' on' : ''}`} aria-pressed={picked.includes(s.id)} onClick={() => toggle(s.id)}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
 
@@ -66,13 +68,13 @@ export function SymptomChecklist({ astronautId }: { astronautId: string }) {
             <p>Saved: no symptoms today. <StatusBadge status="ok" /></p>
           ) : (
             <>
-              <h4>Saved. Here is what it means</h4>
               {reasons.map((r) => (
-                <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text} <StatusBadge status={r.status} /></p>
+                <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>
               ))}
-              <h4>What to do</h4>
-              <ol>{guide.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
-              <p><strong>When to get help:</strong> {guide.escalate}</p>
+              <div className="folds">
+                <details className="fold"><summary>What to do</summary><ol>{guide.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol></details>
+                <details className="fold"><summary>When to get help</summary><p>{guide.escalate}</p></details>
+              </div>
             </>
           )}
         </div>

@@ -18,18 +18,6 @@ import { StatusBadge } from '../components/StatusBadge';
 import { TrendExplorer } from '../components/TrendExplorer';
 
 const DAY = 86_400_000;
-const NBSP = String.fromCharCode(160);
-const list = (names: string[]) => (names.length <= 1 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`);
-
-/** One plain sentence per status group, worst first. */
-function crewSummary(groups: Record<Status, string[]>): { status: Status; text: string }[] {
-  const out: { status: Status; text: string }[] = [];
-  if (groups.act.length) out.push({ status: 'act', text: `${list(groups.act)} ${groups.act.length > 1 ? 'need' : 'needs'} action today.` });
-  if (groups.watch.length) out.push({ status: 'watch', text: `${list(groups.watch)} ${groups.watch.length > 1 ? 'are' : 'is'} on watch.` });
-  if (groups.ok.length) out.push({ status: 'ok', text: groups.act.length + groups.watch.length === 0 ? 'Everyone is within their baseline.' : `${list(groups.ok)} ${groups.ok.length > 1 ? 'are' : 'is'} clear.` });
-  return out;
-}
-
 type Icon = ComponentType<{ size?: number; strokeWidth?: number; 'aria-hidden'?: boolean }>;
 const VITALS: { id: IndicatorId; pair?: IndicatorId; label: string; icon: Icon; tint: string }[] = [
   { id: 'heartRate', label: 'Heart rate', icon: HeartPulse, tint: 'rose' },
@@ -58,10 +46,6 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
   const data = useData();
 
   const rows = crew.map((a) => ({ a, ev: evaluateAstronaut(a.id, data.readings, data.skinScans, data.now, data.symptomLogs) }));
-  const groups: Record<Status, string[]> = { act: [], watch: [], ok: [] };
-  // Non-breaking spaces keep each name on one line in the headline
-  for (const { a, ev } of rows) if (ev.hasData) groups[ev.status].push(a.name.replace(/ /g, NBSP));
-  const summary = crewSummary(groups);
   const date = new Date(data.now).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
 
   const { a, ev } = rows.find((r) => r.a.id === astronautId) ?? rows[0];
@@ -75,14 +59,11 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
       <header className="dash-head">
         <p className="page-meta">{date}, mission day {crew[0].missionDay}</p>
         <h2>Crew health</h2>
-        {summary.length > 0 && (
-          <p className="crew-summary">{summary.map((s) => <span key={s.status} className={`summary-${s.status}`}>{s.text} </span>)}</p>
-        )}
       </header>
 
       <div className="crew-strip" role="group" aria-label="Choose a crew member">
         {rows.map(({ a: c, ev: e }) => (
-          <button key={c.id} type="button" aria-pressed={c.id === a.id} className={`crew-pick${c.id === a.id ? ' active' : ''}`} onClick={() => onSelect(c.id)}>
+          <button key={c.id} type="button" aria-pressed={c.id === a.id} className={`crew-pick${c.id === a.id ? ' active' : ''}${e.hasData && e.status === 'act' ? ' crew-pick-act' : ''}`} onClick={() => onSelect(c.id)}>
             <span className={`avatar avatar-lg`} aria-hidden="true">{c.name.split(' ').pop()![0]}</span>
             <span className="crew-pick-who">
               <strong>{c.name}</strong>
@@ -91,6 +72,16 @@ export function Dashboard({ astronautId, onSelect, onOpenBody, onOpenInsights, o
             {e.hasData && <StatusBadge status={e.status} />}
           </button>
         ))}
+      </div>
+
+      {/* Divider: everything below belongs to the crew member picked above */}
+      <div className="member-head">
+        <span className="avatar avatar-lg" aria-hidden="true">{a.name.split(' ').pop()![0]}</span>
+        <div className="member-who">
+          <h3>{a.name}</h3>
+          <span className="muted">{a.role}, mission day {a.missionDay}</span>
+        </div>
+        {ev.hasData && <StatusBadge status={ev.status} />}
       </div>
 
       {/* One grid; CSS moves the areas around with the screen width so nothing leaves an empty column */}

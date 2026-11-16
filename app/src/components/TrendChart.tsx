@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import { monotonePath } from '../lib/trends';
 import type { Source } from '../lib/types';
 import { SourceTag } from './SourceTag';
 
@@ -32,11 +33,9 @@ interface Props {
    */
   minSpan?: number;
   height?: number;
-  /** Shade the area under the line (used by the larger trend explorer) */
-  area?: boolean;
 }
 
-const M = { top: 10, right: 12, bottom: 20, left: 40 };
+const M = { top: 12, right: 14, bottom: 26, left: 40 };
 const day = (t: number) => new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 
 /** Round tick step: 1, 2 or 5 times a power of ten */
@@ -49,9 +48,12 @@ function niceStep(span: number, target: number): number {
 
 /**
  * One measure over time, one axis. Single series, so no legend: the card title names it.
+ * Styled after Bklit UI's area chart: smooth monotone curve, gradient fill that fades out,
+ * horizontal grid only, date axis, crosshair tooltip, and a left-to-right reveal on load.
  * Hover, touch or arrow keys show the value under the crosshair.
  */
-export function TrendChart({ label, points, format, lines = [], from, to, minSpan = 0, height = 150, area = false }: Props) {
+export function TrendChart({ label, points, format, lines = [], from, to, minSpan = 0, height = 150 }: Props) {
+  const gid = useId();
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(320);
   const [active, setActive] = useState<number>();
@@ -91,7 +93,11 @@ export function TrendChart({ label, points, format, lines = [], from, to, minSpa
     if (!ticks.length || tickLabel(ticks[ticks.length - 1]) !== tickLabel(n)) ticks.push(n);
   }
 
-  const path = points.map((p, i) => `${i ? 'L' : 'M'}${x(p.t).toFixed(1)},${y(p.value).toFixed(1)}`).join('');
+  const xy = points.map((p): [number, number] => [x(p.t), y(p.value)]);
+  const path = monotonePath(xy);
+  // About one date label per 110px, evenly spaced across the range
+  const nx = Math.max(2, Math.min(6, Math.floor(w / 110) + 1));
+  const xTicks = Array.from({ length: nx }, (_, i) => t0 + ((t1 - t0) * i) / (nx - 1));
   const last = points[points.length - 1];
   const a = active !== undefined ? points[Math.min(active, points.length - 1)] : undefined;
 
@@ -120,43 +126,52 @@ export function TrendChart({ label, points, format, lines = [], from, to, minSpa
         onPointerMove={onMove} onPointerDown={onMove} onPointerLeave={() => setActive(undefined)}
         onKeyDown={onKey} onBlur={() => setActive(undefined)}
       >
+        <defs>
+          <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="var(--series)" stopOpacity=".32" />
+            <stop offset="1" stopColor="var(--series)" stopOpacity="0" />
+          </linearGradient>
+        </defs>
         {ticks.map((v) => (
           <g key={v}>
             <line className="chart-grid" x1={M.left} x2={width - M.right} y1={y(v)} y2={y(v)} />
-            <text className="chart-tick" x={M.left - 6} y={y(v)} dy="0.32em" textAnchor="end">{tickLabel(v)}</text>
+            <text className="chart-tick" x={M.left - 8} y={y(v)} dy="0.32em" textAnchor="end">{tickLabel(v)}</text>
           </g>
         ))}
-        <text className="chart-tick" x={M.left} y={height - 4}>{day(t0)}</text>
-        <text className="chart-tick" x={width - M.right} y={height - 4} textAnchor="end">{day(t1)}</text>
+        {xTicks.map((t, i) => (
+          <text key={t} className="chart-tick" x={x(t)} y={height - 6} textAnchor={i === 0 ? 'start' : i === nx - 1 ? 'end' : 'middle'}>{day(t)}</text>
+        ))}
 
         {shown.map((l) => (
           <line key={l.label} className={`chart-ref chart-ref-${l.kind}`} x1={M.left} x2={width - M.right} y1={y(l.value)} y2={y(l.value)} />
         ))}
 
-        {area && <path className="chart-area" d={`${path}L${x(last.t).toFixed(1)},${M.top + h}L${x(points[0].t).toFixed(1)},${M.top + h}Z`} />}
-        <path className="chart-line" d={path} />
+        <g className="chart-series">
+          <path d={`${path}L${xy[xy.length - 1][0].toFixed(1)},${M.top + h}L${xy[0][0].toFixed(1)},${M.top + h}Z`} fill={`url(#${gid})`} />
+          <path className="chart-line" d={path} />
+          {/* Readings the crew entered themselves get a marker; simulated history stays a plain line */}
+          {points.map((p, i) => p.source !== 'simulated' && (
+            <circle key={i} className="chart-dot" cx={xy[i][0]} cy={xy[i][1]} r={3.5} />
+          ))}
+          <circle className="chart-end" cx={x(last.t)} cy={y(last.value)} r={4} />
+        </g>
         {/* Labels go on top of the line so their outline keeps them readable */}
         {shown.map((l) => (
-          <text key={l.label} className="chart-ref-label" x={width - M.right - 2} y={y(l.value) - 4} textAnchor="end">{l.label}</text>
+          <text key={l.label} className="chart-ref-label" x={width - M.right - 2} y={y(l.value) - 5} textAnchor="end">{l.label}</text>
         ))}
-        {/* Readings the crew entered themselves get a marker; simulated history stays a plain line */}
-        {points.map((p, i) => p.source !== 'simulated' && (
-          <circle key={i} className="chart-dot" cx={x(p.t)} cy={y(p.value)} r={4} />
-        ))}
-        <circle className="chart-dot" cx={x(last.t)} cy={y(last.value)} r={4} />
 
         {a && (
           <g>
             <line className="chart-cross" x1={x(a.t)} x2={x(a.t)} y1={M.top} y2={M.top + h} />
-            <circle className="chart-dot chart-dot-active" cx={x(a.t)} cy={y(a.value)} r={5} />
+            <circle className="chart-halo" cx={x(a.t)} cy={y(a.value)} r={9} />
+            <circle className="chart-end" cx={x(a.t)} cy={y(a.value)} r={4.5} />
           </g>
         )}
       </svg>
       {a && (
-        <div className="chart-tip" style={flip ? { right: width - tipLeft + 10 } : { left: tipLeft + 10 }}>
-          <strong>{format(a.value)}</strong>
-          <span className="muted">{day(a.t)}</span>
-          <SourceTag source={a.source} />
+        <div className="chart-tip" style={flip ? { right: width - tipLeft + 14 } : { left: tipLeft + 14 }}>
+          <span className="chart-tip-date">{day(a.t)}</span>
+          <span className="chart-tip-value"><i aria-hidden="true" /><strong>{format(a.value)}</strong> <SourceTag source={a.source} /></span>
         </div>
       )}
     </div>

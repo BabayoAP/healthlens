@@ -4,8 +4,7 @@ import { formatValue } from '../lib/indicators';
 import { evaluateAstronaut } from '../lib/status';
 import { addReading, addReadings, useData } from '../lib/store';
 import type { IndicatorId } from '../lib/types';
-import { SourceTag } from '../components/SourceTag';
-import { StatusBadge } from '../components/StatusBadge';
+import { IndicatorList } from '../components/IndicatorList';
 
 /**
  * Tests the app runs itself (PRD §5.0, §5.6): near-vision chart, Amsler grid, reaction time.
@@ -13,37 +12,39 @@ import { StatusBadge } from '../components/StatusBadge';
  * (see `basis` for each indicator in `indicators.ts`): the screen is not a calibrated instrument.
  */
 
-/** What the saved results mean: value, baseline, status, reasons, and the guide steps if flagged. */
+/** What the saved results mean, as the same indicator rows used everywhere else (open one for trend and next steps). */
 function Result({ astronautId, ids }: { astronautId: string; ids: IndicatorId[] }) {
   const data = useData();
   const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
-  const rows = ev.indicators.filter((i) => ids.includes(i.def.id) && i.latest);
-  const guide = guideFor(ids[0]);
-  const flagged = rows.some((i) => i.status !== 'ok');
   return (
-    <div className="todo" aria-live="polite">
-      <h4>Saved. Here is what it means</h4>
-      <table>
-        <thead><tr><th>Test</th><th>Result</th><th>Your baseline</th><th>Status</th></tr></thead>
-        <tbody>
-          {rows.map((i) => (
-            <tr key={i.def.id}>
-              <td>{i.def.label}</td>
-              <td>{formatValue(i.def, i.latest!.value)} <SourceTag source={i.latest!.source} /></td>
-              <td>{i.baseline !== undefined ? formatValue(i.def, i.baseline) : 'building…'}</td>
-              <td><StatusBadge status={i.status} /></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {rows.flatMap((i) => i.reasons).map((r) => <p className={`chart-reason reason-${r.status}`} key={r.text}>{r.text}</p>)}
-      {flagged && guide ? (
-        <>
-          <h4>What to do</h4>
-          <ol>{guide.ifAbnormal.map((s) => <li key={s}>{s}</li>)}</ol>
-          <p><strong>When to get help:</strong> {guide.escalate}</p>
-        </>
-      ) : <p>Within your normal range.</p>}
+    <div className="test-result" aria-live="polite">
+      <span className="field-label">Saved</span>
+      <IndicatorList astronautId={astronautId} indicators={ev.indicators.filter((i) => ids.includes(i.def.id) && i.latest)} />
+    </div>
+  );
+}
+
+/** Card header: name, how long it takes, and the latest result with its status, so the card says where you stand before you start. */
+function TestHead({ astronautId, title, minutes, ids }: { astronautId: string; title: string; minutes: string; ids: IndicatorId[] }) {
+  const data = useData();
+  const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
+  const last = ev.indicators.filter((i) => ids.includes(i.def.id) && i.latest);
+  return (
+    <div className="test-head">
+      <div>
+        <h3>{title}</h3>
+        <span className="muted">{minutes}</span>
+      </div>
+      <div className="test-last">
+        {last.map((i) => (
+          <span key={i.def.id} className="test-last-item">
+            <span className={`status-dot status-dot-${i.status}`} aria-hidden="true" />
+            {last.length > 1 && <span className="muted">{i.def.label.replace(/ \(.*\)/, '')}</span>}
+            {formatValue(i.def, i.latest!.value)}
+            <span className="muted">{i.daysSince === 0 ? 'today' : `${i.daysSince} d ago`}</span>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -86,8 +87,8 @@ function ReactionTest({ astronautId }: { astronautId: string }) {
 
   return (
     <div className="panel">
-      <div className="panel-head"><h3>Reaction time</h3><span className="muted">about 30 seconds</span></div>
-      <ol className="steps">{guide.how({} as never).map((s) => <li key={s}>{s}</li>)}</ol>
+      <TestHead astronautId={astronautId} title="Reaction time" minutes="about 30 seconds" ids={['reactionTime']} />
+      <details className="fold"><summary>How it works</summary><ol>{guide.how({} as never).map((s) => <li key={s}>{s}</li>)}</ol></details>
       <button
         type="button" className={`reaction reaction-${phase}`}
         onPointerDown={(e) => { e.preventDefault(); press(); }}
@@ -179,12 +180,12 @@ function VisionCheck({ astronautId }: { astronautId: string }) {
 
   return (
     <div className="panel">
-      <div className="panel-head"><h3>Vision check</h3><span className="muted">about 1 minute</span></div>
+      <TestHead astronautId={astronautId} title="Vision check" minutes="about 1 minute" ids={['nearVision', 'amsler']} />
 
       {(step === 'intro' || step === 'done') && (
         <>
-          <ol className="steps">{guide.how({} as never).map((s) => <li key={s}>{s}</li>)}</ol>
-          <button type="button" className="primary" onClick={start}>{step === 'done' ? 'Run again' : 'Start vision check'}</button>
+          <details className="fold"><summary>How it works</summary><ol>{guide.how({} as never).map((s) => <li key={s}>{s}</li>)}</ol></details>
+          <button type="button" className="primary test-start" onClick={start}>{step === 'done' ? 'Run again' : 'Start vision check'}</button>
         </>
       )}
 
@@ -202,7 +203,7 @@ function VisionCheck({ astronautId }: { astronautId: string }) {
             ))}
           </div>
           <button type="button" className="ghost" onClick={() => answer('unsure')}>I can't tell</button>
-          <p className="muted">You can also use the arrow keys.</p>
+          <p className="muted">Arrow keys work too.</p>
         </>
       )}
 
@@ -230,10 +231,8 @@ export function Tests({ astronautId }: { astronautId: string }) {
   return (
     <section>
       <h2>Tests</h2>
-      <p className="muted">
-        Quick checks the app runs itself. They are compared only with your own earlier results on the same device, not with a clinical scale.
-      </p>
-      <div className="form-grid">
+      <p className="muted">Compared only with your own earlier results, not a clinical scale.</p>
+      <div className="checkin">
         <VisionCheck astronautId={astronautId} />
         <ReactionTest astronautId={astronautId} />
       </div>

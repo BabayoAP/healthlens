@@ -1,39 +1,45 @@
-import { formatValue } from '../lib/indicators';
+import { useState } from 'react';
+import { SYSTEM_INFO } from '../lib/bodyRegions';
 import { evaluateAstronaut } from '../lib/status';
 import { useData } from '../lib/store';
-import { SourceTag } from '../components/SourceTag';
-import { StatusBadge } from '../components/StatusBadge';
+import { IndicatorList } from '../components/IndicatorList';
 
-// TODO (other tasks): entry forms, trend charts, guide cards. This page lists every indicator
-// from the registry with its latest value, personal baseline and status.
+const FILTERS = [
+  { id: 'all', label: 'All' },
+  { id: 'flagged', label: 'Needs attention' },
+  { id: 'due', label: 'Due now' },
+] as const;
+
+/** Every indicator from the registry, grouped by body system. Open a row for its trend and guidance. */
 export function Vitals({ astronautId }: { astronautId: string }) {
   const data = useData();
   const ev = evaluateAstronaut(astronautId, data.readings, data.skinScans, data.now, data.symptomLogs);
-  const rows = ev.indicators;
+  const [filter, setFilter] = useState<(typeof FILTERS)[number]['id']>('all');
+  const count = {
+    all: ev.indicators.length,
+    flagged: ev.indicators.filter((i) => i.latest && i.status !== 'ok').length,
+    due: ev.indicators.filter((i) => i.due).length,
+  };
+  const shown = ev.indicators.filter((i) => (filter === 'flagged' ? i.latest && i.status !== 'ok' : filter === 'due' ? i.due : true));
+  const systems = [...new Set(shown.map((i) => i.def.system))];
 
   return (
     <section>
       <h2>Indicators</h2>
-      <table>
-        <thead>
-          <tr><th>Indicator</th><th>Latest</th><th>Your baseline</th><th>Last measured</th><th>Status</th><th>Why</th></tr>
-        </thead>
-        <tbody>
-          {rows.map((i) => (
-            <tr key={i.def.id}>
-              <td>{i.def.label}</td>
-              <td>{i.latest ? <>{formatValue(i.def, i.latest.value)} <SourceTag source={i.latest.source} /></> : '—'}</td>
-              <td>{i.baseline !== undefined ? formatValue(i.def, i.baseline) : '—'}</td>
-              <td>
-                {i.daysSince === undefined ? 'never' : i.daysSince === 0 ? 'today' : `${i.daysSince} d ago`}
-                {i.due && <span className="muted"> · due</span>}
-              </td>
-              <td>{i.latest ? <StatusBadge status={i.status} /> : '—'}</td>
-              <td>{i.reasons.map((r) => <div key={r.text}>{r.text}</div>)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="row" role="group" aria-label="Filter indicators">
+        {FILTERS.map((f) => (
+          <button key={f.id} type="button" className={`chip${filter === f.id ? ' on' : ''}`} aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
+            {f.label} {count[f.id]}
+          </button>
+        ))}
+      </div>
+      {shown.length === 0 && <p className="muted">Nothing here right now.</p>}
+      {systems.map((sys) => (
+        <div key={sys}>
+          <h3 className="ind-group">{SYSTEM_INFO[sys]?.title ?? sys}</h3>
+          <IndicatorList astronautId={astronautId} indicators={shown.filter((i) => i.def.system === sys)} />
+        </div>
+      ))}
     </section>
   );
 }

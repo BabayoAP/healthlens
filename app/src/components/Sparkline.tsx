@@ -1,4 +1,5 @@
 import { useId } from 'react';
+import { monotonePath } from '../lib/trends';
 
 /** Tiny trend line for a tile. Decorative: the tile states the value in text. */
 export function Sparkline({ values, width = 120, height = 36 }: { values: number[]; width?: number; height?: number }) {
@@ -8,7 +9,7 @@ export function Sparkline({ values, width = 120, height = 36 }: { values: number
   const span = hi - lo || 1;
   const x = (i: number) => (i / (values.length - 1)) * width;
   const y = (v: number) => 3 + (1 - (v - lo) / span) * (height - 6);
-  const line = values.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  const line = monotonePath(values.map((v, i) => [x(i), y(v)]));
   return (
     <svg className="sparkline" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" aria-hidden="true">
       <defs>
