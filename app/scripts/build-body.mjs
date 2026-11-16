@@ -11,6 +11,7 @@
 //   2. Download https://cdn.humanatlas.io/digital-objects/ref-organ/united-female/v1.10/assets/3d-vh-f-united.glb (375 MB).
 //   3. npm i @gltf-transform/core@4.1.1 @gltf-transform/functions@4.1.1 @gltf-transform/extensions@4.1.1 meshoptimizer@0.22.0
 //   4. node --max-old-space-size=8192 build-body.mjs <bodyparts3d folder> <female .glb> <repo>/app/public/models
+//   5. node slim-female.mjs <female out .glb> <female out .glb>   (slims the female build)
 // Frame of both outputs: meters, y up, feet at 0, +x = the person's left, +z = front.
 // Each mesh node carries extras { layer, region } (region only for organs; skin and bones are split by position in the app).
 // Both skins are smoothed into a generic mannequin: a shape-keeping (Taubin) pass over the whole skin, then the chest
