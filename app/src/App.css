@@ -593,13 +593,19 @@ button.ghost:hover, .upload:hover { border-color: color-mix(in srgb, var(--accen
 .holo:active { cursor: grabbing; }
 .holo.holo-hover { cursor: pointer; }
 .holo canvas { display: block; width: 100%; height: 100%; }
-.holo-hint { position: absolute; left: 0; right: 0; bottom: 10px; margin: 0; text-align: center; font-size: .76rem; color: var(--muted); pointer-events: none; }
+.holo-hint { position: absolute; left: 0; right: 0; bottom: 24px; margin: 0; text-align: center; font-size: .76rem; color: var(--muted); pointer-events: none; }
 .holo-label {
   position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 8px; margin: 0;
   font-size: .9rem; font-weight: 600; pointer-events: none;
 }
+.holo-layers { position: absolute; top: 10px; right: 10px; display: flex; gap: 2px; padding: 2px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); z-index: 1; }
+.holo-layers button { border: 0; background: none; padding: 4px 10px; border-radius: 999px; font: inherit; font-size: .78rem; color: var(--muted); cursor: pointer; }
+.holo-layers button.on { background: var(--accent-soft); color: var(--text); font-weight: 600; }
+.holo-label { top: 52px; }
+.holo-credit { position: absolute; left: 0; right: 0; text-align: center; bottom: 6px; margin: 0; font-size: .64rem; color: var(--faint); pointer-events: none; }
+.holo { height: 560px; }
 @media (max-width: 860px) { .holo { height: 380px; } }
-@media (min-width: 1281px) { .bodymap:has(.holo) { grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); } }
+@media (min-width: 1281px) { .bodymap:has(.holo) { grid-template-columns: minmax(340px, 460px) minmax(0, 1fr); } }
 /* Half-width windows: figure on top, details below, so the measurement table has room */
 @media (max-width: 1280px) {
   .bodymap { grid-template-columns: 1fr; }

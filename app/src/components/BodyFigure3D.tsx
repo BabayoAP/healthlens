@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import type { FigureRegionId } from '../lib/bodyRegions';
-import { buildBodyMesh, REGION_ORDER, type BodyMesh } from '../lib/bodyMesh';
+import { regionAt } from '../lib/anatomy';
 import type { RegionView } from '../lib/bodyView';
 import { useTheme } from '../lib/theme';
 import { StatusBadge } from './StatusBadge';
 
 /**
- * Draggable 3D mannequin (Body map). Same regions, statuses and click-to-select as the 2D
- * <BodyFigure>, built from the same shape (`lib/bodyShape.ts`) so both share a silhouette.
- * It is one seamless surface (`lib/bodyMesh.ts`); flagged regions are shaded by vertex color.
+ * Draggable 3D anatomy figure (Body map), built from BodyParts3D (CC BY 4.0, © The Database Center
+ * for Life Science): skin, skeleton and the main organs, simplified into `public/models/body.glb`
+ * (see `scripts/build-body.mjs`). Three layers can be shown or hidden, like an anatomy atlas: with
+ * skin on top of organs, the skin turns see-through. Each organ takes the status color of the body
+ * part it sits in; skin and bones are split into parts by position (`lib/anatomy.ts`).
  * Drag to turn, scroll or pinch to zoom, click a part to open it.
  * The region list next to it stays the keyboard and screen-reader way in.
  */
@@ -23,19 +27,24 @@ interface Props {
   onUnavailable?: () => void;
 }
 
-// One mesh for the whole session: built once in a worker, then reused every time the 3D view opens
-let meshPromise: Promise<BodyMesh> | undefined;
-function loadMesh(): Promise<BodyMesh> {
-  meshPromise ??= new Promise<BodyMesh>((resolve) => {
-    try {
-      const w = new Worker(new URL('../lib/bodyMesh.worker.ts', import.meta.url), { type: 'module' });
-      w.onmessage = (e) => { resolve(e.data); w.terminate(); };
-      w.onerror = () => resolve(buildBodyMesh());
-    } catch {
-      resolve(buildBodyMesh());
-    }
-  });
-  return meshPromise;
+export type Layer = 'skin' | 'organs' | 'skeleton';
+const LAYERS: { id: Layer; label: string }[] = [
+  { id: 'skin', label: 'Skin' },
+  { id: 'organs', label: 'Organs' },
+  { id: 'skeleton', label: 'Skeleton' },
+];
+
+/** Natural colors, so the figure reads as anatomy; status color is blended on top */
+const NATURAL: Record<string, string> = {
+  skin: '#e8cdb8', skeleton: '#ebe3cf', brain: '#e3b2b0', eyes: '#f4f1ea', heart: '#b8443f',
+  aorta: '#c2504a', lungs: '#e09a9a', digestive: '#d7a07a', urinary: '#a5524a',
+};
+
+const MODEL_URL = `${import.meta.env.BASE_URL}models/body.glb`;
+let modelPromise: Promise<THREE.Group> | undefined;
+function loadModel(): Promise<THREE.Group> {
+  modelPromise ??= new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(MODEL_URL).then((g) => g.scene);
+  return modelPromise;
 }
 
 /** Soft contact shadow under the feet */
@@ -56,16 +65,22 @@ function cssColor(name: string): THREE.Color {
   return new THREE.Color(v || '#888888');
 }
 
-interface Scene {
-  body: THREE.Mesh;
-  weights: Float32Array;
+interface Part {
+  id: string;
+  layer: Layer;
+  mesh: THREE.Mesh;
+  material: THREE.MeshStandardMaterial;
+  /** Organs: the one region they belong to. Skin / skeleton: a region per vertex. */
+  region?: FigureRegionId;
+  vertexRegions?: FigureRegionId[];
 }
 
 export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props) {
   const host = useRef<HTMLDivElement>(null);
-  const scene = useRef<Scene | null>(null);
+  const parts = useRef<Part[]>([]);
   const [hover, setHover] = useState<FigureRegionId>();
-  const [ready, setReady] = useState(false);
+  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [layers, setLayers] = useState<Record<Layer, boolean>>({ skin: true, organs: true, skeleton: false });
   const theme = useTheme();
   const pickRef = useRef(onPick);
   const failRef = useRef(onUnavailable);
@@ -85,50 +100,69 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
     el.prepend(renderer.domElement);
 
     const world = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 30);
-    camera.position.set(0, 0.98, 4.1);
+    const camera = new THREE.PerspectiveCamera(30, 1, 0.05, 30);
+    camera.position.set(0, 0.95, 3.9);
 
-    // Studio lighting: soft sky fill, a warm key from the front right, a cool rim from behind
-    world.add(new THREE.HemisphereLight(0xffffff, 0x3a3836, 1.1));
-    const key = new THREE.DirectionalLight(0xfff4e8, 1.7);
+    world.add(new THREE.HemisphereLight(0xffffff, 0x3a3836, 1.15));
+    const key = new THREE.DirectionalLight(0xfff4e8, 1.6);
     key.position.set(2.5, 4, 3.5);
-    const rim = new THREE.DirectionalLight(0xdfe8ff, 1.2);
+    const rim = new THREE.DirectionalLight(0xdfe8ff, 1.1);
     rim.position.set(-3, 2.5, -3);
     world.add(key, rim);
 
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0.9, 0);
+    controls.target.set(0, 0.88, 0);
     controls.enablePan = false;
     controls.enableDamping = true;
-    controls.minDistance = 1.6;
-    controls.maxDistance = 6.5;
-    controls.minPolarAngle = Math.PI * 0.3;
-    controls.maxPolarAngle = Math.PI * 0.58;
+    controls.minDistance = 0.8;
+    controls.maxDistance = 6;
+    controls.minPolarAngle = Math.PI * 0.25;
+    controls.maxPolarAngle = Math.PI * 0.62;
     controls.autoRotate = !reduced;
-    controls.autoRotateSpeed = 0.8;
+    controls.autoRotateSpeed = 0.7;
     controls.addEventListener('start', () => { controls.autoRotate = false; });
 
     let alive = true;
-    const geo = new THREE.BufferGeometry();
-    const body = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0, vertexColors: true }));
-    world.add(body);
-    loadMesh().then((m) => {
+    loadModel().then((model) => {
       if (!alive) return;
-      geo.setAttribute('position', new THREE.BufferAttribute(m.positions, 3));
-      geo.setIndex(new THREE.BufferAttribute(m.indices, 1));
-      geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(m.positions.length), 3));
-      geo.computeVertexNormals();
-      geo.computeBoundingSphere();
-      scene.current = { body, weights: m.weights };
-      setReady(true);
-    });
-    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.42, 48), new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false }));
+      const root = model.clone(true);
+      const list: Part[] = [];
+      root.traverse((o) => {
+        if (!(o instanceof THREE.Mesh)) return;
+        const extras = (o.userData ?? {}) as { layer?: Layer; region?: FigureRegionId | null };
+        const id = o.name;
+        const layer = extras.layer ?? 'organs';
+        const geo = o.geometry as THREE.BufferGeometry;
+        geo.computeVertexNormals();
+        const material = new THREE.MeshStandardMaterial({ roughness: layer === 'skin' ? 0.6 : 0.45, metalness: 0, side: THREE.FrontSide });
+        o.material = material;
+        const part: Part = { id, layer, mesh: o, material, region: extras.region ?? undefined };
+        if (!part.region) {
+          // Skin and bones span the whole body: give every vertex its body part
+          const p = geo.getAttribute('position') as THREE.BufferAttribute;
+          const v = new THREE.Vector3();
+          part.vertexRegions = Array.from({ length: p.count }, (_, i) => {
+            v.fromBufferAttribute(p, i).applyMatrix4(o.matrixWorld);
+            return regionAt(v.x, v.y);
+          });
+          geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(p.count * 3), 3));
+          material.vertexColors = true;
+        }
+        if (layer === 'skin') o.renderOrder = 2;
+        list.push(part);
+      });
+      root.updateMatrixWorld(true);
+      world.add(root);
+      parts.current = list;
+      setState('ready');
+    }).catch(() => { if (alive) setState('error'); });
+
+    const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.4, 48), new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false }));
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y = 0.002;
     world.add(shadow);
 
-    // Size to the container
     const resize = () => {
       const { width, height } = el.getBoundingClientRect();
       if (!width || !height) return;
@@ -140,19 +174,22 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
     ro.observe(el);
     resize();
 
-    // Click (not drag) picks a part; hovering highlights it
+    // Click (not drag) picks a part; hovering highlights it. Only visible layers can be hit.
     const ray = new THREE.Raycaster();
     const hit = (e: PointerEvent): FigureRegionId | undefined => {
       const r = renderer.domElement.getBoundingClientRect();
       ray.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), camera);
-      const sc = scene.current;
-      const face = sc && ray.intersectObject(sc.body, false)[0]?.face;
-      if (!face) return undefined;
-      // The region that owns this spot of the surface
-      const R = REGION_ORDER.length;
-      let best = 0;
-      for (let r = 1; r < R; r++) if (sc.weights[face.a * R + r] > sc.weights[face.a * R + best]) best = r;
-      return REGION_ORDER[best];
+      const visible = parts.current.filter((p) => p.mesh.visible);
+      // A see-through skin should not block the organs behind it
+      const solid = visible.filter((p) => !(p.layer === 'skin' && p.material.transparent));
+      const order = solid.length ? [solid, visible] : [visible];
+      for (const group of order) {
+        const h = ray.intersectObjects(group.map((p) => p.mesh), false)[0];
+        if (!h) continue;
+        const part = group.find((p) => p.mesh === h.object)!;
+        return part.region ?? regionAt(h.point.x, h.point.y);
+      }
+      return undefined;
     };
     let down: { x: number; y: number } | undefined;
     const onDown = (e: PointerEvent) => { down = { x: e.clientX, y: e.clientY }; };
@@ -193,50 +230,76 @@ export function BodyFigure3D({ views, selectedId, onPick, onUnavailable }: Props
       });
       renderer.dispose();
       c.remove();
-      scene.current = null;
+      parts.current = [];
     };
   }, []);
 
-  // Mannequin white for OK parts; flagged regions are shaded in their status color, blending softly at the edges.
-  // The selected or hovered region is lifted a little toward white.
+  useEffect(() => { if (state === 'error') failRef.current?.(); }, [state]);
+
+  // Colors, visibility and see-through skin. Flagged parts take their status color;
+  // the selected or hovered part is lifted a little toward white.
   useEffect(() => {
-    const sc = scene.current;
-    if (!sc) return;
-    const base = new THREE.Color(theme === 'light' ? '#f3f1ec' : '#d8d5ce');
-    const tint = { ok: [cssColor('--ok'), 0.1], watch: [cssColor('--watch'), 1], act: [cssColor('--act'), 1] } as const;
+    if (state !== 'ready') return;
+    const status = { ok: [cssColor('--ok'), 0], watch: [cssColor('--watch'), 0.65], act: [cssColor('--act'), 0.7] } as const;
     const white = new THREE.Color('#ffffff');
-    const cols = REGION_ORDER.map((id) => {
-      const v = views.find((x) => x.region.id === id);
-      const [c, amount] = v?.status ? tint[v.status] : [base, 0];
+    const colorFor = (base: THREE.Color, region?: FigureRegionId) => {
+      const v = region && views.find((x) => x.region.id === region);
+      const [c, amount] = v?.status ? status[v.status] : [base, 0];
       const col = base.clone().lerp(c, amount);
-      return col.lerp(white, id === selectedId ? 0.22 : id === hover ? 0.12 : 0);
-    });
-    const R = REGION_ORDER.length;
-    const attr = sc.body.geometry.getAttribute('color') as THREE.BufferAttribute;
-    const out = attr.array as Float32Array;
-    for (let v = 0; v < out.length / 3; v++) {
-      let r = 0, g = 0, b = 0;
-      for (let k = 0; k < R; k++) {
-        const w = sc.weights[v * R + k];
-        if (w < 0.002) continue;
-        r += cols[k].r * w; g += cols[k].g * w; b += cols[k].b * w;
+      return col.lerp(white, region === selectedId ? 0.25 : region === hover ? 0.14 : 0);
+    };
+    const xray = layers.skin && (layers.organs || layers.skeleton);
+    for (const p of parts.current) {
+      p.mesh.visible = layers[p.layer];
+      const base = new THREE.Color(NATURAL[p.id] ?? '#cccccc');
+      if (p.layer === 'skin') {
+        if (p.material.transparent !== xray) {
+          p.material.transparent = xray;
+          p.material.depthWrite = !xray;
+          p.material.needsUpdate = true; // switching transparency needs a new shader
+        }
+        p.material.opacity = xray ? (theme === 'light' ? 0.22 : 0.18) : 1;
       }
-      out[v * 3] = r; out[v * 3 + 1] = g; out[v * 3 + 2] = b;
+      if (p.vertexRegions) {
+        const attr = p.mesh.geometry.getAttribute('color') as THREE.BufferAttribute;
+        const out = attr.array as Float32Array;
+        const cache = new Map<FigureRegionId, THREE.Color>();
+        p.vertexRegions.forEach((r, i) => {
+          let col = cache.get(r);
+          if (!col) { col = colorFor(base, r); cache.set(r, col); }
+          out[i * 3] = col.r; out[i * 3 + 1] = col.g; out[i * 3 + 2] = col.b;
+        });
+        attr.needsUpdate = true;
+        p.material.color.set('#ffffff');
+      } else {
+        p.material.color.copy(colorFor(base, p.region));
+      }
     }
-    attr.needsUpdate = true;
-  }, [views, selectedId, hover, theme, ready]);
+  }, [views, selectedId, hover, theme, layers, state]);
 
   const shown = views.find((v) => v.region.id === (hover ?? selectedId));
+  const toggle = (id: Layer) => setLayers((l) => {
+    const next = { ...l, [id]: !l[id] };
+    return Object.values(next).some(Boolean) ? next : l; // keep at least one layer on
+  });
 
   return (
-    <div ref={host} className={`holo${hover ? ' holo-hover' : ''}`} aria-hidden="true">
+    <div ref={host} className={`holo${hover ? ' holo-hover' : ''}`}>
+      <div className="holo-layers" role="group" aria-label="Layers to show">
+        {LAYERS.map((l) => (
+          <button key={l.id} type="button" aria-pressed={layers[l.id]} className={layers[l.id] ? 'on' : ''} onClick={() => toggle(l.id)}>{l.label}</button>
+        ))}
+      </div>
       {shown && (
-        <p className="holo-label">
+        <p className="holo-label" aria-hidden="true">
           {shown.region.label}
           {shown.status && <StatusBadge status={shown.status} />}
         </p>
       )}
-      <p className="holo-hint">{ready ? 'Drag to turn · scroll to zoom · click a part' : 'Building the figure…'}</p>
+      <p className="holo-hint" aria-hidden="true">
+        {state === 'ready' ? 'Drag to turn · scroll to zoom · click a part' : state === 'error' ? 'The 3D model could not load.' : 'Loading the anatomy model…'}
+      </p>
+      <p className="holo-credit">Anatomy: BodyParts3D, © DBCLS, CC BY 4.0</p>
     </div>
   );
 }
