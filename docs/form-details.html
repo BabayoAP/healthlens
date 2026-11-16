@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>HealthLens: Project Details</title>
+<style>body{font:16px/1.5 system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;color:#111}h3{margin:20px 0 6px;font-size:1.05rem}.how{background:#eef4fb;border:1px solid #c9d9ea;padding:10px 14px;border-radius:8px;font-size:.9rem}</style></head><body>
+<p class="how">Select from the first line below to the end (or Ctrl+A, then Ctrl+C), and paste into the Project Details box. Bold, headings and bullet lists come across.</p>
+<p><strong>Halfway to Mars, a crewmate feels a sharp pain in the chest and collapses. What do you do?</strong></p>
+<p>That is how the official challenge video opens. On a Mars mission there is no doctor down the hall, a question to Earth can take up to 44 minutes to answer, and a round trip alone exposes the crew to about 0.66 sievert of radiation (Zeitlin et al., Science, 2013). HealthLens is the crew&#x27;s own medic: a few minutes a day to check yourself, and clear steps when something goes wrong.</p>
+<h3>What does it do?</h3>
+<ul>
+<li><strong>Daily check-in in under a minute.</strong> Fifteen indicators: heart rate, blood pressure, blood oxygen, breathing rate, temperature, fasting blood sugar (mg/dL), body mass, sleep, mood, stress, fatigue, reaction time, near vision and the Amsler grid. Values are typed or imported with one &quot;Sync all&quot; from devices modeled on real space hardware: a smart shirt like the Canadian Space Agency&#x27;s Bio-Monitor, a sleep wristband like the Actiwatch from NASA&#x27;s Sleep-Long study, a body mass device like the station&#x27;s SLAMMD, and a finger-prick analyzer like CSA&#x27;s Bio-Analyzer. (No hardware is connected in this prototype; imported values are labeled simulated.)</li>
+<li><strong>Tests the app runs itself.</strong> A weekly vision check, because about 70% of space station astronauts show swelling at the back of the eye (NASA, SANS), and a reaction-time test, which slows with sleep loss before you feel tired.</li>
+<li><strong>A skin check that never forgets a spot.</strong> Crewmates photograph each other; an AI vision model finds each spot, and HealthLens matches it to the last scan to see whether it is new or growing. Space radiation raises skin-cancer risk, and skin problems are the most reported complaint on the space station.</li>
+<li><strong>A daily symptom checklist.</strong> Chest pain, trouble breathing or fainting raises the alarm at once.</li>
+<li><strong>Guidance for people who are not doctors.</strong> Every measurement has a guide: how to take it, why it matters in space (tied to NASA&#x27;s five hazards of human spaceflight), what is normal, what to do if it looks wrong, and when to call the flight surgeon.</li>
+<li><strong>Emergency mode.</strong> A red button on every screen opens 15 guides in three priority groups, chosen from conditions in NASA&#x27;s Integrated Medical Model: life-threatening (CPR, low oxygen, chest pain, severe allergic reaction, smoke or toxic air, severe bleeding), urgent (decompression sickness, head injury, low blood sugar, fainting, solar radiation storm, eye injury, severe distress) and serious (burns, kidney stones). If someone just logged chest pain or a dangerous reading, the matching guide is suggested first. Each guide runs one step per screen with a timer, and the timed log is copied as a report for the ground.</li>
+<li><strong>Built around where the crew is.</strong> A mission bar shows the location (space station, spacecraft to Mars, Moon base, lunar rover, Mars base), the gravity, the signal delay and whether help is live or delayed. Location changes how body mass is measured, where to shelter from radiation, which checks and emergencies matter most, and the advice: near Earth &quot;call the flight surgeon now&quot;; on the way to Mars &quot;send the report and keep going, the crew acts first&quot;.</li>
+<li><strong>A 3D body map.</strong> A real anatomy model, female or male to match each crew member, with skin, organ and skeleton layers. Each part is colored by status and opens its measurements, trend and what to do.</li>
+<li><strong>Live NASA space weather.</strong> NASA DONKI notifications become a radiation watch that links to the solar storm guide.</li>
+<li>Reminders, streaks and a flight-surgeon report that summarizes findings, advice given and readings against baseline.</li>
+</ul>
+<h3>How does it work?</h3>
+<p>Each indicator is checked in four steps: (1) hard safety limits from public medical references, (2) change against the astronaut&#x27;s own baseline (their first 7 readings), (3) a steady trend over the last 14 days, so a slow drift is caught while every value still looks normal, and (4) checks that are overdue. To avoid false alarms, one odd reading only asks for a re-measure; the status rises when a second reading agrees or a hard safety limit is crossed. The astronaut&#x27;s status is the worst of all indicators, symptoms and skin spots. Skin spots follow the ABCDE rule dermatologists teach: the AI model reports asymmetry, border, color and size, and the app&#x27;s own code decides OK, Watch or Act and follows each spot over time, and a size the AI only guessed can never raise the alarm on its own. Everything runs in the browser and works offline.</p>
+<p><em>Worked example (demo crew, simulated data):</em> Cmdr. Vega&#x27;s spot on the left arm grew from 4 mm to 6.5 mm in 45 days with an irregular border, so she is at Act and a report goes to the flight surgeon. Dr. Osei&#x27;s blood pressure crept from about 121 to 134 mmHg in two weeks: Watch. Nakamura&#x27;s heart rate and sleep drifted while every value still looked normal, and temperature checks were skipped: Watch. Lindqvist is healthy: OK.</p>
+<h3>What benefits does it have, and what is the intended impact?</h3>
+<p>The crew gets one routine of a few minutes a day, in plain words, with a clear rule for when to act. Flight surgeons get a short report instead of a stream of raw numbers, ready for the next communication window. Mission planners get one tool from the space station to Mars. On Earth, HealthLens works offline in a browser, needs no special hardware to start and assumes the user is not a doctor, so a rural clinic, an Antarctic station or a ship could use the same check-ins and skin tracking and send one clear report to a distant doctor.</p>
+<h3>How is it creative?</h3>
+<ul>
+<li>It compares each astronaut with their own normal, so it catches slow drifts that fixed thresholds miss.</li>
+<li>It remembers every skin spot across the mission, like a dermatologist who never forgets.</li>
+<li>Emergencies are guided step by step and adapted to weightlessness (CPR while braced against a wall, blood that floats, water that does not run) and to how far away help is.</li>
+<li>Location shapes everything, from how you weigh yourself to which emergencies are most likely.</li>
+</ul>
+<h3>What factors did we consider?</h3>
+<ul>
+<li>Astronauts are not doctors, so there is no jargon: every value comes with how, why and what to do.</li>
+<li>Distance from Earth: the app works offline, and its advice changes with the signal delay.</li>
+<li>False alarms erode trust, so the app re-measures before it escalates and compares with personal baselines.</li>
+<li>Honest data: every value says where it came from (entered, device, self-report, measured in app, simulated, estimated), and every limit lists its source in the app.</li>
+<li>Safety: HealthLens flags changes for review and does not diagnose. The 3D body is a neutral mannequin, suitable for all ages.</li>
+</ul>
+<h3>What tools did we use?</h3>
+<p>React, TypeScript and Vite; three.js for the 3D body (anatomy from BodyParts3D and the HuBMAP Human Reference Atlas, prepared with glTF Transform and meshoptimizer); OpenRouter with free open vision models (NVIDIA Nemotron, Google Gemma) for skin-spot detection, with Zod for the response schema; charts in plain SVG; Vitest for the rule tests; Geist font and Lucide icons; hosted on Vercel.</p>
+<h3>What&#x27;s next?</h3>
+<p>Connect real wearables through the existing device-import path, run the skin model on the tablet so scans work with no connection, have doctors review the guides and test the skin rules on public dermatology images (ISIC), and send the flight-surgeon report automatically at the next communication window.</p>
+</body></html>
