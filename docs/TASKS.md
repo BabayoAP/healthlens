@@ -18,6 +18,7 @@ Priorities and details come from [PRD §11 (MVP cut)](PRD.md#11-hackathon-mvp-cu
 
 ## In progress
 _(name · task · started)_
+- BabayoAP · full-week check calendar (Mon–Sun), more emergency guides with priorities, simulated device import (NASA-style biomedical sensors), challenge/winner alignment pass + docs · Nov 15
 
 ## Done
 - [x] UI pass 5 (team feedback, Nov 15): warm-gray dark palette (Claude / Notion style); charts restyled after Bklit UI's area chart (smooth curve, fading fill, crosshair tooltip); seamless mannequin body map (one shape in `lib/bodyShape.ts`; 3D is a single distance-field mesh from `lib/bodyMesh.ts` built in a worker, with status shading on the surface; 2D is its front outline); insight cards lead with what we saw + first step, trend chart beside, the rest folded; Indicators screen is a grouped, filterable list (`components/IndicatorList.tsx`, also on the body map); check schedule is a heatmap per check (`components/CheckSchedule.tsx`); per-value "simulated" tags hidden while the demo banner shows; dashboard divider under the crew strip; Check-in / Tests / Skin scan cleanup; body map stacks at half width. winterrmelonn
